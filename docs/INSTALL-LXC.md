@@ -8,7 +8,7 @@ Guiden tar deg fra en tom Proxmox-node til en Høringsradar som:
 
 Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container, med Tailscale installert **inne i** containeren. Regn med 45–60 minutter første gang.
 
-> Kommandoer med `#` foran kjøres som root i containeren. Kommandoer med `pve#` kjøres som root på Proxmox-verten. Bytt ut verdier i `<vinkelparenteser>`.
+> **Slik leser du guiden:** Alle kommandoer kjøres som **root i containeren**, med mindre blokken starter med `# På Proxmox-verten:`. Kopier én kodeblokk om gangen og bytt ut `<vinkelparenteser>` med egne verdier. Blokker merket «Forventet utskrift» viser hva du skal *se*, og skal ikke kjøres.
 
 ## Innhold
 
@@ -65,11 +65,11 @@ Du trenger:
 - En **Tailscale-konto** (tailnet) og Tailscale på PC-en du skal demonstrere fra.
 - Et **git-repo** for koden. Anbefalt er et privat GitHub-repo med en skrivebeskyttet *deploy key*. Det trengs bare utgående trafikk. Et alternativ står i [kapittel 7](#7-hent-koden).
 
-Push koden fra utviklingsmaskinen først, for eksempel:
+Koden ligger allerede i det private repoet `Unackn0wledged/horingsradar` på GitHub. Senere endringer pushes fra utviklingsmaskinen:
 
 ```bash
-git remote add origin git@github.com:<bruker>/horingsradar.git
-git push -u origin main
+# På utviklingsmaskinen:
+git push
 ```
 
 ## 3. Opprett containeren
@@ -81,9 +81,10 @@ I Proxmox-GUI: velg *local*-lagringen, gå til **CT Templates → Templates** og
 Eller på verten:
 
 ```bash
-pve# pveam update
-pve# pveam available --section system | grep debian-13
-pve# pveam download local debian-13-standard_13.<x>-1_amd64.tar.zst
+# På Proxmox-verten:
+pveam update
+pveam available --section system | grep debian-13
+pveam download local debian-13-standard_13.<x>-1_amd64.tar.zst
 ```
 
 ### 3.2 Opprett CT
@@ -115,31 +116,39 @@ Tailscale trenger `/dev/net/tun`. En uprivilegert container har ikke tilgang til
 **Alternativ B (alle versjoner, i konfigurasjonsfilen):**
 
 ```bash
-pve# nano /etc/pve/lxc/<CT-ID>.conf
+# På Proxmox-verten:
+nano /etc/pve/lxc/<CT-ID>.conf
 ```
 
-Legg til nederst:
+Legg til nederst (innhold i filen, ikke kommandoer):
 
-```
+```ini
 lxc.cgroup2.devices.allow: c 10:200 rwm
 lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
 ```
 
-Start containeren og åpne konsollen. Bruk enten **Console** i GUI eller `pve# pct enter <CT-ID>`.
+Start containeren og åpne konsollen. Bruk enten **Console** i GUI eller `pct enter <CT-ID>` på Proxmox-verten.
 
 ```bash
-# ls -l /dev/net/tun
+ls -l /dev/net/tun
+```
+
+Forventet utskrift (`...` er dato og klokkeslett). Ikke kjør dette:
+
+```text
 crw-rw-rw- 1 nobody nogroup 10, 200 ... /dev/net/tun
 ```
+
+Får du `No such file or directory`, mangler linjene fra Alternativ B, eller containeren er ikke startet på nytt etter at de ble lagt inn.
 
 > Får du ikke TUN til å virke, kan Tailscale kjøre i *userspace networking*-modus. Se [11.6](#116-hvis-tun-ikke-er-tilgjengelig).
 
 ## 5. Grunnoppsett i containeren
 
 ```bash
-# apt update && apt full-upgrade -y
-# apt install -y git curl ca-certificates sudo nftables \
-      libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 fontconfig
+apt update && apt full-upgrade -y
+apt install -y git curl ca-certificates sudo nftables \
+    libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 fontconfig
 ```
 
 `libpango…` og `libharfbuzz-subset0` trengs av WeasyPrint for PDF-rapporten (jf. WeasyPrints installasjonsguide for Debian). Selve fontene ligger i repoet, så du trenger ingen fontpakker.
@@ -147,15 +156,15 @@ crw-rw-rw- 1 nobody nogroup 10, 200 ... /dev/net/tun
 Sett tidssonen, slik at timeren og datoene i panelet følger norsk tid:
 
 ```bash
-# timedatectl set-timezone Europe/Oslo || ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
-# date
+timedatectl set-timezone Europe/Oslo || ln -sf /usr/share/zoneinfo/Europe/Oslo /etc/localtime
+date
 ```
 
 Aktiver automatiske sikkerhetsoppdateringer (anbefalt):
 
 ```bash
-# apt install -y unattended-upgrades
-# dpkg-reconfigure -plow unattended-upgrades
+apt install -y unattended-upgrades
+dpkg-reconfigure -plow unattended-upgrades
 ```
 
 ## 6. Tjenestebruker, mapper og uv
@@ -163,17 +172,17 @@ Aktiver automatiske sikkerhetsoppdateringer (anbefalt):
 Tjenestebrukeren eier koden og dataene. Hjemmemappen er `/var/lib/horingsradar`, som også er `DATA_DIR`. Der havner også uv-cache og Python-installasjonen til uv.
 
 ```bash
-# useradd --system --create-home --home-dir /var/lib/horingsradar \
-          --shell /bin/bash horingsradar
-# chmod 750 /var/lib/horingsradar
-# install -d -o horingsradar -g horingsradar -m 755 /opt/horingsradar
+useradd --system --create-home --home-dir /var/lib/horingsradar \
+        --shell /bin/bash horingsradar
+chmod 750 /var/lib/horingsradar
+install -d -o horingsradar -g horingsradar -m 755 /opt/horingsradar
 ```
 
 Installer uv systemomfattende. Prosjektet bruker Python 3.12, som uv henter selv:
 
 ```bash
-# curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh
-# uv --version
+curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh
+uv --version
 ```
 
 > Vil du ha nøyaktig samme uv-versjon som på utviklingsmaskinen, bruk `https://astral.sh/uv/<versjon>/install.sh`.
@@ -185,17 +194,17 @@ Installer uv systemomfattende. Prosjektet bruker Python 3.12, som uv henter selv
 Lag en SSH-nøkkel for tjenestebrukeren:
 
 ```bash
-# install -d -m 700 -o horingsradar -g horingsradar /var/lib/horingsradar/.ssh
-# sudo -u horingsradar -H ssh-keygen -t ed25519 -N "" -C "horingsradar-lxc" \
-      -f /var/lib/horingsradar/.ssh/id_ed25519
-# cat /var/lib/horingsradar/.ssh/id_ed25519.pub
+install -d -m 700 -o horingsradar -g horingsradar /var/lib/horingsradar/.ssh
+sudo -u horingsradar -H ssh-keygen -t ed25519 -N "" -C "horingsradar-lxc" \
+    -f /var/lib/horingsradar/.ssh/id_ed25519
+cat /var/lib/horingsradar/.ssh/id_ed25519.pub
 ```
 
 Lim inn den offentlige nøkkelen på GitHub under **Repo → Settings → Deploy keys → Add deploy key**. La «Allow write access» være **av**.
 
 ```bash
-# sudo -u horingsradar -H ssh -o StrictHostKeyChecking=accept-new -T git@github.com   # bekreft vertsnøkkel
-# sudo -u horingsradar -H git clone git@github.com:<bruker>/horingsradar.git /opt/horingsradar
+sudo -u horingsradar -H ssh -o StrictHostKeyChecking=accept-new -T git@github.com   # bekreft vertsnøkkel
+sudo -u horingsradar -H git clone git@github.com:Unackn0wledged/horingsradar.git /opt/horingsradar
 ```
 
 ### 7.2 Alternativ uten GitHub: bart repo i containeren
@@ -203,14 +212,15 @@ Lim inn den offentlige nøkkelen på GitHub under **Repo → Settings → Deploy
 Dette krever at du kan nå containeren med SSH fra utviklingsmaskinen på LAN.
 
 ```bash
-# apt install -y openssh-server
-# install -d -o horingsradar -g horingsradar /srv/git
-# sudo -u horingsradar git init --bare /srv/git/horingsradar.git
+apt install -y openssh-server
+install -d -o horingsradar -g horingsradar /srv/git
+sudo -u horingsradar git init --bare /srv/git/horingsradar.git
 ```
 
 Legg din offentlige SSH-nøkkel i `/var/lib/horingsradar/.ssh/authorized_keys`. Push deretter fra utviklingsmaskinen:
 
 ```bash
+# På utviklingsmaskinen:
 git remote add lab horingsradar@<lan-ip>:/srv/git/horingsradar.git
 git push lab main
 ```
@@ -218,29 +228,29 @@ git push lab main
 Klon i containeren:
 
 ```bash
-# sudo -u horingsradar -H git clone /srv/git/horingsradar.git /opt/horingsradar
+sudo -u horingsradar -H git clone /srv/git/horingsradar.git /opt/horingsradar
 ```
 
 ### 7.3 Installer avhengigheter
 
 ```bash
-# cd /opt/horingsradar
-# sudo -u horingsradar -H uv sync --frozen
+cd /opt/horingsradar
+sudo -u horingsradar -H uv sync --frozen
 ```
 
 Første gang laster uv ned Python 3.12 og alle pakker. Bekreft at alt, også PDF-generering med Pango, virker ved å kjøre testene. De bruker ikke nett eller API:
 
 ```bash
-# sudo -u horingsradar -H uv run pytest -q
+sudo -u horingsradar -H uv run pytest -q
 ```
 
 ## 8. Konfigurasjon (.env)
 
 ```bash
-# cd /opt/horingsradar
-# sudo -u horingsradar cp .env.example .env
-# chmod 600 .env && chown horingsradar:horingsradar .env
-# sudo -u horingsradar nano .env
+cd /opt/horingsradar
+sudo -u horingsradar cp .env.example .env
+chmod 600 .env && chown horingsradar:horingsradar .env
+sudo -u horingsradar nano .env
 ```
 
 Endre minst disse:
@@ -259,7 +269,7 @@ Endre minst disse:
 Lag passord-hashen. Passordet tastes inn og vises ikke:
 
 ```bash
-# cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar hash-password
+cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar hash-password
 ```
 
 Lim hele linjen som starter med `scrypt$` inn som `WEB_PASSWORD_HASH=...`. Bruk et sterkt, unikt passord: knappene i panelet koster penger.
@@ -271,29 +281,29 @@ Lim hele linjen som starter med `scrypt$` inn som `WEB_PASSWORD_HASH=...`. Bruk 
 Kjør først **uten LLM**. Da hentes høringer og dokumenter, men ingenting sendes til modellen, så det koster ingenting:
 
 ```bash
-# cd /opt/horingsradar
-# sudo -u horingsradar -H .venv/bin/horingsradar run --no-assess
-# sudo -u horingsradar -H .venv/bin/horingsradar status
+cd /opt/horingsradar
+sudo -u horingsradar -H .venv/bin/horingsradar run --no-assess
+sudo -u horingsradar -H .venv/bin/horingsradar status
 ```
 
 Første kjøring henter høringer publisert de siste 90 dagene (`INITIAL_LOOKBACK_DAYS`). Med minst 2 sekunder mellom kall tar det typisk 10–20 minutter. Se fremdriften i loggen:
 
 ```bash
-# ls -t /var/lib/horingsradar/logs/ | head -1
-# tail -f /var/lib/horingsradar/logs/job-<nr>.log
+ls -t /var/lib/horingsradar/logs/ | head -1
+tail -f /var/lib/horingsradar/logs/job-<nr>.log
 ```
 
 Prøv deretter én vurdering med ekte API, for å bekrefte nøkkel, modell og pris:
 
 ```bash
-# sudo -u horingsradar -H .venv/bin/horingsradar assess <id fra «Siste høringer» i status>
+sudo -u horingsradar -H .venv/bin/horingsradar assess <id fra «Siste høringer» i status>
 ```
 
 Når dette ser bra ut, kan resten vurderes. Det skjer automatisk ved neste `run`, eller med `run` for hånd. Lag deretter første rapport:
 
 ```bash
-# sudo -u horingsradar -H .venv/bin/horingsradar run
-# sudo -u horingsradar -H .venv/bin/horingsradar report
+sudo -u horingsradar -H .venv/bin/horingsradar run
+sudo -u horingsradar -H .venv/bin/horingsradar report
 ```
 
 PDF-en havner i `/var/lib/horingsradar/reports/` og kan lastes ned fra panelet.
@@ -301,12 +311,12 @@ PDF-en havner i `/var/lib/horingsradar/reports/` og kan lastes ned fra panelet.
 ## 10. systemd: daglig kjøring og adminpanel
 
 ```bash
-# install -m 644 /opt/horingsradar/deploy/systemd/horingsradar-* /etc/systemd/system/
-# systemctl daemon-reload
-# systemctl enable --now horingsradar-run.timer
-# systemctl enable --now horingsradar-web.service
-# systemctl list-timers horingsradar-run.timer
-# systemctl status horingsradar-web.service
+install -m 644 /opt/horingsradar/deploy/systemd/horingsradar-* /etc/systemd/system/
+systemctl daemon-reload
+systemctl enable --now horingsradar-run.timer
+systemctl enable --now horingsradar-web.service
+systemctl list-timers horingsradar-run.timer
+systemctl status horingsradar-web.service
 ```
 
 - `horingsradar-run.timer` starter `run` hver dag kl. 06:15 (± 10 min). Med `Persistent=true` tas en glemt kjøring igjen etter omstart. Endre tidspunktet i `OnCalendar` og kjør `daemon-reload`.
@@ -318,14 +328,14 @@ PDF-en havner i `/var/lib/horingsradar/reports/` og kan lastes ned fra panelet.
 ### 11.1 Installer
 
 ```bash
-# curl -fsSL https://tailscale.com/install.sh | sh
-# systemctl enable --now tailscaled
+curl -fsSL https://tailscale.com/install.sh | sh
+systemctl enable --now tailscaled
 ```
 
 ### 11.2 Koble til tailnettet
 
 ```bash
-# tailscale up --hostname=horingsradar --ssh=false
+tailscale up --hostname=horingsradar --ssh=false
 ```
 
 Åpne lenken som vises og godkjenn maskinen. Deretter, i Tailscale-admin (**Machines → horingsradar**):
@@ -336,9 +346,10 @@ PDF-en havner i `/var/lib/horingsradar/reports/` og kan lastes ned fra panelet.
 ### 11.3 Finn adressen
 
 ```bash
-# tailscale ip -4
-100.x.y.z
+tailscale ip -4
 ```
+
+Utskriften er Tailscale-adressen, for eksempel `100.101.102.103`. Notér den.
 
 Med MagicDNS på (standard) heter maskinen `horingsradar` eller `horingsradar.<tailnet>.ts.net`.
 
@@ -346,11 +357,23 @@ Med MagicDNS på (standard) heter maskinen `horingsradar` eller `horingsradar.<t
 
 Panelet binder bare til adressene i `WEB_BIND`, aldri `0.0.0.0`. Legg inn både LAN- og Tailscale-adressen:
 
+Åpne `.env`:
+
 ```bash
-# sudo -u horingsradar nano /opt/horingsradar/.env
+sudo -u horingsradar nano /opt/horingsradar/.env
+```
+
+Endre linjen med `WEB_BIND` til (dette er innhold i filen, ikke en kommando):
+
+```ini
 WEB_BIND=<lan-ip>:8080,<tailscale-ip>:8080
-# systemctl restart horingsradar-web.service
-# ss -ltnp | grep 8080
+```
+
+Lagre og start panelet på nytt. Sjekk deretter at det lytter på begge adressene:
+
+```bash
+systemctl restart horingsradar-web.service
+ss -ltnp | grep 8080
 ```
 
 Panelet kan binde Tailscale-adressen selv om `tailscaled` ikke er helt oppe ved oppstart (Linux `IP_FREEBIND`). Du trenger derfor ingen spesiell rekkefølge ved boot.
@@ -377,11 +400,11 @@ Tilpass regelen til din eksisterende policy. Har du allerede en «alle til alle�
 Kjør Tailscale i userspace-modus og la Tailscale videresende til panelet på localhost:
 
 ```bash
-# mkdir -p /etc/systemd/system/tailscaled.service.d
-# printf '[Service]\nEnvironment="FLAGS=--tun=userspace-networking"\n' \
-      > /etc/systemd/system/tailscaled.service.d/userspace.conf
-# systemctl daemon-reload && systemctl restart tailscaled
-# tailscale serve --bg --http=8080 http://127.0.0.1:8080
+mkdir -p /etc/systemd/system/tailscaled.service.d
+printf '[Service]\nEnvironment="FLAGS=--tun=userspace-networking"\n' \
+    > /etc/systemd/system/tailscaled.service.d/userspace.conf
+systemctl daemon-reload && systemctl restart tailscaled
+tailscale serve --bg --http=8080 http://127.0.0.1:8080
 ```
 
 Sett da `WEB_BIND=<lan-ip>:8080,127.0.0.1:8080`.
@@ -391,7 +414,7 @@ Sett da `WEB_BIND=<lan-ip>:8080,127.0.0.1:8080`.
 Trafikken over Tailscale er allerede kryptert (WireGuard). Vil du likevel ha `https://` i adressefeltet, for eksempel for å slippe advarsler i nettleseren under en demo, aktiver **HTTPS Certificates** i Tailscale-admin og kjør:
 
 ```bash
-# tailscale serve --bg --https=443 http://127.0.0.1:8080
+tailscale serve --bg --https=443 http://127.0.0.1:8080
 ```
 
 Legg da `127.0.0.1:8080` til i `WEB_BIND`. Panelet er nå tilgjengelig på `https://horingsradar.<tailnet>.ts.net`, bare innenfor tailnettet. Bruk **ikke** `tailscale funnel`, som eksponerer tjenesten mot internett.
@@ -401,7 +424,7 @@ Legg da `127.0.0.1:8080` til i `WEB_BIND`. Panelet er nå tilgjengelig på `http
 SPEC sier at containeren bare skal ha utgående trafikk, i tillegg til panelet på LAN og Tailscale. Med nftables:
 
 ```bash
-# cat > /etc/nftables.conf <<'EOF'
+cat > /etc/nftables.conf <<'EOF'
 #!/usr/sbin/nft -f
 flush ruleset
 table inet filter {
@@ -421,8 +444,8 @@ table inet filter {
   chain output  { type filter hook output priority 0; policy accept; }
 }
 EOF
-# systemctl enable --now nftables
-# nft list ruleset
+systemctl enable --now nftables
+nft list ruleset
 ```
 
 > Proxmox-brannmuren på containerens nettverkskort er et alternativ. Ikke bruk begge uten å vite hvilken som gjelder.
@@ -443,7 +466,7 @@ EOF
 Kjør CLI-kommandoer som tjenestebrukeren fra `/opt/horingsradar`:
 
 ```bash
-# cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar <kommando>
+cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar <kommando>
 ```
 
 Bare én jobb kan kjøre om gangen, uansett om den er startet fra timeren, panelet eller terminalen. En jobb som finner låsen tatt, registreres som `skipped`.
@@ -455,7 +478,7 @@ Bare én jobb kan kjøre om gangen, uansett om den er startet fra timeren, panel
 Push fra utviklingsmaskinen, og kjør deretter dette i containeren:
 
 ```bash
-# /opt/horingsradar/deploy/deploy.sh
+/opt/horingsradar/deploy/deploy.sh
 ```
 
 Skriptet:
@@ -475,7 +498,7 @@ All tilstand ligger i `/var/lib/horingsradar` (database, cache, PDF-er, logger).
 - **Mer målrettet:** SQLite-dump og rapporter:
 
   ```bash
-  # sudo -u horingsradar sqlite3 /var/lib/horingsradar/horingsradar.sqlite3 ".backup '/var/lib/horingsradar/backup.sqlite3'"
+  sudo -u horingsradar sqlite3 /var/lib/horingsradar/horingsradar.sqlite3 ".backup '/var/lib/horingsradar/backup.sqlite3'"
   ```
 
   Krever `apt install sqlite3`. Ta vare på `backup.sqlite3`, `reports/` og en kopi av `.env` på et trygt sted.
