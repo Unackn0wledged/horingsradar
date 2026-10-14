@@ -49,3 +49,20 @@ def test_hash_password(monkeypatch, capsys):
     monkeypatch.setattr(cli.getpass, "getpass", lambda prompt: "hemmelig")
     assert cli.main(["hash-password"]) == 0
     assert verify_password("hemmelig", capsys.readouterr().out.strip())
+
+
+def test_unwritable_data_dir_gives_clear_error(tmp_path):
+    from horingsradar.db import DatabaseUnavailable, connect
+
+    blocker = tmp_path / "file"
+    blocker.write_text("not a directory")
+    with pytest.raises(DatabaseUnavailable, match="DATA_DIR"):
+        connect(blocker / "sub" / "horingsradar.sqlite3")
+
+
+def test_relative_data_dir_is_made_absolute(tmp_path, monkeypatch):
+    from horingsradar.config import load_settings
+
+    monkeypatch.chdir(tmp_path)
+    settings = load_settings(env_file=tmp_path / "none.env", data_dir="./data")
+    assert settings.data_dir == (tmp_path / "data").resolve()

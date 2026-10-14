@@ -81,6 +81,12 @@ class Settings(BaseModel):
 
     log_level: str = "INFO"
 
+    @field_validator("data_dir")
+    @classmethod
+    def _absolute_data_dir(cls, v: Path) -> Path:
+        # Paths stored in the database must not depend on the working directory.
+        return v.expanduser().resolve()
+
     @field_validator("request_interval_seconds")
     @classmethod
     def _min_interval(cls, v: float) -> float:

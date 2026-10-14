@@ -167,15 +167,25 @@ def format_ts(value: str | None, fmt: str = "%d.%m.%Y %H:%M") -> str:
     return parsed.strftime(fmt) if parsed else "–"
 
 
+class DatabaseUnavailable(RuntimeError):
+    pass
+
+
 def connect(db_path: Path) -> sqlite3.Connection:
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(db_path, timeout=30, isolation_level=None)
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    conn.execute("PRAGMA journal_mode = WAL")
-    conn.execute("PRAGMA synchronous = NORMAL")
-    conn.execute("PRAGMA busy_timeout = 30000")
-    conn.executescript(SCHEMA)
+    try:
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+        conn = sqlite3.connect(db_path, timeout=30, isolation_level=None)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("PRAGMA journal_mode = WAL")
+        conn.execute("PRAGMA synchronous = NORMAL")
+        conn.execute("PRAGMA busy_timeout = 30000")
+        conn.executescript(SCHEMA)
+    except (OSError, sqlite3.OperationalError) as exc:
+        raise DatabaseUnavailable(
+            f"Kan ikke åpne databasen {db_path} for skriving ({exc}). Sjekk at DATA_DIR i .env"
+            " er riktig (på lab: /var/lib/horingsradar) og skrivbar for tjenestebrukeren."
+        ) from exc
     return conn
 
 
