@@ -146,3 +146,22 @@ def test_helpers():
     assert parse_week("2026-W42") == (date(2026, 10, 12), date(2026, 10, 18))
     with pytest.raises(ValueError):
         parse_week("2026-42")
+
+
+def test_every_overview_row_jumps_to_its_analysis(settings, conn):
+    result = build_report(settings, conn, now=NOW)
+    ids = [r[0] for r in conn.execute("SELECT id FROM hearing WHERE tracked = 1")]
+    with pymupdf.open(result["path"]) as doc:
+        names = doc.resolve_names()
+        targets = {
+            link["nameddest"]
+            for page in doc
+            for link in page.get_links()
+            if link["kind"] == pymupdf.LINK_NAMED
+        }
+    # Every hearing has an anchor in the document, every overview row links to it,
+    # and the analyses link back to the overview.
+    assert {f"h{i}" for i in ids} <= set(names)
+    assert {f"h{i}" for i in ids} <= targets
+    assert "oversikt" in names and "oversikt" in targets
+    assert names["oversikt"]["page"] == 0
