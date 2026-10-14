@@ -19,6 +19,7 @@ from horingsradar.http import Fetcher, FetchError
 from horingsradar.sources.regjeringen.parse import (
     DocumentLink,
     ListingItem,
+    hearing_id_from_url,
     parse_hearing,
     parse_listing,
     parse_responses,
@@ -97,6 +98,11 @@ class RegjeringenSource:
             page = parse_listing(result.text, self.base + LIST_PATH)
             stats.pages += 1
             if not page.items:
+                if page_no == 1:
+                    raise RuntimeError(
+                        "Fant ingen høringer på første listeside. Har HTML-strukturen på"
+                        " regjeringen.no endret seg? Parseren må i så fall oppdateres."
+                    )
                 break
             for item in page.items:
                 stats.seen += 1
@@ -186,7 +192,15 @@ class RegjeringenSource:
             raise KeyError(f"Unknown hearing {hearing_id}")
         max_age = self.settings.html_cache_max_age_seconds if max_age is None else max_age
         page_result = self.fetcher.get(row["url"], max_age=max_age)
-        page = parse_hearing(page_result.text, row["url"])
+        url = row["url"]
+        canonical = page_result.final_url.split("?")[0].split("#")[0]
+        if canonical != url and hearing_id_from_url(canonical) == hearing_id:
+            # e.g. a short /id123/ URL from `assess <id>` redirected to the full page
+            url = canonical
+            self.conn.execute("UPDATE hearing SET url = ? WHERE id = ?", (url, hearing_id))
+        page = parse_hearing(page_result.text, url)
+        if not page.title and page.status == "unknown" and not page.documents:
+            log.warning("Hearing %s: unexpected page structure (%s)", hearing_id, url)
 
         self.conn.execute(
             "UPDATE hearing SET title = ?, doc_type = COALESCE(?, doc_type),"

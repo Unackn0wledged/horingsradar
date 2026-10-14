@@ -189,7 +189,8 @@ def job_context(
 
 
 def running_job(conn: sqlite3.Connection) -> sqlite3.Row | None:
-    mark_stale_jobs(conn)
-    return conn.execute(
-        "SELECT * FROM job WHERE status = 'running' ORDER BY id DESC LIMIT 1"
-    ).fetchone()
+    """The job that is actually running (its process is alive). Read-only."""
+    for row in conn.execute("SELECT * FROM job WHERE status = 'running' ORDER BY id DESC"):
+        if pid_alive(row["pid"]):
+            return row
+    return None

@@ -258,7 +258,6 @@ def create_app(settings: Settings) -> FastAPI:
     @app.get("/jobs", response_class=HTMLResponse)
     def jobs(request: Request):
         with connection() as conn:
-            running_job(conn)  # marks stale jobs
             rows = conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 100").fetchall()
             items = []
             for r in rows:

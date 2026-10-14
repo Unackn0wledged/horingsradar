@@ -133,3 +133,11 @@ def test_subsequent_run_uses_overlap_cutoff(settings, conn):
     do_run(settings, conn, site, llm)
     summary = do_run(settings, conn, site, llm, today=date(2026, 10, 20))
     assert summary["cutoff"] == "2026-09-30"
+
+
+def test_empty_first_listing_page_fails_loudly(settings, conn):
+    site = FakeSite(list_pages={1: "svar_3116453.html"})  # a page without listing items
+    with pytest.raises(RuntimeError, match="HTML-strukturen"):
+        do_run(settings, conn, site, FakeLLM())
+    job = conn.execute("SELECT * FROM job").fetchone()
+    assert job["status"] == "failed"

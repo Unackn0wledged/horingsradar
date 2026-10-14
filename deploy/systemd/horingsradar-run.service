@@ -1,0 +1,25 @@
+[Unit]
+Description=Høringsradar: hent og vurder nye og endrede høringer
+Documentation=file:///opt/horingsradar/docs/INSTALL-LXC.md
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=horingsradar
+Group=horingsradar
+WorkingDirectory=/opt/horingsradar
+Environment=ENV_FILE=/opt/horingsradar/.env
+# Bare `run`. report og backtest startes manuelt (CLI eller adminpanel).
+ExecStart=/opt/horingsradar/.venv/bin/horingsradar run --triggered-by timer
+TimeoutStartSec=6h
+Nice=5
+# SIGINT gjør at jobben registreres som avbrutt i jobbregisteret.
+KillSignal=SIGINT
+TimeoutStopSec=60
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/horingsradar
