@@ -27,9 +27,9 @@ from horingsradar.assess import (
     AssessmentPlan,
     ChunkOutcome,
     OutputError,
-    parse_output,
     plan_assessment,
     store_assessment,
+    validate_output,
 )
 from horingsradar.config import Settings
 from horingsradar.http import Fetcher, FetchError
@@ -381,7 +381,7 @@ def _accept(
 ) -> None:
     s["responses"].append(response)
     try:
-        s["output"] = parse_output(response)
+        s["output"] = validate_output(response, s["plan"])
         s["error"] = None
         s["done"] = True
         if store_cache:

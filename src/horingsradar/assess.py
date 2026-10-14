@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -29,7 +30,7 @@ from horingsradar.extract import marker, split_pages
 from horingsradar.llm.client import LLMClient, LLMError, LLMResponse
 from horingsradar.llm.prompt import Prompt, load_prompt
 from horingsradar.llm.schema import RELEVANCE_ORDER, AssessmentOutput, output_json_schema
-from horingsradar.quotes import QuoteCheck, normalize_pages, verify_quote
+from horingsradar.quotes import QuoteCheck, normalize, normalize_pages, verify_quote
 
 log = logging.getLogger(__name__)
 
@@ -309,6 +310,30 @@ def parse_output(response: LLMResponse) -> AssessmentOutput:
         raise OutputError(f"skjemafeil: {exc.error_count()} feil: {exc.errors()[:3]}") from exc
 
 
+DT_ADVICE_RE = re.compile(r"\bdatatilsynet\s+(bør|burde)\b", re.IGNORECASE)
+
+
+def check_against_sources(output: AssessmentOutput, docs: list[DocInput]) -> None:
+    """«Datatilsynet bør/burde» may appear only when the hearing documents say it themselves;
+    otherwise it is the model giving its own advice."""
+    texts = [output.summary, output.relevance_reason, *(f.description for f in output.findings)]
+    if not any(DT_ADVICE_RE.search(text) for text in texts):
+        return
+    for doc in docs:
+        if any(DT_ADVICE_RE.search(normalize(page)) for page in doc.pages.values()):
+            return
+    raise OutputError(
+        "«Datatilsynet bør/burde» står ikke i høringsdokumentene; modellen skal ikke gi egne"
+        " anbefalinger"
+    )
+
+
+def validate_output(response: LLMResponse, plan: AssessmentPlan) -> AssessmentOutput:
+    output = parse_output(response)
+    check_against_sources(output, plan.docs)
+    return output
+
+
 def execute_sync(plan: AssessmentPlan, client: LLMClient) -> list[ChunkOutcome]:
     outcomes: list[ChunkOutcome] = []
     for chunk in plan.chunks:
@@ -324,7 +349,7 @@ def execute_sync(plan: AssessmentPlan, client: LLMClient) -> list[ChunkOutcome]:
                 break
             responses.append(response)
             try:
-                output = parse_output(response)
+                output = validate_output(response, plan)
                 error = None
                 break
             except OutputError as exc:
