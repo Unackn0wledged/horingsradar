@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Status{% endblock %} · Høringsradar</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js" defer></script>
+{% block head %}{% endblock %}
+</head>
+<body hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+{% set path = request.url.path %}
+<header class="top">
+  <a class="brand" href="/">Høringsradar</a>
+  <nav>
+    <a href="/" class="{{ 'active' if path == '/' }}">Status</a>
+    <a href="/hearings" class="{{ 'active' if path.startswith('/hearings') }}">Høringer</a>
+    <a href="/reports" class="{{ 'active' if path.startswith('/reports') }}">Rapporter</a>
+    <a href="/stats" class="{{ 'active' if path.startswith('/stats') }}">Statistikk</a>
+    <a href="/backtest" class="{{ 'active' if path.startswith('/backtest') }}">Backtest</a>
+    <a href="/jobs" class="{{ 'active' if path.startswith('/jobs') }}">Jobber og logg</a>
+  </nav>
+  <span class="env">Adminpanel for operatør · pilot</span>
+</header>
+<main>
+{% if msg %}<div class="flash">{{ msg }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

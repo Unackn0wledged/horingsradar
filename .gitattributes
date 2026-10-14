@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.pdf binary
+*.ttf binary
+*.js text eol=lf

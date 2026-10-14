@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Høringer{% endblock %}
+{% block content %}
+<h1>Høringer</h1>
+<p class="muted">Siste {{ hearings|length }} høringer i drift, nyeste først. Relevans er fra siste vurdering.</p>
+<table>
+  <thead>
+    <tr><th>Relevans</th><th>Tittel</th><th>Departement</th><th>Publisert</th><th>Frist</th><th>Status</th><th>DT adr.</th><th></th></tr>
+  </thead>
+  <tbody>
+  {% for h in hearings %}
+    <tr>
+      <td><span class="badge rel-{{ h.relevance }}">{{ relevance_labels.get(h.relevance, h.relevance) }}</span></td>
+      <td><a href="/hearings/{{ h.id }}">{{ h.title }}</a><br><a class="small" href="{{ h.url }}" target="_blank" rel="noopener">regjeringen.no ↗</a></td>
+      <td class="small">{{ h.department or "–" }}</td>
+      <td class="nowrap">{{ h.published_date|d }}</td>
+      <td class="nowrap">{{ h.deadline|d }}</td>
+      <td class="small">{{ h.status_raw or status_labels.get(h.status, "–") }}</td>
+      <td>{% if h.dt_on_address_list %}Ja{% elif h.dt_on_address_list is none %}–{% else %}Nei{% endif %}</td>
+      <td>
+        <form class="inline" method="post" action="/actions/assess/{{ h.id }}" onsubmit="return confirm('Vurdere høring {{ h.id }} på nytt? Det koster API-tokens.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="small secondary" type="submit">Vurder på nytt</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8" class="muted">Ingen høringer ennå. Start en kjøring fra statussiden.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

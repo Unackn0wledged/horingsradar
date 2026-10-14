@@ -1,0 +1,47 @@
+<div id="status" class="card" hx-get="/partials/status" hx-trigger="every 4s" hx-swap="outerHTML">
+  <h2>Status</h2>
+  <dl class="kv">
+    <dt>Planlagt kjøring</dt>
+    <dd>{% if paused %}<span class="badge st-paused">Pauset</span>{% else %}<span class="badge st-ok">Aktiv</span>{% endif %}</dd>
+    <dt>Neste planlagte kjøring</dt>
+    <dd>{{ next_run }}{% if paused %} <span class="muted small">(timeren fyrer, men kjøringen hoppes over)</span>{% endif %}</dd>
+    <dt>Siste kjøring</dt>
+    <dd>
+      {% if last_run %}
+        {{ last_run.started_at|ts }} · <span class="badge st-{{ last_run.status }}">{{ last_run.status }}</span>
+        <span class="muted small">({{ last_run.triggered_by }})</span><br>
+        {% set s = last_run.summary_data %}
+        <span class="small">
+          {% if s.reason %}Hoppet over: {{ s.reason }}{% else %}
+          Nye: {{ s.new if s.new is defined else "–" }} · endrede: {{ s.changed if s.changed is defined else "–" }}
+          · sjekket: {{ s.checked if s.checked is defined else "–" }}
+          · vurdert: {{ s.assessed if s.assessed is defined else 0 }}
+          · feilede vurderinger: {{ s.assessment_failed if s.assessment_failed is defined else 0 }}
+          · hentefeil: {{ s.fetch_errors if s.fetch_errors is defined else 0 }}
+          {% endif %}
+        </span>
+        {% if s.error %}<div class="alert small">Feil: {{ s.error }}</div>{% endif %}
+        {% if s.assessment_skipped %}<div class="alert small">Vurdering hoppet over: {{ s.assessment_skipped }}</div>{% endif %}
+      {% else %}<span class="muted">Ingen kjøringer ennå</span>{% endif %}
+    </dd>
+    <dt>Venter på vurdering</dt>
+    <dd>{{ pending }}</dd>
+    <dt>Kjører nå</dt>
+    <dd>
+      {% if current %}
+        {% set p = current.progress_data %}
+        <strong>{{ current.kind }}</strong> #{{ current.id }} startet {{ current.started_at|ts }}
+        <span class="muted small">({{ current.triggered_by }}{% if current.args_data %}, {{ current.args_data|tojson }}{% endif %})</span><br>
+        {% if p.phase %}
+          <span class="small">Fase: {{ p.phase }}{% if p.total %} · {{ p.done }} av {{ p.total }}{% endif %}{% if p.page %} · listeside {{ p.page }}{% endif %}{% if p.status %} · batch {{ p.status }}{% endif %}</span>
+          {% if p.total %}<div class="progress"><div style="width: {{ (100 * p.done / p.total)|round|int }}%"></div></div>{% endif %}
+        {% endif %}
+        <form class="inline" method="post" action="/actions/cancel/{{ current.id }}" onsubmit="return confirm('Avbryte jobb #{{ current.id }}? Tokens som allerede er brukt, telles med.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="danger small" type="submit">Avbryt jobb</button>
+        </form>
+        <a class="small" href="/jobs/{{ current.id }}/log">Se logg</a>
+      {% else %}<span class="muted">Ingen</span>{% endif %}
+    </dd>
+  </dl>
+</div>

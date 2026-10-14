@@ -64,7 +64,10 @@ def test_full_backtest_with_batch_and_metrics(settings, conn):
     assert "Recall" in (out / "summary.md").read_text(encoding="utf-8")
     contexts = {r[0] for r in conn.execute("SELECT DISTINCT context FROM assessment")}
     assert contexts == {"backtest"}
-    assert conn.execute("SELECT COUNT(*) FROM hearing WHERE reported_in IS NOT NULL").fetchone()[0] == 0
+    assert (
+        conn.execute("SELECT COUNT(*) FROM hearing WHERE reported_in IS NOT NULL").fetchone()[0]
+        == 0
+    )
     h = conn.execute("SELECT * FROM hearing WHERE id = 3118997").fetchone()
     assert h["dt_responded"] == 1 and h["tracked"] == 0
 
