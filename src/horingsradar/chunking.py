@@ -59,8 +59,10 @@ def find_chapters(pages: dict[int, str]) -> list[tuple[int, int, str]]:
                 continue
             if expected is not None and number != expected:
                 continue
-            if title.endswith((".", ",", ";")) or TOC_LINE.search(title):
-                continue
+            if title.endswith((".", ",", ";", "?", ":")) or TOC_LINE.search(title):
+                continue  # sentences, questions and list items are not chapter headings
+            if found and found[-1][0] == page_no:
+                continue  # at most one top-level chapter starts on a page
             found.append((page_no, number, title))
             expected = number + 1
     return found
