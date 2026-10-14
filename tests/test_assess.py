@@ -346,3 +346,11 @@ def test_assess_splits_large_hearing(settings, stored):
     row = stored.execute("SELECT * FROM assessment WHERE id = ?", (assessment_id,)).fetchone()
     assert row["chunk_count"] == len(plan.chunks) and row["status"] == "ok"
     assert len(llm.calls) == len(plan.chunks)
+
+
+def test_find_chapters_ignores_numbered_questions():
+    pages = _synthetic_pages(chapters=3, pages_per_chapter=2)
+    # A summary page listing numbered questions must not be taken as chapters 2 and 3.
+    pages[3] = pages[3] + "\n2 Hva er virkningene av forslaget?\n3 Hvilke tiltak anbefales?\n"
+    assert [c[1] for c in find_chapters(pages)] == [1, 2, 3]
+    assert [c[0] for c in find_chapters(pages)] == [3, 5, 7]

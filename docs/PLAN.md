@@ -102,6 +102,17 @@ docs/INSTALL-LXC.md  installasjonsguide for Proxmox + Tailscale
 - **`backtest_run`**: `status`, `metrics` (JSON).
 - **`job`**: `progress` (JSON), `args`.
 
+## Status (14.10.2026)
+
+Milepæl 1–4 og 6–8 er ferdige, med tester. Milepæl 5 (backtest) er bygget og testet, men selve kjøringene gjenstår. De skal startes manuelt av operatøren.
+
+Gjenstår for operatøren:
+
+1. Legg inn `ANTHROPIC_API_KEY`. Kjør `assess <id>` på noen få høringer og se over output og pris.
+2. Tilpass sektorlisten (`llm/schema.py` og `report/build.py`, TODO i SPEC).
+3. Backtest på dev-settet: start med `--limit 20` og deretter hele 2024. Iterer med `prompts/assess_v2.md` osv., lås prompten og kjør testsettet (2025).
+4. Sett terskelen for «andel flagget» etter dev-kjøringen (SPEC, Suksesskriterier).
+
 ## Ting som bevisst ikke er med
 
 - OCR, andre kilder, e-post og UI for jurister (jf. SPEC).
