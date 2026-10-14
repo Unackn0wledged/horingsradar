@@ -8,7 +8,7 @@ Krav og detaljer står i `docs/SPEC.md`. Les den før du jobber med datamodell, 
 
 - Eneste kilde er regjeringen.no. Ikke implementer andre kilder, men hold kildespesifikk kode i `sources/`.
 - Ingen e-post, varsler eller tilbakemeldingsfunksjon i piloten. Output er PDF-filer på disk. Eneste web-UI er adminpanelet for operatøren (se SPEC); ingen UI for juristene.
-- LLM-en skal aldri skrive høringsinnspill, foreslå standpunkt eller vurdere om et forslag er godt eller dårlig. Den beskriver hva som foreslås og hvor det står. Formuleringer som «Datatilsynet bør» skal ikke forekomme i output.
+- LLM-en skal aldri skrive høringsinnspill, foreslå standpunkt eller vurdere om et forslag er godt eller dårlig. Den beskriver hva som foreslås og hvor det står. Modellen gir aldri egne anbefalinger til juristene («vi anbefaler», «juristene bør» o.l. avvises). Å gjengi hva høringsdokumentene selv sier er tillatt, også «det anbefales» og «Datatilsynet bør» når det står i kildeteksten (sjekkes i kode).
 - Metadata (tittel, publisert, frist, departement, status, adresseliste) parses fra HTML. LLM-en er aldri kilde til dato, frist eller departement.
 - Ingen høring filtreres bort. Alle vurderes og vises i rapporten; lav og ingen relevans som én linje med begrunnelse.
 - Hvert funn har dokument, kapittel/side og ordrett sitat. Sitatet verifiseres i kode mot kildeteksten. Uverifiserte sitater markeres synlig i rapporten, aldri stille fjernet eller rettet.

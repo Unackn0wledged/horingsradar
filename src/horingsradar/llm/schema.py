@@ -56,15 +56,19 @@ Sector = Literal[SECTORS]  # type: ignore[valid-type]
 Category = Literal[CATEGORIES]  # type: ignore[valid-type]
 
 MAX_QUOTE_WORDS = 80  # the prompt asks for about 40; this only rejects clearly broken output
-NORMATIVE_RE = re.compile(
-    r"\b(datatilsynet\s+(bør|burde|anbefaler)|vi\s+(anbefaler|bør|mener)|det\s+anbefales)\b",
+# The model must never give its own advice to the lawyers. Rendering what the hearing documents
+# say ("utvalget anbefaler", "det anbefales") is fine; first/second person stance is not.
+# «Datatilsynet bør/burde» is checked against the source text in assess.check_against_sources.
+MODEL_VOICE_RE = re.compile(
+    r"\b(vi|jeg|dere)\s+(anbefaler|bør|burde|mener|foreslår|vil\s+anbefale)\b"
+    r"|\bjuristene\s+(bør|burde|må)\b",
     re.IGNORECASE,
 )
 
 
-def _reject_normative(text: str) -> str:
-    if NORMATIVE_RE.search(text):
-        raise ValueError("normative wording is not allowed (describe, do not recommend)")
+def _reject_own_stance(text: str) -> str:
+    if MODEL_VOICE_RE.search(text):
+        raise ValueError("the model's own recommendation is not allowed (describe the source)")
     return text
 
 
@@ -96,7 +100,7 @@ class Finding(_Strict):
     def _description(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("empty description")
-        return _reject_normative(v)
+        return _reject_own_stance(v)
 
     @field_validator("quote")
     @classmethod
@@ -134,7 +138,7 @@ class AssessmentOutput(_Strict):
     def _text(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("empty text")
-        return _reject_normative(v)
+        return _reject_own_stance(v)
 
 
 UNSUPPORTED_SCHEMA_KEYS = {

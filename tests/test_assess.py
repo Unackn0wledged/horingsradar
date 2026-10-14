@@ -197,9 +197,18 @@ def test_parse_output_validation():
         parse_output(_response(json.dumps(output(sectors=[]))))
     with pytest.raises(Exception, match="skjemafeil"):
         parse_output(_response(json.dumps(output(relevance="kritisk"))))
-    normative = output(summary="Forslaget gjelder registre. Datatilsynet bør gi innspill.")
+    own_advice = output(summary="Forslaget gjelder registre. Vi anbefaler at det gis innspill.")
     with pytest.raises(Exception, match="skjemafeil"):
-        parse_output(_response(json.dumps(normative)))
+        parse_output(_response(json.dumps(own_advice)))
+    lawyers = output(relevance_reason="Juristene bør lese kapittel 4.")
+    with pytest.raises(Exception, match="skjemafeil"):
+        parse_output(_response(json.dumps(lawyers)))
+    # Rendering what the source recommends is allowed (this failed on a real hearing).
+    source = output(
+        summary="Utvalget konkluderer med at kontrollen er tilfredsstillende. Det anbefales å"
+        " klargjøre regler om søk i rådata. Utvalget anbefaler også styrking av domstolskontrollen."
+    )
+    assert parse_output(_response(json.dumps(source))).summary.startswith("Utvalget")
     missing = output()
     del missing["privacy_section"]
     with pytest.raises(Exception, match="skjemafeil"):
@@ -354,3 +363,27 @@ def test_find_chapters_ignores_numbered_questions():
     pages[3] = pages[3] + "\n2 Hva er virkningene av forslaget?\n3 Hvilke tiltak anbefales?\n"
     assert [c[1] for c in find_chapters(pages)] == [1, 2, 3]
     assert [c[0] for c in find_chapters(pages)] == [3, 5, 7]
+
+
+def test_datatilsynet_bor_only_when_in_source():
+    from horingsradar.assess import OutputError, check_against_sources
+
+    says_it = AssessmentOutput.model_validate(
+        output(summary="Forskriften fastsetter at Datatilsynet bør varsles ved avvik.")
+    )
+    source = DocInput(
+        "D1", 1, "Notat", "horingsnotat", 1, {1: "Datatilsynet bør\nvarsles ved avvik."}
+    )
+    other = DocInput("D1", 1, "Notat", "horingsnotat", 1, {1: "Ingen omtale av tilsynet."})
+    check_against_sources(says_it, [source])  # stated in the source: allowed
+    with pytest.raises(OutputError, match="høringsdokumentene"):
+        check_against_sources(says_it, [other])  # the model's own advice: rejected
+
+
+def test_own_advice_about_datatilsynet_is_retried_then_fails(settings, stored):
+    advice = output(relevance_reason="Datatilsynet bør gi høringsinnspill i denne saken.")
+    llm = FakeLLM([advice, advice])
+    assessment_id = assess_hearing(settings, stored, 3170511, llm)
+    row = stored.execute("SELECT * FROM assessment WHERE id = ?", (assessment_id,)).fetchone()
+    assert row["status"] == "failed" and "høringsdokumentene" in row["error"]
+    assert len(llm.calls) == 2
