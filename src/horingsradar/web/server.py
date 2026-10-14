@@ -35,6 +35,9 @@ def serve(settings: Settings) -> None:
         )
     if not settings.web_binds:
         raise SystemExit("WEB_BIND er tom.")
+    from horingsradar import db
+
+    db.connect(settings.db_path).close()  # fail at startup, not on the first request
     app = create_app(settings)
     config = uvicorn.Config(
         app,

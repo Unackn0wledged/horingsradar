@@ -265,7 +265,7 @@ Endre minst disse:
 
 | Variabel | Verdi |
 |---|---|
-| `DATA_DIR` | `/var/lib/horingsradar` |
+| `DATA_DIR` | `/var/lib/horingsradar`. **Må** endres fra standardverdien `./data`, ellers får ikke systemd-tjenestene skrive til databasen. |
 | `USER_AGENT` | `Horingsradar/0.1 (pilot for Datatilsynet; kontakt: <din e-post>)` |
 | `ANTHROPIC_API_KEY` | API-nøkkelen |
 | `LLM_MODEL` | `claude-sonnet-5-5` (standard) |
@@ -537,6 +537,7 @@ Forslag til forløp i demoen:
 | Symptom | Sjekk |
 |---|---|
 | Panelet svarer ikke | `systemctl status horingsradar-web`, `journalctl -u horingsradar-web -n 50`. Står `WEB_PASSWORD_HASH` i `.env`? Lytter `ss -ltnp \| grep 8080` på riktige adresser? |
+| «Internal Server Error», eller `unable to open database file` / «Kan ikke åpne databasen» i `journalctl -u horingsradar-web` | `DATA_DIR` i `.env` står ikke på `/var/lib/horingsradar`. Rett den, slett `/opt/horingsradar/data`, kjør `run --no-assess` på nytt og start panelet på nytt. |
 | Når panelet på LAN, men ikke via Tailscale | `tailscale status`, `tailscale ip -4`. Står Tailscale-IP-en i `WEB_BIND`? Slipper brannmuren gjennom `tailscale0`? Stopper ACL-ene trafikken? |
 | `tailscaled` starter ikke i containeren | `ls -l /dev/net/tun`. Sjekk punkt 4 eller bruk 11.6. |
 | `run` gir «Vurdering hoppet over: ANTHROPIC_API_KEY is not set» | Nøkkelen mangler i `.env`. Høringene står i kø og vurderes ved neste kjøring. |
