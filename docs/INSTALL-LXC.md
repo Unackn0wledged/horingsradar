@@ -8,7 +8,7 @@ Guiden tar deg fra en tom Proxmox-node til en Høringsradar som:
 
 Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container, med Tailscale installert **inne i** containeren. Regn med 45–60 minutter første gang.
 
-> **Slik leser du guiden:** Alle kommandoer kjøres som **root i containeren**, med mindre blokken starter med `# På Proxmox-verten:`. Kopier én kodeblokk om gangen og bytt ut `<vinkelparenteser>` med egne verdier. Blokker merket «Forventet utskrift» viser hva du skal *se*, og skal ikke kjøres.
+> **Slik leser du guiden:** Alle kommandoer kjøres som **root i containeren**, med mindre blokken starter med `# På Proxmox-verten:`. Kopier én kodeblokk om gangen og bytt ut `<vinkelparenteser>` med egne verdier, *inkludert* parentesene: `pct reboot <CT-ID>` blir for eksempel `pct reboot 105`. Blokker merket «Forventet utskrift» viser hva du skal *se*, og skal ikke kjøres.
 
 ## Innhold
 
@@ -151,7 +151,7 @@ Sjekk først at containeren har nett og DNS:
 ping -c 1 deb.debian.org
 ```
 
-Svarer den med `1 packets transmitted, 1 received`, er alt i orden. Får du `Temporary failure in name resolution`, ser du [feilsøking](#17-feilsøking) («Temporary failure resolving»). Fiks det før du går videre, ellers feiler alle `apt`-kommandoene.
+Svarer den med `1 packets transmitted, 1 received`, er alt i orden. Gir `ip route` ingen utskrift, har containeren ingen IP-adresse. Sett IP og gateway under *CT → Network → net0* (se 3.2), eller kjør `pct set <CT-ID> --net0 name=eth0,bridge=vmbr0,ip=<ip>/24,gw=<ruter-ip>` på verten, og start containeren på nytt. Får du `Temporary failure in name resolution`, ser du [feilsøking](#17-feilsøking) («Temporary failure resolving»). Fiks det før du går videre, ellers feiler alle `apt`-kommandoene.
 
 ```bash
 apt update && apt full-upgrade -y
