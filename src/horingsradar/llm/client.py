@@ -103,6 +103,7 @@ class AnthropicClient:
         self.base_url = settings.anthropic_base_url.rstrip("/")
         self.http = http or httpx.Client(timeout=settings.llm_timeout_seconds)
         self.sleep = sleep
+        self._fallback_rejected = False
 
     def _headers(self, beta: str | None = None) -> dict[str, str]:
         if not self.settings.anthropic_api_key:
@@ -172,12 +173,25 @@ class AnthropicClient:
         }
 
     def complete(self, params: dict[str, Any]) -> LLMResponse:
-        body = dict(params)
-        beta = None
-        if self.settings.llm_refusal_fallback and body.get("model") in FALLBACK_MODELS:
-            body["fallbacks"] = "default"
-            beta = FALLBACK_BETA
-        response = self._send("POST", f"{self.base_url}/v1/messages", body=body, beta=beta)
+        url = f"{self.base_url}/v1/messages"
+        use_fallback = (
+            self.settings.llm_refusal_fallback
+            and not self._fallback_rejected
+            and params.get("model") in FALLBACK_MODELS
+        )
+        if use_fallback:
+            try:
+                response = self._send(
+                    "POST", url, body={**params, "fallbacks": "default"}, beta=FALLBACK_BETA
+                )
+                return parse_message(response.json())
+            except LLMError as exc:
+                if exc.status != 400 or "fallback" not in str(exc).lower():
+                    raise
+                # The account/model does not accept server-side fallbacks: continue without.
+                self._fallback_rejected = True
+                log.warning("Server-side fallback rejected (%s); continuing without it", exc)
+        response = self._send("POST", url, body=params)
         return parse_message(response.json())
 
     # -- batches -----------------------------------------------------------

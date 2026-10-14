@@ -229,10 +229,26 @@ def _status() -> int:
     print(
         f"Høringer i drift: {conn.execute('SELECT COUNT(*) FROM hearing WHERE tracked = 1').fetchone()[0]}"
     )
+    pending = conn.execute(
+        "SELECT COUNT(*) FROM hearing WHERE tracked = 1 AND needs_assessment = 1"
+    ).fetchone()[0]
+    print(f"Venter på vurdering: {pending}")
+    print("\nSiste jobber:")
     for row in conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 10"):
         print(
-            f"#{row['id']} {row['kind']:<8} {row['triggered_by']:<5} {row['status']:<9}"
-            f" {row['started_at']} {row['summary'] or ''}"
+            f"  #{row['id']} {row['kind']:<8} {row['triggered_by']:<5} {row['status']:<9}"
+            f" {db.format_ts(row['started_at'])} {row['summary'] or ''}"
+        )
+    print("\nSiste høringer:")
+    for row in conn.execute(
+        "SELECT h.id, h.title, h.deadline, (SELECT CASE WHEN a.status = 'ok' THEN a.relevance"
+        " ELSE a.status END FROM assessment a WHERE a.hearing_id = h.id AND a.context = 'drift'"
+        " ORDER BY a.created_at DESC LIMIT 1) AS relevance"
+        " FROM hearing h WHERE h.tracked = 1 ORDER BY h.published_date DESC, h.id DESC LIMIT 10"
+    ):
+        print(
+            f"  {row['id']}  {row['relevance'] or 'ikke vurdert':<12} frist {row['deadline'] or '–':<10}"
+            f"  {row['title'][:70]}"
         )
     return 0
 

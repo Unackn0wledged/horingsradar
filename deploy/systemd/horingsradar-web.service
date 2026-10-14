@@ -1,0 +1,26 @@
+[Unit]
+Description=Høringsradar: adminpanel
+Documentation=file:///opt/horingsradar/docs/INSTALL-LXC.md
+Wants=network-online.target
+After=network-online.target tailscaled.service
+
+[Service]
+Type=simple
+User=horingsradar
+Group=horingsradar
+WorkingDirectory=/opt/horingsradar
+Environment=ENV_FILE=/opt/horingsradar/.env
+ExecStart=/opt/horingsradar/.venv/bin/horingsradar web
+Restart=on-failure
+RestartSec=5
+# Jobber startet fra panelet er egne prosesser og skal overleve en omstart av panelet.
+KillMode=process
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/horingsradar
+
+[Install]
+WantedBy=multi-user.target

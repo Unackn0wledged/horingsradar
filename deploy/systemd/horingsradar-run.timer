@@ -1,0 +1,12 @@
+[Unit]
+Description=Daglig kjøring av Høringsradar
+
+[Timer]
+# Tidspunkt i containerens tidssone (sett Europe/Oslo, se installasjonsguiden).
+OnCalendar=*-*-* 06:15:00
+RandomizedDelaySec=10min
+Persistent=true
+Unit=horingsradar-run.service
+
+[Install]
+WantedBy=timers.target
