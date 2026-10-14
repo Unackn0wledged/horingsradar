@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Jobber og logg{% endblock %}
+{% block content %}
+<h1>Jobber og logg</h1>
+<table>
+  <thead><tr><th>#</th><th>Jobb</th><th>Startet av</th><th>Start</th><th>Slutt</th><th>Status</th><th>Sammendrag</th><th></th></tr></thead>
+  <tbody>
+  {% for j in jobs %}
+    <tr>
+      <td>{{ j.id }}</td>
+      <td><strong>{{ j.kind }}</strong>{% if j.args_data %}<br><span class="small muted">{{ j.args_data|tojson }}</span>{% endif %}</td>
+      <td>{{ j.triggered_by }}</td>
+      <td class="nowrap">{{ j.started_at|ts }}</td>
+      <td class="nowrap">{{ j.finished_at|ts }}</td>
+      <td><span class="badge st-{{ j.status }}">{{ j.status }}</span></td>
+      <td class="small">{% for k, v in j.summary_data.items() if k not in ("estimate",) %}{{ k }}: {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td>
+      <td>{% if j.log_path %}<a href="/jobs/{{ j.id }}/log">logg</a>{% endif %}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8" class="muted">Ingen jobber ennå.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

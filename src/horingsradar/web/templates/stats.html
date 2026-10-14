@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Statistikk{% endblock %}
+{% block content %}
+<h1>Statistikk</h1>
+<div class="grid">
+  <div class="card">
+    <h2>Høringer behandlet per uke</h2>
+    {% if s.per_week %}
+    <div class="bars">
+      {% for w in s.per_week %}
+        <span class="small">{{ w.week }}</span>
+        <div class="bar"><div style="width: {{ (100 * w.count / s.max_week)|round|int if s.max_week else 0 }}%"></div></div>
+        <span class="small">{{ w.count }}</span>
+      {% endfor %}
+    </div>
+    {% else %}<p class="muted">Ingen vurderinger de siste 12 ukene.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Fordeling per relevansnivå</h2>
+    {% set total = s.relevance.values()|sum %}
+    <div class="bars">
+      {% for level, count in s.relevance.items() %}
+        <span class="small">{{ s.relevance_labels.get(level, level) }}</span>
+        <div class="bar {{ level }}"><div style="width: {{ (100 * count / total)|round|int if total else 0 }}%"></div></div>
+        <span class="small">{{ count }}</span>
+      {% endfor %}
+    </div>
+    <p style="margin-top:12px">Andel flagget (høy + middels): <strong>{{ s.flagged_share|pct }}</strong> av {{ s.assessed }} vurderte høringer.</p>
+  </div>
+
+  <div class="card">
+    <h2>Kvalitet</h2>
+    <dl class="kv">
+      <dt>Verifiserte sitater</dt><dd><span class="stat">{{ s.quotes_verified_share|pct }}</span> <span class="muted small">av {{ s.quotes_total }} funn</span></dd>
+      <dt>Feilede vurderinger</dt><dd><span class="stat">{{ s.failed_assessments }}</span></dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Siste backtest</h2>
+    {% if s.last_backtest %}
+    {% set b = s.last_backtest %}
+    <dl class="kv">
+      <dt>Dato</dt><dd>{{ b.created_at|ts }}</dd>
+      <dt>Split</dt><dd>{{ b.split or "egendefinert" }} ({{ b.period_from|d }}–{{ b.period_to|d }})</dd>
+      <dt>Modell / prompt</dt><dd>{{ b.model }} / {{ b.prompt_version }}</dd>
+      <dt>Recall høy + middels</dt><dd><strong>{{ b.recall|pct }}</strong></dd>
+      <dt>Andel flagget</dt><dd><strong>{{ b.flagged_share|pct }}</strong></dd>
+    </dl>
+    {% else %}<p class="muted">Ingen fullført backtest ennå.</p>{% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <h2>API-forbruk per måned</h2>
+  <p class="muted small">Faktiske tokens fra API-svarene. Kostnaden er et estimat beregnet med prisene i konfigurasjonen da vurderingen ble gjort, inkludert backtest og avbrutte jobber.</p>
+  <table>
+    <thead><tr><th>Måned</th><th class="num">Vurderinger</th><th class="num">Tokens inn</th><th class="num">Tokens ut</th><th class="num">Estimert kostnad</th></tr></thead>
+    <tbody>
+    {% for u in s.usage %}
+      <tr><td>{{ u.month }}</td><td class="num">{{ u.assessments }}</td><td class="num">{{ u.input_tokens|num }}</td><td class="num">{{ u.output_tokens|num }}</td><td class="num">${{ "%.2f"|format(u.cost) }}</td></tr>
+    {% else %}<tr><td colspan="5" class="muted">Ingen forbruk ennå.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

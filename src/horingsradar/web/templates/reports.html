@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Rapporter{% endblock %}
+{% block content %}
+<h1>Rapporter</h1>
+<div class="card">
+  <p class="muted">En ny rapport tar med alle høringer som ikke har vært i en tidligere rapport, pluss høringer som er vurdert på nytt siden. PDF-ene videresendes manuelt til pilotjuristene.</p>
+  <form method="post" action="/actions/report">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit">Generer rapport</button>
+  </form>
+</div>
+<table>
+  <thead><tr><th>Generert</th><th>Periode</th><th class="num">Høringer</th><th>Type</th><th>PDF</th></tr></thead>
+  <tbody>
+  {% for r in reports %}
+    <tr>
+      <td class="nowrap">{{ r.created_at|ts }}</td>
+      <td>{{ r.period_label }}</td>
+      <td class="num">{{ r.hearing_count }}</td>
+      <td>{{ "uke (regenerert)" if r.kind == "week" else "drift" }}</td>
+      <td><a href="/reports/{{ r.id }}/download">Last ned</a></td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5" class="muted">Ingen rapporter ennå.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

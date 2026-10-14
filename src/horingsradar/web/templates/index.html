@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Status{% endblock %}
+{% block content %}
+<h1>Status</h1>
+<div class="grid">
+  <div>{% include "partials/status.html" %}</div>
+  <div class="card">
+    <h2>Handlinger</h2>
+    <p class="muted small">Jobber kjøres som egne prosesser. Bare én jobb kan kjøre om gangen, uansett om den er startet fra timer, panel eller terminal.</p>
+    <div class="actions">
+      <form method="post" action="/actions/run" onsubmit="return confirm('Starte en kjøring nå? Nye høringer vurderes og koster API-tokens.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" {{ 'disabled' if current }}>Kjør nå</button>
+      </form>
+      <form method="post" action="/actions/report">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="secondary" {{ 'disabled' if current }}>Generer rapport</button>
+      </form>
+      {% if paused %}
+      <form method="post" action="/actions/resume">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="secondary">Gjenoppta planlagt kjøring</button>
+      </form>
+      {% else %}
+      <form method="post" action="/actions/pause">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="secondary">Pause planlagt kjøring</button>
+      </form>
+      {% endif %}
+      <a class="button secondary" style="background:#fff;color:var(--accent)" href="/backtest">Backtest …</a>
+    </div>
+    <h3>Oversikt</h3>
+    <dl class="kv">
+      <dt>Høringer i drift</dt><dd>{{ tracked }}</dd>
+      <dt>Vurder én høring på nytt</dt><dd><a href="/hearings">fra høringslisten</a></dd>
+    </dl>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Logg fra siste jobb
+    {% if last_job %}<span class="muted small">#{{ last_job.id }} {{ last_job.kind }} · {{ last_job.started_at|ts }} · <span class="badge st-{{ last_job.status }}">{{ last_job.status }}</span> · <a href="/jobs/{{ last_job.id }}/log">hele loggen</a></span>{% endif %}
+  </h2>
+  {% if log_tail %}<pre class="log">{{ log_tail }}</pre>{% else %}<p class="muted">Ingen logg ennå.</p>{% endif %}
+</div>
+{% endblock %}
