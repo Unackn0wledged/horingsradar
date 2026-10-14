@@ -101,7 +101,7 @@ Velg **Create CT** og bruk disse verdiene:
 | CPU | 2 kjerner |
 | Minne | 2048 MB, swap 1024 MB. Store PDF-er og WeasyPrint trenger litt. |
 | Nettverk | `vmbr0`. Bruk statisk IPv4 (for eksempel `192.168.1.50/24`) eller DHCP-reservasjon, så LAN-adressen ligger fast. |
-| DNS | Bruk vertens innstillinger |
+| DNS | Ruterens IP (for eksempel `192.168.1.1`), eventuelt også `1.1.1.1`. Bruk ikke vertens innstillinger hvis Proxmox-verten selv bruker Tailscale/MagicDNS eller en lokal resolver (`100.100.100.100` eller `127.0.0.x` i vertens `/etc/resolv.conf`). Den adressen når ikke containeren. |
 
 Når containeren er opprettet, gå til **Options** og sett **Start at boot = Yes**. Ikke start den ennå. TUN legges til først.
 
@@ -144,6 +144,14 @@ Får du `No such file or directory`, mangler linjene fra Alternativ B, eller con
 > Får du ikke TUN til å virke, kan Tailscale kjøre i *userspace networking*-modus. Se [11.6](#116-hvis-tun-ikke-er-tilgjengelig).
 
 ## 5. Grunnoppsett i containeren
+
+Sjekk først at containeren har nett og DNS:
+
+```bash
+ping -c 1 deb.debian.org
+```
+
+Svarer den med `1 packets transmitted, 1 received`, er alt i orden. Får du `Temporary failure in name resolution`, ser du [feilsøking](#17-feilsøking) («Temporary failure resolving»). Fiks det før du går videre, ellers feiler alle `apt`-kommandoene.
 
 ```bash
 apt update && apt full-upgrade -y
@@ -538,4 +546,5 @@ Forslag til forløp i demoen:
 | «En annen jobb kjører allerede» | Se **Status** eller `horingsradar status`. En prosess som har krasjet, markeres automatisk som `failed` neste gang. |
 | Mange `skipped` på timer-kjøringer | Er planlagt kjøring pauset? Se **Status**. |
 | Feil klokkeslett i panelet eller timeren | `timedatectl`. Tidssonen skal være Europe/Oslo. |
+| `apt` gir «Temporary failure resolving 'deb.debian.org'» | Containeren mangler DNS eller nett. Kjør `ping -c 1 1.1.1.1`. Feiler den, er IP eller gateway feil under *CT → Network*. Virker den, mangler bare DNS. Kjør da `pct set <CT-ID> --nameserver "<ruterens-ip> 1.1.1.1"` og `pct reboot <CT-ID>` på Proxmox-verten. `/etc/resolv.conf` i containeren skrives over av Proxmox og skal ikke redigeres for hånd. |
 | Hentefeil mot regjeringen.no | Loggen viser URL og status. Nettstedet kan være nede. Kjøringen prøver igjen neste dag. |
