@@ -66,6 +66,10 @@ td.date { white-space: nowrap; }
 .warning { font-size: 8.5pt; color: #a8231b; font-weight: 700; }
 .flag { display: inline-block; background: #a8231b; color: #ffffff; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-right: 1mm; font-size: 7.5pt; letter-spacing: 0.3pt; }
 
+a.jump { display: inline-block; margin-top: 0.8mm; padding: 0.1mm 1.6mm; border: 0.3mm solid #1d4f91; border-radius: 1mm; font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
+a.badge-link { text-decoration: none; }
+.back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
+.back-inline { font-size: 8pt; white-space: nowrap; }
 ul.brief { list-style: none; padding: 0; margin: 0; }
 ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside: avoid; }
 </style>
@@ -88,7 +92,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   Sitater er kontrollert maskinelt mot dokumentteksten; sitater som ikke kunne bekreftes er tydelig merket.
 </div>
 
-<h2>Oversikt</h2>
+<h2 id="oversikt">Oversikt</h2>
 {% if views %}
 <table>
   <thead>
@@ -99,10 +103,10 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   <tbody>
   {% for v in views %}
     <tr>
-      <td><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></td>
+      <td><a class="badge-link" href="#h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></a></td>
       <td>
-        {% if v.relevance in ("hoy", "middels") %}<a href="#h{{ v.id }}">{{ v.row.title }}</a>{% else %}<a href="{{ v.row.url }}">{{ v.row.title }}</a>{% endif %}
-        {% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
+        <a href="#h{{ v.id }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}<br>
+        <a class="jump" href="#h{{ v.id }}">Gå til analyse ↓</a>
       </td>
       <td>{{ v.row.department or "–" }}</td>
       <td class="date">{{ v.row.published_date|date }}</td>
@@ -114,7 +118,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   {% endfor %}
   </tbody>
 </table>
-<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">DT = Datatilsynet. Sortert etter relevans og deretter frist.</p>
+<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">DT = Datatilsynet. Sortert etter relevans og deretter frist. Klikk på en rad for å gå til analysen.</p>
 {% else %}
 <p class="empty">Ingen nye eller oppdaterte høringer siden forrige rapport.</p>
 {% endif %}
@@ -189,6 +193,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     {% for n in v.notes %}{{ n }}<br>{% endfor %}
   </p>
   {% endif %}
+  <p class="back"><a href="#oversikt">↑ Til oversikten</a></p>
 </section>
 {% endfor %}
 
@@ -196,9 +201,9 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 {% if brief %}
 <ul class="brief">
 {% for v in brief %}
-  <li><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
+  <li id="h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
     <span class="muted"> · {{ v.row.department or "–" }} · frist {{ v.row.deadline|date }}</span><br>
-    {{ v.assessment.relevance_reason }}</li>
+    {{ v.assessment.relevance_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}
 </ul>
 {% else %}
@@ -210,9 +215,9 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 <p class="muted">Høringer som er hentet, men ikke har en gyldig vurdering ennå. De er ikke filtrert bort og vurderes på nytt ved neste kjøring.</p>
 <ul class="brief">
 {% for v in not_assessed %}
-  <li><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>
+  <li id="h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>
     <span class="muted"> · {{ v.row.department or "–" }} · frist {{ v.row.deadline|date }}</span><br>
-    {% if v.assessment %}Vurderingen feilet: {{ v.assessment.error }}{% else %}Venter på vurdering.{% endif %}</li>
+    {% if v.assessment %}Vurderingen feilet: {{ v.assessment.error }}{% else %}Venter på vurdering.{% endif %} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}
 </ul>
 {% endif %}
