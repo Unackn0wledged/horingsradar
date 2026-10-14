@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<title>Høringsradar – {{ period_label }}</title>
+<style>
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Regular.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-It.ttf"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Semibold.ttf"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Bold.ttf"); font-weight: 700; font-style: normal; }
+
+@page {
+  size: A4;
+  margin: 17mm 15mm 18mm 15mm;
+  @bottom-left { content: "Høringsradar · KI-generert sortering – verifiser mot kilden"; font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+  @bottom-right { content: "Side " counter(page) " av " counter(pages); font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+}
+@page :first { @bottom-left { content: none; } }
+
+html { font-family: "Source Sans 3", sans-serif; font-size: 9.8pt; color: #1b1f24; line-height: 1.38; }
+body { margin: 0; }
+a { color: #1d4f91; text-decoration: none; }
+h1 { font-size: 22pt; font-weight: 700; margin: 0; letter-spacing: -0.2pt; }
+h2 { font-size: 13.5pt; font-weight: 700; margin: 8mm 0 3mm; padding-bottom: 1.2mm; border-bottom: 0.5mm solid #1b1f24; break-after: avoid; }
+h3 { font-size: 11.5pt; font-weight: 600; margin: 0 0 1.5mm; break-after: avoid; }
+h4 { font-size: 9.8pt; font-weight: 700; margin: 3mm 0 1mm; text-transform: uppercase; letter-spacing: 0.4pt; color: #3d4652; break-after: avoid; }
+p { margin: 0 0 2mm; }
+
+.masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.2mm solid #1b1f24; padding-bottom: 2mm; }
+.masthead .sub { font-size: 10pt; color: #3d4652; }
+.meta { margin: 3mm 0; font-size: 9pt; color: #3d4652; }
+.meta span { margin-right: 6mm; }
+.notice { border: 0.35mm solid #a15c07; background: #fff7e8; padding: 2.5mm 3.5mm; font-size: 9pt; margin: 3mm 0 2mm; }
+
+.badge { display: inline-block; padding: 0.3mm 1.8mm; border-radius: 1.2mm; border: 0.3mm solid; font-weight: 700; font-size: 8pt; white-space: nowrap; }
+.rel-hoy { background: #fde4e2; border-color: #a8231b; color: #7a160f; }
+.rel-middels { background: #fff0d4; border-color: #a85a07; color: #683606; }
+.rel-lav { background: #e6f0fa; border-color: #2d68ad; color: #1b4677; }
+.rel-ingen { background: #eff1f3; border-color: #69717d; color: #39414b; }
+.rel-feilet, .rel-ikke_vurdert { background: #ffffff; border-style: dashed; border-color: #69717d; color: #39414b; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 700; color: #ffffff; background: #1d4f91; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-left: 1.5mm; vertical-align: 1px; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-weight: 700; font-size: 8pt; color: #3d4652; border-bottom: 0.4mm solid #1b1f24; padding: 1.2mm 1.5mm; vertical-align: bottom; }
+td { border-bottom: 0.2mm solid #d4d9df; padding: 1.3mm 1.5mm; vertical-align: top; font-size: 8.6pt; }
+tr { break-inside: avoid; }
+td.num { text-align: right; white-space: nowrap; }
+td.date { white-space: nowrap; }
+.muted { color: #5b6470; }
+.empty { color: #5b6470; font-style: italic; }
+
+.hearing { border-top: 0.3mm solid #b7bec7; padding-top: 3.5mm; margin-top: 5mm; }
+.hearing:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.facts { display: table; width: 100%; font-size: 8.8pt; margin: 1.5mm 0 2.5mm; }
+.facts div { display: table-row; }
+.facts dt, .facts dd { display: table-cell; padding: 0.4mm 0; }
+.facts dt { width: 46mm; color: #3d4652; font-weight: 600; }
+.facts dd { margin: 0; }
+
+.finding { border-left: 1mm solid #b7bec7; padding: 0.5mm 0 0.5mm 3mm; margin: 0 0 2.5mm; break-inside: avoid; }
+.finding.unverified { border-left-color: #a8231b; }
+.finding .head { font-size: 8.6pt; color: #3d4652; }
+.finding .head strong { color: #1b1f24; }
+.quote { font-style: italic; margin: 1mm 0 0.5mm; }
+.verified { font-size: 8pt; color: #2b6a37; font-weight: 600; }
+.warning { font-size: 8.5pt; color: #a8231b; font-weight: 700; }
+.flag { display: inline-block; background: #a8231b; color: #ffffff; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-right: 1mm; font-size: 7.5pt; letter-spacing: 0.3pt; }
+
+ul.brief { list-style: none; padding: 0; margin: 0; }
+ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <h1>Høringsradar</h1>
+  <div class="sub">Høringer fra regjeringen.no sortert etter personvernrelevans</div>
+</div>
+<div class="meta">
+  <span><strong>Periode:</strong> {{ period_label }}</span>
+  <span><strong>Generert:</strong> {{ generated_at }}</span>
+  <span><strong>Høringer:</strong> {{ views|length }}</span><br>
+  <span><strong>Modell og prompt:</strong> {{ models|join(", ") if models else "–" }}</span>
+</div>
+<div class="notice">
+  <strong>Merk:</strong> Relevansnivå, sammendrag, funn og leseguide er KI-generert sortering og må verifiseres mot kildedokumentene.
+  Verktøyet tar ikke stilling til forslagene og skriver ikke høringsinnspill. Tittel, datoer, frist, departement og adresseliste er hentet direkte fra regjeringen.no.
+  Sitater er kontrollert maskinelt mot dokumentteksten; sitater som ikke kunne bekreftes er tydelig merket.
+</div>
+
+<h2>Oversikt</h2>
+{% if views %}
+<table>
+  <thead>
+    <tr>
+      <th>Relevans</th><th>Tittel</th><th>Departement</th><th>Publisert</th><th>Frist</th><th>Dager igjen</th><th>Sektor</th><th>DT på adresse&shy;listen</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for v in views %}
+    <tr>
+      <td><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></td>
+      <td>
+        {% if v.relevance in ("hoy", "middels") %}<a href="#h{{ v.id }}">{{ v.row.title }}</a>{% else %}<a href="{{ v.row.url }}">{{ v.row.title }}</a>{% endif %}
+        {% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
+      </td>
+      <td>{{ v.row.department or "–" }}</td>
+      <td class="date">{{ v.row.published_date|date }}</td>
+      <td class="date">{{ v.row.deadline|date }}</td>
+      <td class="num">{% if v.days_left is none %}–{% elif v.days_left < 0 %}utløpt{% else %}{{ v.days_left }}{% endif %}</td>
+      <td>{{ v.sectors|join(", ") if v.sectors else "–" }}</td>
+      <td>{% if v.row.dt_on_address_list is none %}–{% elif v.row.dt_on_address_list %}Ja{% else %}Nei{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">DT = Datatilsynet. Sortert etter relevans og deretter frist.</p>
+{% else %}
+<p class="empty">Ingen nye eller oppdaterte høringer siden forrige rapport.</p>
+{% endif %}
+
+{% if kind == "drift" %}
+<h2>Frister som nærmer seg</h2>
+<p class="muted">Åpne høringer med høy eller middels relevans fra tidligere rapporter, med frist innen 28 dager.</p>
+{% if upcoming %}
+<table>
+  <thead><tr><th>Relevans</th><th>Tittel</th><th>Departement</th><th>Frist</th><th>Dager igjen</th></tr></thead>
+  <tbody>
+  {% for v in upcoming %}
+    <tr>
+      <td><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></td>
+      <td><a href="{{ v.row.url }}">{{ v.row.title }}</a></td>
+      <td>{{ v.row.department or "–" }}</td>
+      <td class="date">{{ v.row.deadline|date }}</td>
+      <td class="num">{{ v.days_left }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="empty">Ingen.</p>
+{% endif %}
+{% endif %}
+
+<h2>Høy og middels relevans</h2>
+{% if not detailed %}<p class="empty">Ingen høringer med høy eller middels relevans i perioden.</p>{% endif %}
+{% for v in detailed %}
+<section class="hearing" id="h{{ v.id }}">
+  <h3><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}</h3>
+  <dl class="facts">
+    <div><dt>Departement</dt><dd>{{ v.row.department or "–" }}{% if v.row.original_department %} (opprinnelig utgitt av {{ v.row.original_department }}){% endif %}</dd></div>
+    <div><dt>Publisert / frist</dt><dd>{{ v.row.published_date|date }} / {{ v.row.deadline|date }}{% if v.days_left is not none and v.days_left >= 0 %} ({{ v.days_left }} dager igjen){% endif %}</dd></div>
+    <div><dt>Status</dt><dd>{{ v.row.status_raw or status_labels.get(v.row.status, "–") }}</dd></div>
+    <div><dt>Datatilsynet på adresselisten</dt><dd>{% if v.row.dt_on_address_list %}Ja{% elif v.row.dt_on_address_list is none %}–{% else %}Nei{% endif %}</dd></div>
+    <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>
+    <div><dt>Eget personvernkapittel</dt><dd>{{ v.privacy_section }}</dd></div>
+    <div><dt>Regjeringen.no</dt><dd><a href="{{ v.row.url }}">{{ v.row.url }}</a></dd></div>
+  </dl>
+
+  <h4>Hva foreslås</h4>
+  <p>{{ v.assessment.summary }}</p>
+  <h4>Begrunnelse for relevansnivå</h4>
+  <p>{{ v.assessment.relevance_reason }}</p>
+
+  <h4>Funn</h4>
+  {% if not v.findings %}<p class="empty">Ingen konkrete funn oppgitt.</p>{% endif %}
+  {% for f in v.findings %}
+  <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
+    <div class="head"><strong>{{ f.category_label }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, s. {{ f.page }}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
+    <div>{{ f.description }}</div>
+    <div class="quote">«{{ f.quote }}»</div>
+    {% if f.quote_verified %}
+    <div class="verified">Sitat verifisert mot dokumentteksten</div>
+    {% else %}
+    <div class="warning"><span class="flag">UVERIFISERT</span> Sitatet ble ikke funnet i dokumentteksten – kontroller mot kilden før bruk.</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <h4>Leseguide</h4>
+  {% if v.reading_guide %}
+  <p>{% for line in v.reading_guide %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}{% if v.reading_share %}<br><span class="muted">Totalt {{ v.reading_share }} i dokumentene.</span>{% endif %}</p>
+  {% else %}<p class="empty">Ingen sider pekt ut.</p>{% endif %}
+
+  {% if v.unread_documents or v.notes %}
+  <h4>Merknader</h4>
+  <p class="muted">
+    {% for d in v.unread_documents %}Ikke lest: {{ d }}<br>{% endfor %}
+    {% for n in v.notes %}{{ n }}<br>{% endfor %}
+  </p>
+  {% endif %}
+</section>
+{% endfor %}
+
+<h2>Lav og ingen relevans</h2>
+{% if brief %}
+<ul class="brief">
+{% for v in brief %}
+  <li><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
+    <span class="muted"> · {{ v.row.department or "–" }} · frist {{ v.row.deadline|date }}</span><br>
+    {{ v.assessment.relevance_reason }}</li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="empty">Ingen.</p>
+{% endif %}
+
+{% if not_assessed %}
+<h2>Ikke vurdert</h2>
+<p class="muted">Høringer som er hentet, men ikke har en gyldig vurdering ennå. De er ikke filtrert bort og vurderes på nytt ved neste kjøring.</p>
+<ul class="brief">
+{% for v in not_assessed %}
+  <li><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>
+    <span class="muted"> · {{ v.row.department or "–" }} · frist {{ v.row.deadline|date }}</span><br>
+    {% if v.assessment %}Vurderingen feilet: {{ v.assessment.error }}{% else %}Venter på vurdering.{% endif %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+</body>
+</html>
