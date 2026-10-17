@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -103,6 +104,30 @@ def format_ranges(ranges: list[list[int]] | list[tuple[int, int]]) -> str:
     return ", ".join(parts[:-1]) + " og " + parts[-1]
 
 
+def page_link(url: str | None, page: int | None) -> str | None:
+    """Link to a page in a source document.
+
+    PDF viewers and browsers honour `#page=N`, which counts physical pages, the same pages as our
+    `[[side N]]` markers. Documents that are part of the hearing web page (the letter, inline notat)
+    have no pages, so they link to the page itself.
+    """
+    if not url:
+        return None
+    if urlparse(url).path.lower().endswith(".pdf"):
+        base = url.split("#")[0]
+        return f"{base}#page={page}" if page and page > 0 else base
+    return url
+
+
+def linked_ranges(
+    url: str | None, ranges: list[list[int]] | list[tuple[int, int]]
+) -> list[dict[str, Any]]:
+    """Page ranges as labels, each linked to its first page."""
+    return [
+        {"label": f"{a}–{b}" if a != b else f"{a}", "href": page_link(url, a)} for a, b in ranges
+    ]
+
+
 @dataclass
 class HearingView:
     row: dict[str, Any]
@@ -151,18 +176,28 @@ class HearingView:
             return []
         return [SECTOR_LABELS.get(s, s) for s in db.loads(self.assessment["sectors"], [])]
 
+    def document_url(self, document_id: int | None) -> str | None:
+        return next((d["url"] for d in self.documents if d["id"] == document_id), None)
+
     @property
-    def reading_guide(self) -> list[str]:
+    def reading_guide(self) -> list[dict[str, Any]]:
+        """Per document: title, total pages and the page ranges, each linked to its first page."""
         if not self.assessment:
             return []
         guide = db.loads(self.assessment.get("reading_guide"), {}) or {}
-        lines = []
+        entries = []
         for doc in guide.get("documents", []):
             if not doc.get("ranges"):
                 continue
-            total = f" av {doc['page_count']}" if doc.get("page_count") else ""
-            lines.append(f"{doc['title']}: s. {format_ranges(doc['ranges'])}{total}")
-        return lines
+            url = self.document_url(doc.get("document_id"))
+            entries.append(
+                {
+                    "title": doc["title"],
+                    "page_count": doc.get("page_count"),
+                    "ranges": linked_ranges(url, doc["ranges"]),
+                }
+            )
+        return entries
 
     @property
     def reading_share(self) -> str | None:
@@ -174,20 +209,20 @@ class HearingView:
         return f"{guide.get('relevant_pages', 0)} av {guide['total_pages']} sider"
 
     @property
-    def privacy_section(self) -> str:
+    def privacy_section(self) -> dict[str, Any] | None:
+        """None when not assessed; otherwise whether a privacy chapter exists, and where."""
         if not self.assessment:
-            return "–"
+            return None
         p = db.loads(self.assessment.get("privacy_section"), {}) or {}
         if not p.get("exists"):
-            return "Nei"
-        parts = ["Ja"]
-        if p.get("chapter"):
-            parts.append(f"«{p['chapter']}»")
-        if p.get("pages"):
-            parts.append(f"s. {format_ranges([p['pages']])}")
-        if p.get("document_title"):
-            parts.append(f"i {p['document_title']}")
-        return " ".join(parts)
+            return {"exists": False}
+        url = self.document_url(p.get("document_id"))
+        return {
+            "exists": True,
+            "chapter": p.get("chapter"),
+            "pages": linked_ranges(url, [p["pages"]]) if p.get("pages") else [],
+            "document_title": p.get("document_title"),
+        }
 
     @property
     def unread_documents(self) -> list[str]:
@@ -219,6 +254,7 @@ def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> HearingVie
     )
     for f in findings:
         f["category_label"] = CATEGORY_LABELS.get(f["category"], f["category"])
+        f["page_href"] = page_link(f.get("document_url"), f.get("page"))
     documents = [dict(d) for d in db.documents_for(conn, row["id"])]
     reported_at = _latest_reported_at(conn, row["reported_in"])
     updated = bool(reported_at and a and a["created_at"] > reported_at)

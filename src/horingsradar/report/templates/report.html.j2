@@ -68,6 +68,7 @@ td.date { white-space: nowrap; }
 
 a.jump { display: inline-block; margin-top: 0.8mm; padding: 0.1mm 1.6mm; border: 0.3mm solid #1d4f91; border-radius: 1mm; font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
 a.badge-link { text-decoration: none; }
+a.page { text-decoration: underline; text-decoration-color: #9fb3cf; }
 .back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
 .back-inline { font-size: 8pt; white-space: nowrap; }
 ul.brief { list-style: none; padding: 0; margin: 0; }
@@ -75,6 +76,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 </style>
 </head>
 <body>
+{% macro page_ranges(items) %}{% for r in items %}{% if not loop.first %}{{ " og " if loop.last else ", " }}{% endif %}{% if r.href %}<a class="page" href="{{ r.href }}">{{ r.label }}</a>{% else %}{{ r.label }}{% endif %}{% endfor %}{% endmacro %}
 
 <div class="masthead">
   <h1>Høringsradar</h1>
@@ -157,7 +159,8 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <div><dt>Status</dt><dd>{{ v.row.status_raw or status_labels.get(v.row.status, "–") }}</dd></div>
     <div><dt>Datatilsynet på adresselisten</dt><dd>{% if v.row.dt_on_address_list %}Ja{% elif v.row.dt_on_address_list is none %}–{% else %}Nei{% endif %}</dd></div>
     <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>
-    <div><dt>Eget personvernkapittel</dt><dd>{{ v.privacy_section }}</dd></div>
+    {% set ps = v.privacy_section %}
+    <div><dt>Eget personvernkapittel</dt><dd>{% if ps is none %}–{% elif not ps.exists %}Nei{% else %}Ja{% if ps.chapter %} «{{ ps.chapter }}»{% endif %}{% if ps.pages %}, s. {{ page_ranges(ps.pages) }}{% endif %}{% if ps.document_title %} i {{ ps.document_title }}{% endif %}{% endif %}</dd></div>
     <div><dt>Regjeringen.no</dt><dd><a href="{{ v.row.url }}">{{ v.row.url }}</a></dd></div>
   </dl>
 
@@ -170,7 +173,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   {% if not v.findings %}<p class="empty">Ingen konkrete funn oppgitt.</p>{% endif %}
   {% for f in v.findings %}
   <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
-    <div class="head"><strong>{{ f.category_label }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, s. {{ f.page }}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
+    <div class="head"><strong>{{ f.category_label }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, {% if f.page_href %}<a class="page" href="{{ f.page_href }}">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
     <div>{{ f.description }}</div>
     <div class="quote">«{{ f.quote }}»</div>
     {% if f.quote_verified %}
@@ -183,7 +186,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 
   <h4>Leseguide</h4>
   {% if v.reading_guide %}
-  <p>{% for line in v.reading_guide %}{{ line }}{% if not loop.last %}<br>{% endif %}{% endfor %}{% if v.reading_share %}<br><span class="muted">Totalt {{ v.reading_share }} i dokumentene.</span>{% endif %}</p>
+  <p>{% for g in v.reading_guide %}{{ g.title }}: s. {{ page_ranges(g.ranges) }}{% if g.page_count %} av {{ g.page_count }}{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}{% if v.reading_share %}<br><span class="muted">Totalt {{ v.reading_share }} i dokumentene. Klikk på et sidetall for å åpne dokumentet på den siden.</span>{% endif %}</p>
   {% else %}<p class="empty">Ingen sider pekt ut.</p>{% endif %}
 
   {% if v.unread_documents or v.notes %}
