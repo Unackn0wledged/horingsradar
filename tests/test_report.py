@@ -165,3 +165,54 @@ def test_every_overview_row_jumps_to_its_analysis(settings, conn):
     assert {f"h{i}" for i in ids} <= targets
     assert "oversikt" in names and "oversikt" in targets
     assert names["oversikt"]["page"] == 0
+
+
+def test_page_link_helpers():
+    from horingsradar.report.build import linked_ranges, page_link
+
+    pdf = "https://www.regjeringen.no/contentassets/abc/notat.pdf"
+    assert page_link(pdf, 22) == pdf + "#page=22"
+    assert page_link(pdf + "#page=3", 22) == pdf + "#page=22"
+    assert page_link(pdf, None) == pdf
+    # The letter and inline notat live on the hearing page: link to the page itself.
+    inline = "https://www.regjeringen.no/no/dokumenter/x/id1/#horingsbrev"
+    assert page_link(inline, 1) == inline
+    assert page_link(None, 5) is None
+    assert linked_ranges(pdf, [(22, 41), (88, 88)]) == [
+        {"label": "22–41", "href": pdf + "#page=22"},
+        {"label": "88", "href": pdf + "#page=88"},
+    ]
+
+
+def test_report_page_numbers_open_the_document_on_that_page(settings, conn):
+    result = build_report(settings, conn, now=NOW)
+    pdf_url = next(
+        d["url"] for d in db.documents_for(conn, 3170511) if d["url"].lower().endswith(".pdf")
+    )
+    with pymupdf.open(result["path"]) as doc:
+        uris = {
+            link["uri"]
+            for page in doc
+            for link in page.get_links()
+            if link["kind"] == pymupdf.LINK_URI
+        }
+    assert f"{pdf_url}#page=7" in uris  # findings on page 7
+    assert f"{pdf_url}#page=6" in uris  # reading guide and privacy chapter start on page 6
+
+
+def test_panel_hearing_page_has_page_links(settings, conn):
+    import base64
+
+    from fastapi.testclient import TestClient
+
+    from horingsradar.web.app import create_app
+    from horingsradar.web.auth import hash_password
+
+    settings.web_password_hash = hash_password("pw")
+    auth = {"Authorization": "Basic " + base64.b64encode(b"operator:pw").decode()}
+    html = TestClient(create_app(settings), headers=auth).get("/hearings/3170511").text
+    pdf_url = next(
+        d["url"] for d in db.documents_for(conn, 3170511) if d["url"].lower().endswith(".pdf")
+    )
+    assert f'href="{pdf_url}#page=7"' in html
+    assert f'href="{pdf_url}#page=6"' in html

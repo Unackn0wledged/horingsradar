@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ hearing.title }}{% endblock %}
 {% block content %}
+{% macro page_ranges(items) %}{% for r in items %}{% if not loop.first %}{{ " og " if loop.last else ", " }}{% endif %}{% if r.href %}<a href="{{ r.href }}" target="_blank" rel="noopener">{{ r.label }}</a>{% else %}{{ r.label }}{% endif %}{% endfor %}{% endmacro %}
 <p><a href="/hearings">← Høringer</a></p>
 <h1>{{ hearing.title }}</h1>
 <div class="grid">
@@ -48,17 +49,17 @@
   <h3>Sektor</h3><p>{% for sector in sectors %}{{ sector_labels.get(sector, sector) }}{% if not loop.last %}, {% endif %}{% else %}–{% endfor %}</p>
   {% set ps = loads(assessment.privacy_section, {}) %}
   <h3>Eget personvernkapittel</h3>
-  <p>{% if ps.exists %}Ja{% if ps.chapter %} – «{{ ps.chapter }}»{% endif %}{% if ps.pages %}, s. {{ [ps.pages]|ranges }}{% endif %}{% if ps.document_title %} i {{ ps.document_title }}{% endif %}{% else %}Nei{% endif %}</p>
+  <p>{% if ps.exists %}Ja{% if ps.chapter %} – «{{ ps.chapter }}»{% endif %}{% if ps.pages %}, s. {{ page_ranges(linked_ranges(doc_urls.get(ps.document_id), [ps.pages])) }}{% endif %}{% if ps.document_title %} i {{ ps.document_title }}{% endif %}{% else %}Nei{% endif %}</p>
   {% set guide = loads(assessment.reading_guide, {}) %}
   <h3>Leseguide</h3>
   {% if guide.documents %}
-  <ul>{% for g in guide.documents if g.ranges %}<li>{{ g.title }}: s. {{ g.ranges|ranges }}{% if g.page_count %} av {{ g.page_count }}{% endif %}</li>{% endfor %}</ul>
+  <ul>{% for g in guide.documents if g.ranges %}<li>{{ g.title }}: s. {{ page_ranges(linked_ranges(doc_urls.get(g.document_id), g.ranges)) }}{% if g.page_count %} av {{ g.page_count }}{% endif %}</li>{% endfor %}</ul>
   <p class="muted small">Totalt {{ guide.relevant_pages }} av {{ guide.total_pages }} sider.</p>
   {% else %}<p class="muted">Ingen sider pekt ut.</p>{% endif %}
   <h3>Funn ({{ findings|length }})</h3>
   {% for f in findings %}
   <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
-    <div class="small"><strong>{{ category_labels.get(f.category, f.category) }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, s. {{ f.page }}{% if f.page_stated != f.page %} <span class="muted">(oppgitt s. {{ f.page_stated }})</span>{% endif %}</div>
+    <div class="small"><strong>{{ category_labels.get(f.category, f.category) }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, {% set href = page_link(f.document_url, f.page) %}{% if href %}<a href="{{ href }}" target="_blank" rel="noopener">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.page_stated != f.page %} <span class="muted">(oppgitt s. {{ f.page_stated }})</span>{% endif %}</div>
     <div>{{ f.description }}</div>
     <div class="quote">«{{ f.quote }}»</div>
     {% if f.quote_verified %}<span class="badge st-ok">Verifisert ({{ f.match_score }})</span>{% else %}<span class="badge st-failed">Ikke verifisert ({{ f.match_score }})</span>{% endif %}

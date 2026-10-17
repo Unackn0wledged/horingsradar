@@ -31,7 +31,14 @@ from horingsradar import db
 from horingsradar.config import Settings
 from horingsradar.jobs import running_job
 from horingsradar.llm.schema import RELEVANCE_LABELS
-from horingsradar.report.build import CATEGORY_LABELS, SECTOR_LABELS, STATUS_LABELS, format_ranges
+from horingsradar.report.build import (
+    CATEGORY_LABELS,
+    SECTOR_LABELS,
+    STATUS_LABELS,
+    format_ranges,
+    linked_ranges,
+    page_link,
+)
 from horingsradar.web import runner, stats
 from horingsradar.web.auth import check_basic_auth, check_csrf, csrf_token
 
@@ -100,6 +107,8 @@ def create_app(settings: Settings) -> FastAPI:
         sector_labels=SECTOR_LABELS,
         status_labels=STATUS_LABELS,
         loads=db.loads,
+        page_link=page_link,
+        linked_ranges=linked_ranges,
     )
     token = csrf_token(settings.web_password_hash, settings.web_username)
 
@@ -213,6 +222,7 @@ def create_app(settings: Settings) -> FastAPI:
                 return PlainTextResponse("Ukjent høring.", status_code=404)
             latest = db.latest_assessment(conn, hearing_id, "drift")
             findings = [dict(f) for f in db.findings_for(conn, latest["id"])] if latest else []
+            documents = [dict(d) for d in db.documents_for(conn, hearing_id)]
             history = conn.execute(
                 "SELECT * FROM assessment WHERE hearing_id = ? ORDER BY created_at DESC, id DESC",
                 (hearing_id,),
@@ -223,7 +233,8 @@ def create_app(settings: Settings) -> FastAPI:
                 hearing=dict(row),
                 assessment=dict(latest) if latest else None,
                 findings=findings,
-                documents=[dict(d) for d in db.documents_for(conn, hearing_id)],
+                documents=documents,
+                doc_urls={d["id"]: d["url"] for d in documents},
                 history=[dict(h) for h in history],
                 address_list=db.loads(row["address_list"], []) or [],
             )
