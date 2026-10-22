@@ -57,7 +57,7 @@ a:hover { color: var(--stamp-dark); }
   color: var(--ink); text-decoration: none; white-space: nowrap;
 }
 .wordmark:hover { color: var(--ink); }
-.wordmark svg { width: 26px; height: 26px; flex: none; }
+.wordmark svg { width: 28px; height: 28px; flex: none; }
 .sections { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .sections::-webkit-scrollbar { display: none; }
 .sections a {
@@ -272,6 +272,7 @@ pre.log {
   :root { --gutter: 16px; }
   .masthead-inner { flex-wrap: wrap; gap: 0; min-height: 0; padding-top: 12px; }
   .wordmark { margin-bottom: 4px; }
+  .wordmark svg { width: 24px; height: 24px; }
   .sections {
     flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter);
     /* fade at the right edge shows that the menu scrolls */
