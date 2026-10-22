@@ -1,6 +1,6 @@
 # Høringsradar – samlet plan for milepæl 1–8
 
-Denne planen dekker alle milepælene i `docs/SPEC.md`. Den ble skrevet 14.10.2026 og bygges i ett strekk.
+Denne planen dekker alle milepælene i `docs/SPEC.md`.
 
 ## Avklaringer
 
@@ -11,7 +11,7 @@ Denne planen dekker alle milepælene i `docs/SPEC.md`. Den ble skrevet 14.10.202
 | Første `run` | Henter og vurderer høringer publisert de siste 90 dagene (`INITIAL_LOOKBACK_DAYS=90`). |
 | Verifisering lokalt | Kun mock-LLM. Pango er installert via MSYS2, så PDF testes også på Windows. |
 | Sektorer | Utgangslisten i SPEC brukes som den er. Den ligger ett sted i koden (`llm/schema.py`), så den er enkel å endre. |
-| LXC | Debian 13, uprivilegert container, Tailscale inne i containeren. |
+| LXC | Debian 13, uprivilegert container. Fjerntilgang ordnes utenfor containeren (se README). |
 
 ## Funn fra ekte sider (fixtures i `tests/fixtures/regjeringen/`)
 
@@ -53,7 +53,7 @@ src/horingsradar/
   cli.py             argparse-kommandoer
 prompts/assess_v1.md
 deploy/              systemd-filer og deploy.sh
-docs/INSTALL-LXC.md  installasjonsguide for Proxmox + Tailscale
+docs/INSTALL-LXC.md  installasjonsguide for Proxmox-LXC
 ```
 
 ## Milepæler
