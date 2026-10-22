@@ -8,7 +8,7 @@ Verktøyet beskriver hva som foreslås og hvor det står. Det skriver aldri hør
 
 - Krav: [`docs/SPEC.md`](docs/SPEC.md)
 - Plan og beslutninger: [`docs/PLAN.md`](docs/PLAN.md)
-- Installasjon på Proxmox-LXC med Tailscale: [`docs/INSTALL-LXC.md`](docs/INSTALL-LXC.md)
+- Installasjon på Proxmox-LXC: [`docs/INSTALL-LXC.md`](docs/INSTALL-LXC.md)
 
 ## Kom i gang (utvikling)
 
@@ -23,6 +23,15 @@ PDF-rapporten bruker WeasyPrint, som trenger Pango:
 
 - **Debian/Ubuntu:** `apt install libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0`
 - **Windows:** installer MSYS2 og kjør `pacman -S mingw-w64-x86_64-pango`. Koden finner `C:\msys64\mingw64\bin` automatisk, ellers settes `WEASYPRINT_DLL_DIRECTORIES`.
+
+## Tilgang utenfra (Tailscale)
+
+Adminpanelet lytter bare på adressene i `WEB_BIND`, og det er ingen portvideresending fra internett. Skal panelet nås fra en annen lokasjon, kan Tailscale brukes på to måter:
+
+- **På Proxmox-verten** som subnet router for LAN-et (anbefalt hvis Tailscale allerede kjører der). Containeren trenger da ingenting ekstra, og `WEB_BIND` er bare LAN-adressen, for eksempel `192.168.1.50:8080`. Panelet nås på samme adresse fra enheter i tailnettet.
+- **Inne i containeren.** Det krever at den uprivilegerte containeren får tilgang til `/dev/net/tun`, og at Tailscale-adressen legges til i `WEB_BIND` (for eksempel `192.168.1.50:8080,100.x.y.z:8080`). Panelet kan binde Tailscale-adressen selv om `tailscaled` ikke er oppe ennå ved oppstart.
+
+Begrens gjerne hvem i tailnettet som når port 8080 med Tailscale-ACL-er, og bruk aldri `tailscale funnel`, som eksponerer tjenesten mot internett.
 
 ## Kommandoer
 

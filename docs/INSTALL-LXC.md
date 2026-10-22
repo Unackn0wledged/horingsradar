@@ -1,12 +1,12 @@
-# Installere Høringsradar i en Proxmox-LXC med Tailscale
+# Installere Høringsradar i en Proxmox-LXC
 
 Guiden tar deg fra en tom Proxmox-node til en Høringsradar som:
 
 - henter og vurderer høringer hver morgen,
-- har adminpanelet tilgjengelig på LAN og via Tailscale,
-- kan vises som proof of concept fra en annen lokasjon.
+- har adminpanelet tilgjengelig på LAN,
+- kan vises som proof of concept fra en annen lokasjon via fjerntilgangen du har til nettverket.
 
-Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container, med Tailscale installert **inne i** containeren. Regn med 45–60 minutter første gang.
+Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container. Regn med 45–60 minutter første gang.
 
 > **Slik leser du guiden:** Alle kommandoer kjøres som **root i containeren**, med mindre blokken starter med `# På Proxmox-verten:`. Kopier én kodeblokk om gangen og bytt ut `<vinkelparenteser>` med egne verdier, *inkludert* parentesene: `pct reboot <CT-ID>` blir for eksempel `pct reboot 105`. Blokker merket «Forventet utskrift» viser hva du skal *se*, og skal ikke kjøres.
 
@@ -15,20 +15,18 @@ Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container, med Tails
 1. [Oversikt](#1-oversikt)
 2. [Forberedelser](#2-forberedelser)
 3. [Opprett containeren](#3-opprett-containeren)
-4. [Gi containeren tilgang til TUN (for Tailscale)](#4-gi-containeren-tilgang-til-tun-for-tailscale)
-5. [Grunnoppsett i containeren](#5-grunnoppsett-i-containeren)
-6. [Tjenestebruker, mapper og uv](#6-tjenestebruker-mapper-og-uv)
-7. [Hent koden](#7-hent-koden)
-8. [Konfigurasjon (.env)](#8-konfigurasjon-env)
-9. [Første test for hånd](#9-første-test-for-hånd)
-10. [systemd: daglig kjøring og adminpanel](#10-systemd-daglig-kjøring-og-adminpanel)
-11. [Tailscale](#11-tailscale)
-12. [Brannmur (valgfritt, anbefalt)](#12-brannmur-valgfritt-anbefalt)
-13. [Daglig drift](#13-daglig-drift)
-14. [Oppdatere til ny versjon](#14-oppdatere-til-ny-versjon)
-15. [Backup og gjenoppretting](#15-backup-og-gjenoppretting)
-16. [Sjekkliste før demo på annen lokasjon](#16-sjekkliste-før-demo-på-annen-lokasjon)
-17. [Feilsøking](#17-feilsøking)
+4. [Grunnoppsett i containeren](#4-grunnoppsett-i-containeren)
+5. [Tjenestebruker, mapper og uv](#5-tjenestebruker-mapper-og-uv)
+6. [Hent koden](#6-hent-koden)
+7. [Konfigurasjon (.env)](#7-konfigurasjon-env)
+8. [Første test for hånd](#8-første-test-for-hånd)
+9. [systemd: daglig kjøring og adminpanel](#9-systemd-daglig-kjøring-og-adminpanel)
+10. [Brannmur (valgfritt, anbefalt)](#10-brannmur-valgfritt-anbefalt)
+11. [Daglig drift](#11-daglig-drift)
+12. [Oppdatere til ny versjon](#12-oppdatere-til-ny-versjon)
+13. [Backup og gjenoppretting](#13-backup-og-gjenoppretting)
+14. [Sjekkliste før demo på annen lokasjon](#14-sjekkliste-før-demo-på-annen-lokasjon)
+15. [Feilsøking](#15-feilsøking)
 
 ---
 
@@ -42,19 +40,19 @@ Den er skrevet for Debian 13 (trixie) i en **uprivilegert** container, med Tails
  │  systemd-timer 06:15 ──► horingsradar run  ──┐            │
  │                                              │ fil-lås    │
  │  horingsradar-web (adminpanel, :8080) ──► CLI-jobber      │
- │        ▲                ▲                                 │
- │   LAN-IP:8080     Tailscale-IP:8080                       │
+ │        ▲                                                  │
+ │   LAN-IP:8080                                             │
  │                                                           │
  │  /opt/horingsradar        kode, .venv, .env (chmod 600)   │
  │  /var/lib/horingsradar    SQLite, cache, PDF-er, logger   │
  └───────────────────────────────────────────────────────────┘
         │ kun utgående: regjeringen.no, api.anthropic.com,
-        │ pakkeregistre, GitHub, Tailscale
+        │ pakkeregistre, GitHub
 ```
 
 - **Timeren** kjører bare `run`. `report` og `backtest` startes manuelt fra panelet eller terminalen.
 - **Panelet** starter jobber som egne prosesser og styrer aldri systemd.
-- Det er **ingen portvideresending** fra internett. Tilgang utenfra går via Tailscale.
+- Det er **ingen portvideresending** fra internett. Panelet lytter bare på LAN-adressen. Fjerntilgang ordnes på nettverksnivå, ikke i containeren.
 
 ## 2. Forberedelser
 
@@ -62,15 +60,10 @@ Du trenger:
 
 - Proxmox VE 8 eller 9 med tilgang til internett.
 - En **Anthropic API-nøkkel**. Lag en egen nøkkel for piloten og sett gjerne en månedlig utgiftsgrense i Anthropic-konsollen.
-- En **Tailscale-konto** (tailnet) og Tailscale på PC-en du skal demonstrere fra.
-- Et **git-repo** for koden. Anbefalt er et privat GitHub-repo med en skrivebeskyttet *deploy key*. Det trengs bare utgående trafikk. Et alternativ står i [kapittel 7](#7-hent-koden).
+- **Fjerntilgang** til LAN-et hvis panelet skal vises fra en annen lokasjon, for eksempel VPN på ruteren eller Proxmox-verten.
+- Et **git-repo** med koden. Et offentlig repo klones over HTTPS uten nøkler. Et privat repo krever en skrivebeskyttet *deploy key*. Se [kapittel 6](#6-hent-koden).
 
-Koden ligger allerede i det private repoet `Unackn0wledged/horingsradar` på GitHub. Senere endringer pushes fra utviklingsmaskinen:
-
-```bash
-# På utviklingsmaskinen:
-git push
-```
+Endringer pushes fra utviklingsmaskinen med `git push` og hentes til containeren med deployskriptet ([kapittel 12](#12-oppdatere-til-ny-versjon)).
 
 ## 3. Opprett containeren
 
@@ -101,49 +94,13 @@ Velg **Create CT** og bruk disse verdiene:
 | CPU | 2 kjerner |
 | Minne | 2048 MB, swap 1024 MB. Store PDF-er og WeasyPrint trenger litt. |
 | Nettverk | `vmbr0`. Bruk statisk IPv4 (for eksempel `192.168.1.50/24`) eller DHCP-reservasjon, så LAN-adressen ligger fast. |
-| DNS | Ruterens IP (for eksempel `192.168.1.1`), eventuelt også `1.1.1.1`. Bruk ikke vertens innstillinger hvis Proxmox-verten selv bruker Tailscale/MagicDNS eller en lokal resolver (`100.100.100.100` eller `127.0.0.x` i vertens `/etc/resolv.conf`). Den adressen når ikke containeren. |
+| DNS | Ruterens IP (for eksempel `192.168.1.1`), eventuelt også `1.1.1.1`. Bruk ikke vertens innstillinger hvis Proxmox-verten selv bruker en lokal eller VPN-basert resolver (for eksempel `127.0.0.x` eller `100.100.100.100` i vertens `/etc/resolv.conf`). Den adressen når ikke containeren. |
 
-Når containeren er opprettet, gå til **Options** og sett **Start at boot = Yes**. Ikke start den ennå. TUN legges til først.
-
-Notér **CT-ID** (for eksempel `120`).
-
-## 4. Gi containeren tilgang til TUN (for Tailscale)
-
-Tailscale trenger `/dev/net/tun`. En uprivilegert container har ikke tilgang til den som standard.
-
-**Alternativ A (PVE 8.1 eller nyere, via GUI):** Gå til **CT → Resources → Add → Device Passthrough** og velg Device Path `/dev/net/tun`.
-
-**Alternativ B (alle versjoner, i konfigurasjonsfilen):**
-
-```bash
-# På Proxmox-verten:
-nano /etc/pve/lxc/<CT-ID>.conf
-```
-
-Legg til nederst (innhold i filen, ikke kommandoer):
-
-```ini
-lxc.cgroup2.devices.allow: c 10:200 rwm
-lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
-```
+Når containeren er opprettet, gå til **Options** og sett **Start at boot = Yes**. Notér **CT-ID** (for eksempel `120`).
 
 Start containeren og åpne konsollen. Bruk enten **Console** i GUI eller `pct enter <CT-ID>` på Proxmox-verten.
 
-```bash
-ls -l /dev/net/tun
-```
-
-Forventet utskrift (`...` er dato og klokkeslett). Ikke kjør dette:
-
-```text
-crw-rw-rw- 1 nobody nogroup 10, 200 ... /dev/net/tun
-```
-
-Får du `No such file or directory`, mangler linjene fra Alternativ B, eller containeren er ikke startet på nytt etter at de ble lagt inn.
-
-> Får du ikke TUN til å virke, kan Tailscale kjøre i *userspace networking*-modus. Se [11.6](#116-hvis-tun-ikke-er-tilgjengelig).
-
-## 5. Grunnoppsett i containeren
+## 4. Grunnoppsett i containeren
 
 Sjekk først at containeren har nett og DNS:
 
@@ -151,7 +108,7 @@ Sjekk først at containeren har nett og DNS:
 ping -c 1 deb.debian.org
 ```
 
-Svarer den med `1 packets transmitted, 1 received`, er alt i orden. Gir `ip route` ingen utskrift, har containeren ingen IP-adresse. Sett IP og gateway under *CT → Network → net0* (se 3.2), eller kjør `pct set <CT-ID> --net0 name=eth0,bridge=vmbr0,ip=<ip>/24,gw=<ruter-ip>` på verten, og start containeren på nytt. Får du `Temporary failure in name resolution`, ser du [feilsøking](#17-feilsøking) («Temporary failure resolving»). Fiks det før du går videre, ellers feiler alle `apt`-kommandoene.
+Svarer den med `1 packets transmitted, 1 received`, er alt i orden. Gir `ip route` ingen utskrift, har containeren ingen IP-adresse. Sett IP og gateway under *CT → Network → net0* (se 3.2), eller kjør `pct set <CT-ID> --net0 name=eth0,bridge=vmbr0,ip=<ip>/24,gw=<ruter-ip>` på verten, og start containeren på nytt. Får du `Temporary failure in name resolution`, ser du [feilsøking](#15-feilsøking) («Temporary failure resolving»). Fiks det før du går videre, ellers feiler alle `apt`-kommandoene.
 
 ```bash
 apt update && apt full-upgrade -y
@@ -175,7 +132,7 @@ apt install -y unattended-upgrades
 dpkg-reconfigure -plow unattended-upgrades
 ```
 
-## 6. Tjenestebruker, mapper og uv
+## 5. Tjenestebruker, mapper og uv
 
 Tjenestebrukeren eier koden og dataene. Hjemmemappen er `/var/lib/horingsradar`, som også er `DATA_DIR`. Der havner også uv-cache og Python-installasjonen til uv.
 
@@ -195,9 +152,17 @@ uv --version
 
 > Vil du ha nøyaktig samme uv-versjon som på utviklingsmaskinen, bruk `https://astral.sh/uv/<versjon>/install.sh`.
 
-## 7. Hent koden
+## 6. Hent koden
 
-### 7.1 Privat GitHub-repo med deploy key (anbefalt)
+### 6.1 Offentlig repo (enklest)
+
+```bash
+sudo -u horingsradar -H git clone https://github.com/<bruker>/horingsradar.git /opt/horingsradar
+```
+
+Gå videre til [6.4](#64-installer-avhengigheter).
+
+### 6.2 Privat GitHub-repo med deploy key
 
 Lag en SSH-nøkkel for tjenestebrukeren:
 
@@ -212,10 +177,10 @@ Lim inn den offentlige nøkkelen på GitHub under **Repo → Settings → Deploy
 
 ```bash
 sudo -u horingsradar -H ssh -o StrictHostKeyChecking=accept-new -T git@github.com   # bekreft vertsnøkkel
-sudo -u horingsradar -H git clone git@github.com:Unackn0wledged/horingsradar.git /opt/horingsradar
+sudo -u horingsradar -H git clone git@github.com:<bruker>/horingsradar.git /opt/horingsradar
 ```
 
-### 7.2 Alternativ uten GitHub: bart repo i containeren
+### 6.3 Alternativ uten GitHub: bart repo i containeren
 
 Dette krever at du kan nå containeren med SSH fra utviklingsmaskinen på LAN.
 
@@ -239,7 +204,7 @@ Klon i containeren:
 sudo -u horingsradar -H git clone /srv/git/horingsradar.git /opt/horingsradar
 ```
 
-### 7.3 Installer avhengigheter
+### 6.4 Installer avhengigheter
 
 ```bash
 cd /opt/horingsradar
@@ -252,7 +217,7 @@ Første gang laster uv ned Python 3.12 og alle pakker. Bekreft at alt, også PDF
 sudo -u horingsradar -H uv run pytest -q
 ```
 
-## 8. Konfigurasjon (.env)
+## 7. Konfigurasjon (.env)
 
 ```bash
 cd /opt/horingsradar
@@ -270,7 +235,7 @@ Endre minst disse:
 | `ANTHROPIC_API_KEY` | API-nøkkelen |
 | `LLM_MODEL` | `claude-sonnet-5-5` (standard) |
 | `PRICE_INPUT_PER_MTOK` / `PRICE_OUTPUT_PER_MTOK` | Gjeldende priser for modellen. Brukes bare til estimater. |
-| `WEB_BIND` | Settes i [11.4](#114-bind-adminpanelet-til-lan-og-tailscale). Bruk foreløpig `<lan-ip>:8080`. |
+| `WEB_BIND` | `<lan-ip>:8080`, altså containerens faste LAN-adresse. Panelet binder bare til adressene her, aldri `0.0.0.0`. |
 | `WEB_USERNAME` | For eksempel `operator` |
 | `WEB_PASSWORD_HASH` | Se nedenfor |
 
@@ -284,7 +249,7 @@ Lim hele linjen som starter med `scrypt$` inn som `WEB_PASSWORD_HASH=...`. Bruk 
 
 > `.env` skal aldri i git (den står i `.gitignore`). Panelet viser aldri innholdet i den.
 
-## 9. Første test for hånd
+## 8. Første test for hånd
 
 Kjør først **uten LLM**. Da hentes høringer og dokumenter, men ingenting sendes til modellen, så det koster ingenting:
 
@@ -316,7 +281,7 @@ sudo -u horingsradar -H .venv/bin/horingsradar report
 
 PDF-en havner i `/var/lib/horingsradar/reports/` og kan lastes ned fra panelet.
 
-## 10. systemd: daglig kjøring og adminpanel
+## 9. systemd: daglig kjøring og adminpanel
 
 ```bash
 install -m 644 /opt/horingsradar/deploy/systemd/horingsradar-* /etc/systemd/system/
@@ -331,105 +296,15 @@ systemctl status horingsradar-web.service
 - **Pause** i panelet stopper ikke timeren. Den fyrer som vanlig, men `run` avslutter straks og registreres som `skipped`. «Kjør nå» virker uansett.
 - All logging går til journald. Hver jobb har i tillegg sin egen logg i `/var/lib/horingsradar/logs/`.
 
-## 11. Tailscale
-
-### 11.1 Installer
+Sjekk at panelet lytter på LAN-adressen, og åpne `http://<lan-ip>:8080` i nettleseren. Den ber om brukernavn og passord.
 
 ```bash
-curl -fsSL https://tailscale.com/install.sh | sh
-systemctl enable --now tailscaled
-```
-
-### 11.2 Koble til tailnettet
-
-```bash
-tailscale up --hostname=horingsradar --ssh=false
-```
-
-Åpne lenken som vises og godkjenn maskinen. Deretter, i Tailscale-admin (**Machines → horingsradar**):
-
-- **Disable key expiry** for denne maskinen. Ellers mister du tilgangen etter 180 dager, kanskje rett før en demo.
-- Gi gjerne maskinen en tag, for eksempel `tag:horingsradar`, for ACL-ene i 11.5.
-
-### 11.3 Finn adressen
-
-```bash
-tailscale ip -4
-```
-
-Utskriften er Tailscale-adressen, for eksempel `100.101.102.103`. Notér den.
-
-Med MagicDNS på (standard) heter maskinen `horingsradar` eller `horingsradar.<tailnet>.ts.net`.
-
-### 11.4 Bind adminpanelet til LAN og Tailscale
-
-Panelet binder bare til adressene i `WEB_BIND`, aldri `0.0.0.0`. Legg inn både LAN- og Tailscale-adressen:
-
-Åpne `.env`:
-
-```bash
-sudo -u horingsradar nano /opt/horingsradar/.env
-```
-
-Endre linjen med `WEB_BIND` til (dette er innhold i filen, ikke en kommando):
-
-```ini
-WEB_BIND=<lan-ip>:8080,<tailscale-ip>:8080
-```
-
-Lagre og start panelet på nytt. Sjekk deretter at det lytter på begge adressene:
-
-```bash
-systemctl restart horingsradar-web.service
 ss -ltnp | grep 8080
 ```
 
-Panelet kan binde Tailscale-adressen selv om `tailscaled` ikke er helt oppe ved oppstart (Linux `IP_FREEBIND`). Du trenger derfor ingen spesiell rekkefølge ved boot.
+## 10. Brannmur (valgfritt, anbefalt)
 
-Test fra en maskin i tailnettet: `http://horingsradar:8080`. Nettleseren ber om brukernavn og passord.
-
-### 11.5 Begrens hvem som når panelet (ACL)
-
-Som standard kan alle enheter i tailnettet nå hverandre. I **Access controls** kan du begrense det, for eksempel slik at bare din bruker når port 8080 på `tag:horingsradar`:
-
-```jsonc
-{
-  "tagOwners": { "tag:horingsradar": ["autogroup:admin"] },
-  "grants": [
-    { "src": ["<din-epost>"], "dst": ["tag:horingsradar"], "ip": ["tcp:8080"] }
-  ]
-}
-```
-
-Tilpass regelen til din eksisterende policy. Har du allerede en «alle til alle»-regel, må den snevres inn for at dette skal ha effekt.
-
-### 11.6 Hvis TUN ikke er tilgjengelig
-
-Kjør Tailscale i userspace-modus og la Tailscale videresende til panelet på localhost:
-
-```bash
-mkdir -p /etc/systemd/system/tailscaled.service.d
-printf '[Service]\nEnvironment="FLAGS=--tun=userspace-networking"\n' \
-    > /etc/systemd/system/tailscaled.service.d/userspace.conf
-systemctl daemon-reload && systemctl restart tailscaled
-tailscale serve --bg --http=8080 http://127.0.0.1:8080
-```
-
-Sett da `WEB_BIND=<lan-ip>:8080,127.0.0.1:8080`.
-
-### 11.7 Valgfritt: HTTPS med gyldig sertifikat
-
-Trafikken over Tailscale er allerede kryptert (WireGuard). Vil du likevel ha `https://` i adressefeltet, for eksempel for å slippe advarsler i nettleseren under en demo, aktiver **HTTPS Certificates** i Tailscale-admin og kjør:
-
-```bash
-tailscale serve --bg --https=443 http://127.0.0.1:8080
-```
-
-Legg da `127.0.0.1:8080` til i `WEB_BIND`. Panelet er nå tilgjengelig på `https://horingsradar.<tailnet>.ts.net`, bare innenfor tailnettet. Bruk **ikke** `tailscale funnel`, som eksponerer tjenesten mot internett.
-
-## 12. Brannmur (valgfritt, anbefalt)
-
-SPEC sier at containeren bare skal ha utgående trafikk, i tillegg til panelet på LAN og Tailscale. Med nftables:
+SPEC sier at containeren bare skal ha utgående trafikk, i tillegg til panelet på LAN. Med nftables:
 
 ```bash
 cat > /etc/nftables.conf <<'EOF'
@@ -442,11 +317,9 @@ table inet filter {
     ct state established,related accept
     ip protocol icmp accept
     ip6 nexthdr ipv6-icmp accept
-    iifname "tailscale0" tcp dport 8080 accept
     ip saddr <lan-nett>/24 tcp dport 8080 accept
-    # SSH fra LAN, bare hvis du bruker 7.2 eller vil logge inn med SSH:
+    # SSH fra LAN, bare hvis du bruker 6.3 eller vil logge inn med SSH:
     # ip saddr <lan-nett>/24 tcp dport 22 accept
-    udp dport 41641 accept   # Tailscale direkte forbindelser (valgfritt)
   }
   chain forward { type filter hook forward priority 0; policy drop; }
   chain output  { type filter hook output priority 0; policy accept; }
@@ -458,7 +331,7 @@ nft list ruleset
 
 > Proxmox-brannmuren på containerens nettverkskort er et alternativ. Ikke bruk begge uten å vite hvilken som gjelder.
 
-## 13. Daglig drift
+## 11. Daglig drift
 
 | Oppgave | Hvor |
 |---|---|
@@ -481,7 +354,7 @@ Bare én jobb kan kjøre om gangen, uansett om den er startet fra timeren, panel
 
 **Backtest** bruker batch-API-et (halv pris) og kan ta fra noen minutter til flere timer. Første gang må også alle høringer og dokumenter i perioden hentes, med 2 sekunder mellom kall. Det er gratis, men tar tid. Begynn med `--limit 20` for å sjekke oppsettet billig.
 
-## 14. Oppdatere til ny versjon
+## 12. Oppdatere til ny versjon
 
 Push fra utviklingsmaskinen, og kjør deretter dette i containeren:
 
@@ -498,7 +371,7 @@ Skriptet:
 
 Bytter du promptversjon eller modell, oppdaterer du `PROMPT_VERSION` og `LLM_MODEL` i `.env`. Promptene er versjonerte filer i `prompts/`.
 
-## 15. Backup og gjenoppretting
+## 13. Backup og gjenoppretting
 
 All tilstand ligger i `/var/lib/horingsradar` (database, cache, PDF-er, logger). Koden ligger i git, og `.env` er den eneste hemmeligheten.
 
@@ -513,14 +386,13 @@ All tilstand ligger i `/var/lib/horingsradar` (database, cache, PDF-er, logger).
 
 `http_cache/`, `documents/` og `text/` kan gjenskapes ved å hente på nytt. `.cache/` og `.local/` (uv) kan slettes.
 
-## 16. Sjekkliste før demo på annen lokasjon
+## 14. Sjekkliste før demo på annen lokasjon
 
 Dagen før:
 
 - [ ] `systemctl list-timers` viser at morgenens kjøring gikk, og panelet viser «ok» på siste kjøring.
 - [ ] Det finnes en fersk rapport i **Rapporter**. Last ned én PDF lokalt som reserve hvis nettet svikter.
-- [ ] Tailscale på demo-PC-en er logget inn i samme tailnet. Test `http://horingsradar:8080` fra et **annet nett** enn hjemme, for eksempel mobil-hotspot.
-- [ ] «Key expiry» er slått av for `horingsradar`-maskinen.
+- [ ] Fjerntilgangen virker: koble demo-PC-en til nettverket slik du skal gjøre under demoen, og test `http://<lan-ip>:8080` fra et **annet nett** enn hjemme, for eksempel mobil-hotspot.
 - [ ] Du kan brukernavn og passord til panelet.
 - [ ] Hvis du skal vise backtest: kjør den på forhånd og vis resultatene. En live-kjøring koster penger og tar tid.
 
@@ -532,14 +404,13 @@ Forslag til forløp i demoen:
 4. **Rapporter**: last ned PDF-en som juristene får.
 5. **Statistikk**: andel flagget, verifiserte sitater, API-forbruk og siste backtest (recall).
 
-## 17. Feilsøking
+## 15. Feilsøking
 
 | Symptom | Sjekk |
 |---|---|
 | Panelet svarer ikke | `systemctl status horingsradar-web`, `journalctl -u horingsradar-web -n 50`. Står `WEB_PASSWORD_HASH` i `.env`? Lytter `ss -ltnp \| grep 8080` på riktige adresser? |
 | «Internal Server Error», eller `unable to open database file` / «Kan ikke åpne databasen» i `journalctl -u horingsradar-web` | `DATA_DIR` i `.env` står ikke på `/var/lib/horingsradar`. Rett den, slett `/opt/horingsradar/data`, kjør `run --no-assess` på nytt og start panelet på nytt. |
-| Når panelet på LAN, men ikke via Tailscale | `tailscale status`, `tailscale ip -4`. Står Tailscale-IP-en i `WEB_BIND`? Slipper brannmuren gjennom `tailscale0`? Stopper ACL-ene trafikken? |
-| `tailscaled` starter ikke i containeren | `ls -l /dev/net/tun`. Sjekk punkt 4 eller bruk 11.6. |
+| Når panelet på LAN, men ikke utenfra | Fjerntilgangen må slippe trafikk til `<lan-ip>:8080`. Sjekk ruting og tilgangsregler i VPN-en, og at brannmuren i [kapittel 10](#10-brannmur-valgfritt-anbefalt) tillater kildeadressen. |
 | `run` gir «Vurdering hoppet over: ANTHROPIC_API_KEY is not set» | Nøkkelen mangler i `.env`. Høringene står i kø og vurderes ved neste kjøring. |
 | Vurderinger feiler med HTTP 401 eller 403 | Ugyldig API-nøkkel eller manglende tilgang til modellen. |
 | Vurderinger feiler med HTTP 429 eller 529 | Rate limit eller overbelastning. Klienten prøver igjen selv. Ved varige feil vurderes høringen på nytt neste dag, maks to feilede forsøk per dokumentversjon. |

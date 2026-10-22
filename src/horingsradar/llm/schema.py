@@ -17,7 +17,7 @@ RELEVANCE_LABELS: dict[str, str] = {
     "ingen": "Ingen",
 }
 
-# TODO (Fredrik): tilpass sektorlisten til den interne ansvarsfordelingen (docs/SPEC.md).
+# TODO: tilpass sektorlisten til den interne ansvarsfordelingen (docs/SPEC.md).
 SECTORS: tuple[str, ...] = (
     "helse_omsorg",
     "justis_politi",

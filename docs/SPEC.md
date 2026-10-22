@@ -127,7 +127,7 @@ Ved tvil velges høyeste nivå.
 
 ### Sektorer
 
-TODO (Fredrik): tilpass til den interne ansvarsfordelingen. Utgangspunkt:
+TODO: tilpass til den interne ansvarsfordelingen. Utgangspunkt:
 
 `helse_omsorg`, `justis_politi`, `arbeid_velferd`, `utdanning_forskning`, `barn_familie`, `finans_skatt`, `digitalisering_forvaltning`, `samferdsel_kommunikasjon`, `innvandring_integrering`, `forsvar_sikkerhet`, `naering`, `kultur_medier`, `kommune_bolig`, `annet`
 
