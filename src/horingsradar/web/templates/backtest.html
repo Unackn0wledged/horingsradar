@@ -2,69 +2,91 @@
 {% block title %}Backtest{% endblock %}
 {% block head %}{% if estimate and estimate.status == 'running' %}<meta http-equiv="refresh" content="5">{% endif %}{% endblock %}
 {% block content %}
-<h1>Backtest</h1>
-<div class="card">
-  <p>Backtesten måler om modell og prompt rangerer høringer riktig, med Datatilsynets publiserte høringssvar som fasit. Den kjøres bare manuelt, alltid etter et kostnadsestimat og en eksplisitt bekreftelse. Vurderingene lagres separat og havner aldri i driftsrapportene.</p>
-  <p class="muted small"><strong>dev</strong> = avsluttede høringer 2024 (justering av prompt og skala). <strong>test</strong> = 2025, kjøres først når prompten er låst. Første gang hentes høringer og dokumenter fra regjeringen.no (gratis, men tar tid: minst 2 sekunder per forespørsel).</p>
-  <form method="post" action="/actions/backtest/estimate">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <div class="actions" style="align-items:flex-end">
-      <div><label for="split">Split</label>
-        <select id="split" name="split"><option value="dev">dev (2024)</option><option value="test">test (2025)</option></select></div>
-      <div><label for="limit">Utvalg (tomt = alle)</label>
-        <input id="limit" name="limit" type="number" min="1" placeholder="for eksempel 20"></div>
-      <div><button type="submit" {{ 'disabled' if running }}>1. Beregn estimat</button></div>
-    </div>
-  </form>
+<div class="page-head">
+  <div>
+    <h1>Backtest</h1>
+    <p class="lede">Måler om modell og prompt rangerer høringer slik Datatilsynet faktisk svarte. Kjøres bare manuelt, etter et kostnadsestimat og din bekreftelse. Vurderingene havner aldri i driftsrapportene.</p>
+  </div>
 </div>
 
-{% if estimate %}
-{% set e = estimate.summary_data.estimate %}
-<div class="card">
-  <h2>Siste estimat <span class="muted small">jobb #{{ estimate.id }} · {{ estimate.started_at|ts }} · <span class="badge st-{{ estimate.status }}">{{ estimate.status }}</span></span></h2>
-  <p class="small">Split: <strong>{{ estimate.args_data.split }}</strong> · utvalg: <strong>{{ estimate.args_data.limit or "alle" }}</strong></p>
-  {% if estimate.status == 'running' %}
-    {% set p = estimate.progress_data %}
-    <p class="small">Forbereder … fase {{ p.phase or "–" }}{% if p.total %}: {{ p.done }} av {{ p.total }}{% endif %}{% if p.page %} (listeside {{ p.page }}){% endif %}</p>
-    {% if p.total %}<div class="progress"><div style="width: {{ (100 * p.done / p.total)|round|int }}%"></div></div>{% endif %}
-  {% elif estimate.status == 'ok' and e %}
-    <dl class="kv">
-      <dt>Høringer</dt><dd>{{ e.hearings }}</dd>
-      <dt>Forespørsler</dt><dd>{{ e.requests }} ({{ e.cached_requests }} fra cache, gratis)</dd>
-      <dt>Estimerte tokens</dt><dd>{{ e.input_tokens|num }} inn / {{ e.output_tokens|num }} ut</dd>
-      <dt>Estimert kostnad</dt><dd><span class="stat">${{ "%.2f"|format(e.estimated_cost) }}</span> {% if e.batch %}<span class="muted small">(batch-API, halv pris)</span>{% endif %}</dd>
-    </dl>
-    {% if e.hearings %}
-    <form method="post" action="/actions/backtest/start" style="margin-top:14px" onsubmit="return confirm('Starte backtest? Estimert kostnad ${{ '%.2f'|format(e.estimated_cost) }}.');">
+<div class="split">
+  <section class="sheet" aria-labelledby="step1">
+    <h2 id="step1">1. Beregn estimat</h2>
+    <p class="small muted">Dev er avsluttede høringer fra 2024, til å justere prompt og skala. Test er 2025, og kjøres først når prompten er låst. Første gang hentes høringer og dokumenter fra regjeringen.no. Det er gratis, men tar tid.</p>
+    <form method="post" action="/actions/backtest/estimate">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <input type="hidden" name="split" value="{{ estimate.args_data.split }}">
-      <input type="hidden" name="limit" value="{{ estimate.args_data.limit or '' }}">
-      <input type="hidden" name="estimate_job_id" value="{{ estimate.id }}">
-      <label class="check"><input type="checkbox" name="confirm" value="ja" required> Jeg bekrefter at backtesten kan starte og bruke API-et for estimert ${{ "%.2f"|format(e.estimated_cost) }}.</label>
-      <button type="submit" class="danger" {{ 'disabled' if running }}>2. Start backtest</button>
+      <div class="filters" style="margin: 14px 0 0">
+        <div class="field"><label for="split">Høringer fra</label>
+          <select id="split" name="split"><option value="dev">Dev (2024)</option><option value="test">Test (2025)</option></select></div>
+        <div class="field"><label for="limit">Antall (tomt gir alle)</label>
+          <input id="limit" name="limit" type="number" min="1" inputmode="numeric" placeholder="for eksempel 20"></div>
+        <button class="btn" type="submit" {{ 'disabled' if running }}>Beregn estimat</button>
+      </div>
     </form>
-    {% else %}<p class="muted">Ingen høringer i utvalget.</p>{% endif %}
-  {% elif estimate.status == 'failed' %}
-    <div class="alert">Estimatet feilet: {{ estimate.summary_data.error }} – <a href="/jobs/{{ estimate.id }}/log">se logg</a></div>
-  {% endif %}
-</div>
-{% endif %}
+    {% if running %}<p class="small muted" style="margin-top: 10px">En jobb kjører. Du kan beregne estimat når den er ferdig.</p>{% endif %}
+  </section>
 
-<div class="card">
-  <h2>Kjøringer</h2>
-  <table>
-    <thead><tr><th>#</th><th>Tid</th><th>Split</th><th>Modell / prompt</th><th class="num">Høringer</th><th class="num">Recall</th><th class="num">Flagget</th><th class="num">Est. kostnad</th><th class="num">Tokens inn/ut</th><th>Status</th><th>Resultater</th></tr></thead>
-    <tbody>
-    {% for r in runs %}
-      <tr>
-        <td>{{ r.id }}</td><td class="nowrap">{{ r.created_at|ts }}</td><td>{{ r.split or "egendefinert" }}</td>
-        <td class="small">{{ r.model }} / {{ r.prompt_version }}</td><td class="num">{{ r.hearing_count }}</td>
-        <td class="num">{{ r.metrics_data.recall_high_medium|pct }}</td><td class="num">{{ r.metrics_data.flagged_share|pct }}</td>
-        <td class="num">${{ "%.2f"|format(r.estimated_cost or 0) }}</td><td class="num">{{ r.actual_input_tokens|num }} / {{ r.actual_output_tokens|num }}</td>
-        <td><span class="badge st-{{ r.status }}">{{ r.status }}</span></td><td class="small muted">{{ r.results_path or "–" }}</td>
-      </tr>
-    {% else %}<tr><td colspan="11" class="muted">Ingen backtester ennå.</td></tr>{% endfor %}
-    </tbody>
-  </table>
+  <section class="sheet" aria-labelledby="step2">
+    <h2 id="step2">2. Bekreft og start</h2>
+    {% if not estimate %}
+      <p class="empty">Beregn et estimat først.</p>
+    {% else %}
+      {% set e = estimate.summary_data.estimate %}
+      <p class="meta" style="margin-top: 0">
+        <span class="state state-{{ estimate.status }}">{{ job_states.get(estimate.status, estimate.status) }}</span>
+        <span>{{ "Dev" if estimate.args_data.split == "dev" else "Test" }}, {{ estimate.args_data.limit or "alle" }} høringer</span>
+        <span class="num">{{ estimate.started_at|ts }}</span>
+      </p>
+      {% if estimate.status == 'running' %}
+        {% set p = estimate.progress_data %}
+        <p class="small">Forbereder{% if p.total %}: {{ p.done }} av {{ p.total }} høringer{% elif p.page %}: listeside {{ p.page }}{% endif %}</p>
+        {% if p.total %}<div class="progress"><div style="width: {{ (100 * p.done / p.total)|round|int }}%"></div></div>{% endif %}
+      {% elif estimate.status == 'ok' and e %}
+        <p class="figure">${{ "%.2f"|format(e.estimated_cost) }}</p>
+        <p class="small muted">Estimert kostnad{% if e.batch %}, med batch-API til halv pris{% endif %}.</p>
+        <dl class="facts" style="margin-top: 12px">
+          <dt>Høringer</dt><dd class="num">{{ e.hearings }}</dd>
+          <dt>Forespørsler</dt><dd><span class="num">{{ e.requests }}</span>{% if e.cached_requests %}, <span class="num">{{ e.cached_requests }}</span> fra cache (gratis){% endif %}</dd>
+          <dt>Tokens</dt><dd><span class="num">{{ e.input_tokens|num }}</span> inn, <span class="num">{{ e.output_tokens|num }}</span> ut</dd>
+        </dl>
+        {% if e.hearings %}
+        <form method="post" action="/actions/backtest/start" onsubmit="return confirm('Starte backtest? Estimert kostnad ${{ '%.2f'|format(e.estimated_cost) }}.');">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <input type="hidden" name="split" value="{{ estimate.args_data.split }}">
+          <input type="hidden" name="limit" value="{{ estimate.args_data.limit or '' }}">
+          <input type="hidden" name="estimate_job_id" value="{{ estimate.id }}">
+          <label class="check"><input type="checkbox" name="confirm" value="ja" required> Jeg bekrefter at backtesten kan starte og bruke API-et for estimert ${{ "%.2f"|format(e.estimated_cost) }}.</label>
+          <button type="submit" class="btn danger" {{ 'disabled' if running }}>Start backtest</button>
+        </form>
+        {% else %}<p class="empty">Ingen høringer i utvalget.</p>{% endif %}
+      {% elif estimate.status == 'failed' %}
+        <div class="alert">Estimatet feilet: {{ estimate.summary_data.error }}. <a href="/jobs/{{ estimate.id }}/log">Se loggen</a>.</div>
+      {% endif %}
+    {% endif %}
+  </section>
 </div>
+
+<section class="sheet" style="margin-top: 18px" aria-labelledby="runs-heading">
+  <h2 id="runs-heading">Kjøringer</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tidspunkt</th><th>Høringer fra</th><th class="num">Recall</th><th class="num">Flagget</th><th class="num opt">Antall</th><th class="opt">Modell og prompt</th><th class="num opt">Kostnad (est.)</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for r in runs %}
+        <tr>
+          <td class="num nowrap">{{ r.created_at|ts }}</td>
+          <td>{{ {"dev": "Dev (2024)", "test": "Test (2025)"}.get(r.split, "Egendefinert") }}</td>
+          <td class="num">{{ r.metrics_data.recall_high_medium|pct }}</td>
+          <td class="num">{{ r.metrics_data.flagged_share|pct }}</td>
+          <td class="num opt">{{ r.hearing_count }}</td>
+          <td class="opt small">{{ r.model }}, prompt {{ r.prompt_version }}</td>
+          <td class="num opt">${{ "%.2f"|format(r.estimated_cost or 0) }}</td>
+          <td><span class="state state-{{ r.status }}">{{ job_states.get(r.status, r.status) }}</span></td>
+        </tr>
+      {% else %}<tr><td colspan="8" class="empty">Ingen backtester ennå.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if runs %}<p class="small muted" style="margin-top: 10px">Resultatene (CSV og sammendrag) ligger i <code>DATA_DIR/backtests/&lt;nummer&gt;/</code> på serveren.</p>{% endif %}
+</section>
 {% endblock %}

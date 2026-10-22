@@ -1,9 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Logg #{{ job.id }}{% endblock %}
+{% block title %}Logg for {{ job_kinds.get(job.kind, job.kind)|lower }}{% endblock %}
 {% block head %}{% if job.status == 'running' %}<meta http-equiv="refresh" content="4">{% endif %}{% endblock %}
 {% block content %}
-<p><a href="/jobs">← Jobber</a></p>
-<h1>Logg for jobb #{{ job.id }} <span class="badge st-{{ job.status }}">{{ job.status }}</span></h1>
-<p class="muted">{{ job.kind }} · startet av {{ job.triggered_by }} · {{ job.started_at|ts }}{% if job.finished_at %} – {{ job.finished_at|ts }}{% endif %}</p>
-{% if log %}<pre class="log">{{ log }}</pre>{% else %}<p class="muted">Loggen er tom eller finnes ikke.</p>{% endif %}
+<a class="back" href="/jobs">Alle jobber</a>
+<div class="page-head">
+  <div>
+    <h1>{{ job_kinds.get(job.kind, job.kind) }}, {{ job.started_at|ts }}</h1>
+    <p class="meta">
+      <span class="state state-{{ job.status }}">{{ job_states.get(job.status, job.status) }}</span>
+      <span>Startet fra {{ {"timer": "timer", "cli": "terminal", "web": "panelet"}.get(job.triggered_by, job.triggered_by) }}</span>
+      {% if job.finished_at %}<span>Ferdig <span class="num">{{ job.finished_at|ts }}</span></span>{% endif %}
+      {% if job.status == 'running' %}<span>Oppdateres automatisk</span>{% endif %}
+    </p>
+  </div>
+</div>
+{% if log %}<pre class="log">{{ log }}</pre>{% else %}<p class="empty">Loggen er tom eller finnes ikke.</p>{% endif %}
 {% endblock %}

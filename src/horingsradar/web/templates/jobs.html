@@ -1,24 +1,46 @@
 {% extends "base.html" %}
 {% block title %}Jobber og logg{% endblock %}
 {% block content %}
-<h1>Jobber og logg</h1>
-<table>
-  <thead><tr><th>#</th><th>Jobb</th><th>Startet av</th><th>Start</th><th>Slutt</th><th>Status</th><th>Sammendrag</th><th></th></tr></thead>
-  <tbody>
-  {% for j in jobs %}
-    <tr>
-      <td>{{ j.id }}</td>
-      <td><strong>{{ j.kind }}</strong>{% if j.args_data %}<br><span class="small muted">{{ j.args_data|tojson }}</span>{% endif %}</td>
-      <td>{{ j.triggered_by }}</td>
-      <td class="nowrap">{{ j.started_at|ts }}</td>
-      <td class="nowrap">{{ j.finished_at|ts }}</td>
-      <td><span class="badge st-{{ j.status }}">{{ j.status }}</span></td>
-      <td class="small">{% for k, v in j.summary_data.items() if k not in ("estimate",) %}{{ k }}: {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td>
-      <td>{% if j.log_path %}<a href="/jobs/{{ j.id }}/log">logg</a>{% endif %}</td>
-    </tr>
-  {% else %}
-    <tr><td colspan="8" class="muted">Ingen jobber ennå.</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
+<div class="page-head">
+  <div>
+    <h1>Jobber og logg</h1>
+    <p class="lede">De siste 100 jobbene, uansett om de ble startet fra timeren, panelet eller terminalen.</p>
+  </div>
+</div>
+
+{% if jobs %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Jobb</th><th>Startet</th><th>Status</th><th class="opt">Fra</th><th class="opt">Resultat</th><th><span class="sr-only">Logg</span></th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      {% set s = j.summary_data %}
+      <tr>
+        <td>
+          <strong>{{ job_kinds.get(j.kind, j.kind) }}</strong>
+          {% if j.args_data.hearing_id %}<div class="small muted">Høring {{ j.args_data.hearing_id }}</div>{% endif %}
+          {% if j.args_data.split %}<div class="small muted">{{ "Dev" if j.args_data.split == "dev" else "Test" }}{% if j.args_data.limit %}, {{ j.args_data.limit }} høringer{% endif %}{% if j.args_data.estimate_only %}, estimat{% endif %}</div>{% endif %}
+          {% if j.args_data.week %}<div class="small muted">Uke {{ j.args_data.week }}</div>{% endif %}
+        </td>
+        <td class="num nowrap">{{ j.started_at|ts }}</td>
+        <td><span class="state state-{{ j.status }}">{{ job_states.get(j.status, j.status) }}</span></td>
+        <td class="opt small">{{ {"timer": "Timer", "cli": "Terminal", "web": "Panelet"}.get(j.triggered_by, j.triggered_by) }}</td>
+        <td class="opt small">
+          {% if s.reason %}{{ {"paused": "Planlagt kjøring var pauset", "lock_taken": "En annen jobb kjørte"}.get(s.reason, s.reason) }}
+          {% elif s.error %}<span class="muted">{{ s.error }}</span>
+          {% elif j.kind == "run" and s.checked is defined %}{{ s.new or 0 }} nye, {{ s.changed or 0 }} endret, {{ s.assessed or 0 }} vurdert
+          {% elif j.kind == "report" and s.hearings is defined %}{{ s.hearings }} høringer
+          {% elif j.kind == "assess" and s.relevance %}{{ relevance_labels.get(s.relevance, s.relevance) }}
+          {% elif s.estimate %}Estimat ${{ "%.2f"|format(s.estimate.estimated_cost) }}
+          {% endif %}
+        </td>
+        <td class="num">{% if j.log_path %}<a href="/jobs/{{ j.id }}/log">Logg</a>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Ingen jobber ennå.</p>
+{% endif %}
 {% endblock %}

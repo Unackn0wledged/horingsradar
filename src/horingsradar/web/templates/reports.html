@@ -1,28 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Rapporter{% endblock %}
 {% block content %}
-<h1>Rapporter</h1>
-<div class="card">
-  <p class="muted">En ny rapport tar med alle høringer som ikke har vært i en tidligere rapport, pluss høringer som er vurdert på nytt siden. PDF-ene videresendes manuelt til pilotjuristene.</p>
-  <form method="post" action="/actions/report">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit">Generer rapport</button>
-  </form>
+<div class="page-head">
+  <div>
+    <h1>Rapporter</h1>
+    <p class="lede">En ny rapport tar med høringer som ikke har vært i en tidligere rapport, og høringer som er vurdert på nytt siden. PDF-ene videresendes manuelt til pilotjuristene.</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="/actions/report">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn" type="submit">Generer rapport</button>
+    </form>
+  </div>
 </div>
-<table>
-  <thead><tr><th>Generert</th><th>Periode</th><th class="num">Høringer</th><th>Type</th><th>PDF</th></tr></thead>
-  <tbody>
-  {% for r in reports %}
-    <tr>
-      <td class="nowrap">{{ r.created_at|ts }}</td>
-      <td>{{ r.period_label }}</td>
-      <td class="num">{{ r.hearing_count }}</td>
-      <td>{{ "uke (regenerert)" if r.kind == "week" else "drift" }}</td>
-      <td><a href="/reports/{{ r.id }}/download">Last ned</a></td>
-    </tr>
-  {% else %}
-    <tr><td colspan="5" class="muted">Ingen rapporter ennå.</td></tr>
-  {% endfor %}
-  </tbody>
-</table>
+
+{% if reports %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Generert</th><th>Periode</th><th class="num">Høringer</th><th class="opt">Type</th><th><span class="sr-only">Nedlasting</span></th></tr></thead>
+    <tbody>
+    {% for r in reports %}
+      <tr>
+        <td class="num nowrap">{{ r.created_at|ts }}</td>
+        <td>{{ r.period_label }}</td>
+        <td class="num">{{ r.hearing_count }}</td>
+        <td class="opt small">{{ "Regenerert uke" if r.kind == "week" else "Drift" }}</td>
+        <td class="num"><a class="btn quiet small" href="/reports/{{ r.id }}/download">Last ned PDF</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Ingen rapporter ennå. Generer den første når høringene er vurdert.</p>
+{% endif %}
 {% endblock %}

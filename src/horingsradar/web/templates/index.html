@@ -1,46 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Status{% endblock %}
 {% block content %}
-<h1>Status</h1>
-<div class="grid">
-  <div>{% include "partials/status.html" %}</div>
-  <div class="card">
-    <h2>Handlinger</h2>
-    <p class="muted small">Jobber kjøres som egne prosesser. Bare én jobb kan kjøre om gangen, uansett om den er startet fra timer, panel eller terminal.</p>
-    <div class="actions">
-      <form method="post" action="/actions/run" onsubmit="return confirm('Starte en kjøring nå? Nye høringer vurderes og koster API-tokens.');">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" {{ 'disabled' if current }}>Kjør nå</button>
-      </form>
-      <form method="post" action="/actions/report">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="secondary" {{ 'disabled' if current }}>Generer rapport</button>
-      </form>
-      {% if paused %}
-      <form method="post" action="/actions/resume">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="secondary">Gjenoppta planlagt kjøring</button>
-      </form>
-      {% else %}
-      <form method="post" action="/actions/pause">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="secondary">Pause planlagt kjøring</button>
-      </form>
-      {% endif %}
-      <a class="button secondary" style="background:#fff;color:var(--accent)" href="/backtest">Backtest …</a>
-    </div>
-    <h3>Oversikt</h3>
-    <dl class="kv">
-      <dt>Høringer i drift</dt><dd>{{ tracked }}</dd>
-      <dt>Vurder én høring på nytt</dt><dd><a href="/hearings">fra høringslisten</a></dd>
-    </dl>
+<div class="page-head">
+  <div>
+    <h1>Status</h1>
+    <p class="lede">Høringer fra regjeringen.no, sortert etter hvor mye de berører personvern.</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="/actions/run" onsubmit="return confirm('Starte en kjøring nå? Nye høringer vurderes og koster API-tokens.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn" type="submit" {{ 'disabled' if current }}>Kjør nå</button>
+    </form>
+    <form method="post" action="/actions/report">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn quiet" type="submit" {{ 'disabled' if current }}>Generer rapport</button>
+    </form>
   </div>
 </div>
 
-<div class="card">
-  <h2>Logg fra siste jobb
-    {% if last_job %}<span class="muted small">#{{ last_job.id }} {{ last_job.kind }} · {{ last_job.started_at|ts }} · <span class="badge st-{{ last_job.status }}">{{ last_job.status }}</span> · <a href="/jobs/{{ last_job.id }}/log">hele loggen</a></span>{% endif %}
-  </h2>
-  {% if log_tail %}<pre class="log">{{ log_tail }}</pre>{% else %}<p class="muted">Ingen logg ennå.</p>{% endif %}
-</div>
+<section class="sheet" aria-labelledby="radar-heading">
+  <h2 id="radar-heading">Høringer i drift</h2>
+  {% if radar %}
+  <div class="radar">
+    {% for seg in radar %}
+    <a class="r-{{ seg.key }}" style="--n: {{ seg.count }}" href="/hearings?relevans={{ seg.key }}" aria-label="{{ seg.count }} med {{ relevance_labels.get(seg.key, seg.key)|lower }} relevans">
+      <span class="count">{{ seg.count }}</span>
+      <span class="label">{{ relevance_labels.get(seg.key, seg.key) }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  <p class="radar-caption">{{ tracked }} høringer totalt. Velg et nivå for å se høringene.</p>
+  {% else %}
+  <p class="empty">Ingen høringer er hentet ennå. Start en kjøring for å hente høringer fra regjeringen.no.</p>
+  {% endif %}
+</section>
+
+{% include "partials/status.html" %}
+
+<section class="sheet" aria-labelledby="log-heading">
+  <div class="page-head" style="margin-bottom: 12px">
+    <h2 id="log-heading" style="margin: 0">Logg fra siste jobb</h2>
+    {% if last_job %}
+    <span class="meta" style="margin: 0">
+      <span>{{ job_kinds.get(last_job.kind, last_job.kind) }}, {{ last_job.started_at|ts }}</span>
+      <span class="state state-{{ last_job.status }}">{{ job_states.get(last_job.status, last_job.status) }}</span>
+      <a href="/jobs/{{ last_job.id }}/log">Hele loggen</a>
+    </span>
+    {% endif %}
+  </div>
+  {% if log_tail %}<pre class="log">{{ log_tail }}</pre>{% else %}<p class="empty">Ingen logg ennå.</p>{% endif %}
+</section>
 {% endblock %}

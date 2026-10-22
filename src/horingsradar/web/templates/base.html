@@ -3,27 +3,41 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Status{% endblock %} · Høringsradar</title>
+<meta name="theme-color" content="#ffffff">
+<title>{% block title %}Status{% endblock %} – Høringsradar</title>
+<link rel="preload" href="/fonts/SourceSans3-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="/static/style.css">
 <script src="/static/htmx.min.js" defer></script>
 {% block head %}{% endblock %}
 </head>
 <body hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
 {% set path = request.url.path %}
-<header class="top">
-  <a class="brand" href="/">Høringsradar</a>
-  <nav>
-    <a href="/" class="{{ 'active' if path == '/' }}">Status</a>
-    <a href="/hearings" class="{{ 'active' if path.startswith('/hearings') }}">Høringer</a>
-    <a href="/reports" class="{{ 'active' if path.startswith('/reports') }}">Rapporter</a>
-    <a href="/stats" class="{{ 'active' if path.startswith('/stats') }}">Statistikk</a>
-    <a href="/backtest" class="{{ 'active' if path.startswith('/backtest') }}">Backtest</a>
-    <a href="/jobs" class="{{ 'active' if path.startswith('/jobs') }}">Jobber og logg</a>
-  </nav>
-  <span class="env">Adminpanel for operatør · pilot</span>
+{% macro nav(href, label, active) %}<a href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ label }}</a>{% endmacro %}
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/" aria-label="Høringsradar, til statussiden">
+      <svg viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="#17212b" stroke-width="2" stroke-linecap="round">
+        <path d="M5 27 A8 8 0 0 1 13 19"/>
+        <path d="M5 27 A15 15 0 0 1 20 12"/>
+        <path d="M5 27 A22 22 0 0 1 27 5"/>
+        <path d="M5 27 L22 10" stroke="#24408e"/>
+        <circle cx="17.5" cy="10.5" r="2.6" fill="#b3261e" stroke="none"/>
+      </svg>
+      Høringsradar
+    </a>
+    <nav class="sections" aria-label="Hovedmeny">
+      {{ nav("/", "Status", path == "/") }}
+      {{ nav("/hearings", "Høringer", path.startswith("/hearings")) }}
+      {{ nav("/reports", "Rapporter", path.startswith("/reports")) }}
+      {{ nav("/stats", "Statistikk", path.startswith("/stats")) }}
+      {{ nav("/backtest", "Backtest", path.startswith("/backtest")) }}
+      {{ nav("/jobs", "Jobber og logg", path.startswith("/jobs")) }}
+    </nav>
+    <span class="role">Operatørpanel, pilot</span>
+  </div>
 </header>
 <main>
-{% if msg %}<div class="flash">{{ msg }}</div>{% endif %}
+{% if msg %}<div class="flash" role="status">{{ msg }}</div>{% endif %}
 {% block content %}{% endblock %}
 </main>
 </body>
