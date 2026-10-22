@@ -71,6 +71,12 @@ a.badge-link { text-decoration: none; }
 a.page { text-decoration: underline; text-decoration-color: #9fb3cf; }
 .back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
 .back-inline { font-size: 8pt; white-space: nowrap; }
+.changes { border: 0.35mm solid #1d4f91; background: #eef3fa; border-radius: 1mm; padding: 2.5mm 3.5mm; margin: 1mm 0 3mm; break-inside: avoid; }
+.changes-head { font-weight: 700; color: #173e72; margin-bottom: 1mm; }
+.changes table { width: auto; }
+.changes td { border: 0; padding: 0.4mm 4mm 0.4mm 0; font-size: 9pt; }
+.changes td.what { color: #3d4652; font-weight: 600; white-space: nowrap; }
+.tag.new { background: #2b6a37; }
 ul.brief { list-style: none; padding: 0; margin: 0; }
 ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside: avoid; }
 </style>
@@ -107,7 +113,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <tr>
       <td><a class="badge-link" href="#h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></a></td>
       <td>
-        <a href="#h{{ v.id }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}<br>
+        <a href="#h{{ v.id }}">{{ v.row.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
         <a class="jump" href="#h{{ v.id }}">Gå til analyse ↓</a>
       </td>
       <td>{{ v.row.department or "–" }}</td>
@@ -148,11 +154,22 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 {% endif %}
 {% endif %}
 
+{% if kind == "drift" and deadline_only %}
+<h2>Endringer i tidligere rapporterte høringer</h2>
+<p class="muted">Høringer med høy eller middels relevans fra tidligere rapporter der bare fristen er endret. Vurderingen er den samme som sist.</p>
+<ul class="brief">
+{% for v in deadline_only %}
+  <li><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a><br>
+    Frist endret fra {{ v.changes.deadline[0]|date }} til <strong>{{ v.changes.deadline[1]|date }}</strong>{% if v.days_left is not none and v.days_left >= 0 %} ({{ v.days_left }} dager igjen){% endif %}.</li>
+{% endfor %}
+</ul>
+{% endif %}
+
 <h2>Høy og middels relevans</h2>
 {% if not detailed %}<p class="empty">Ingen høringer med høy eller middels relevans i perioden.</p>{% endif %}
 {% for v in detailed %}
 <section class="hearing" id="h{{ v.id }}">
-  <h3><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}</h3>
+  <h3><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}</h3>
   <dl class="facts">
     <div><dt>Departement</dt><dd>{{ v.row.department or "–" }}{% if v.row.original_department %} (opprinnelig utgitt av {{ v.row.original_department }}){% endif %}</dd></div>
     <div><dt>Publisert / frist</dt><dd>{{ v.row.published_date|date }} / {{ v.row.deadline|date }}{% if v.days_left is not none and v.days_left >= 0 %} ({{ v.days_left }} dager igjen){% endif %}</dd></div>
@@ -164,6 +181,18 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <div><dt>Regjeringen.no</dt><dd><a href="{{ v.row.url }}">{{ v.row.url }}</a></dd></div>
   </dl>
 
+  {% if v.changes %}
+  {% set c = v.changes %}
+  <div class="changes">
+    <div class="changes-head">Endret siden rapporten {{ c.since|date }}</div>
+    <table>
+      {% if c.deadline %}<tr><td class="what">Frist</td><td>{{ c.deadline[0]|date }} → <strong>{{ c.deadline[1]|date }}</strong></td></tr>{% endif %}
+      {% if c.relevance %}<tr><td class="what">Relevans</td><td>{{ relevance_labels.get(c.relevance[0], c.relevance[0]) }} → <strong>{{ relevance_labels.get(c.relevance[1], c.relevance[1]) }}</strong></td></tr>{% endif %}
+      {% for d in c.documents %}<tr><td class="what">{{ d.label }}</td><td>«{{ d.title }}», {{ d.date|date }}</td></tr>{% endfor %}
+      {% if c.new_findings or c.dropped_findings %}<tr><td class="what">Funn</td><td>{% if c.new_findings %}{{ c.new_findings }} {{ "nytt" if c.new_findings == 1 else "nye" }} (merket «Ny» under){% endif %}{% if c.new_findings and c.dropped_findings %}, {% endif %}{% if c.dropped_findings %}{{ c.dropped_findings }} fra forrige rapport er ikke med lenger{% endif %}</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
   <h4>Hva foreslås</h4>
   <p>{{ v.assessment.summary }}</p>
   <h4>Begrunnelse for relevansnivå</h4>
@@ -173,7 +202,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   {% if not v.findings %}<p class="empty">Ingen konkrete funn oppgitt.</p>{% endif %}
   {% for f in v.findings %}
   <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
-    <div class="head"><strong>{{ f.category_label }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, {% if f.page_href %}<a class="page" href="{{ f.page_href }}">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
+    <div class="head">{% if v.changes and f.is_new %}<span class="tag new" style="margin: 0 1.5mm 0 0">Ny</span>{% endif %}<strong>{{ f.category_label }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, {% if f.page_href %}<a class="page" href="{{ f.page_href }}">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
     <div>{{ f.description }}</div>
     <div class="quote">«{{ f.quote }}»</div>
     {% if f.quote_verified %}
@@ -204,7 +233,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 {% if brief %}
 <ul class="brief">
 {% for v in brief %}
-  <li id="h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>{% if v.updated %}<span class="tag">Oppdatert</span>{% endif %}
+  <li id="h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a>
     <span class="muted"> · {{ v.row.department or "–" }} · frist {{ v.row.deadline|date }}</span><br>
     {{ v.assessment.relevance_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}

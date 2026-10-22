@@ -105,7 +105,10 @@ def test_second_report_is_empty_then_shows_updated(settings, conn):
     assess_hearing(settings, conn, 3170511, FakeLLM(default=output("hoy")))
     updated = build_report(settings, conn, now=datetime(2026, 10, 21, 9, 0).astimezone())
     assert updated["hearings"] == 1
-    assert "Oppdatert" in pdf_text(updated["path"])
+    text = pdf_text(updated["path"])
+    assert "Endret siden rapporten" in text and "Endrede funn" in text
+    assert "3 fra forrige rapport er ikke med lenger" in text
+    assert "Oppdatert" not in text
 
 
 def test_upcoming_deadlines_from_earlier_reports(settings, conn):
