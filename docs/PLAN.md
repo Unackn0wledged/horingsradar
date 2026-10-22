@@ -144,7 +144,11 @@ Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er 
    - Iterer med `prompts/assess_v2.md` osv.
    - Lås prompten og kjør testsettet (2025).
 3. Sett terskelen for «andel flagget» etter dev-kjøringen (SPEC, Suksesskriterier).
-4. Mulige forbedringer som er diskutert, men ikke bestemt:
+4. Sortering på siden «Høringer» i adminpanelet. Den skal virke sammen med filteret på relevans og fritekst:
+   - publisert: nyeste–eldste og eldste–nyeste,
+   - relevans: høy–lav og lav–høy,
+   - høringsfrist: stigende og synkende.
+5. Mulige forbedringer som er diskutert, men ikke bestemt:
    - endringsmerker og tidslinje også i panelet,
    - kostnadstak per måned,
    - batch-API for daglig `run`,
