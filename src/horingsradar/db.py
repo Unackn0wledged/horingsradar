@@ -144,6 +144,28 @@ CREATE INDEX IF NOT EXISTS idx_assessment_hearing ON assessment (hearing_id, con
 CREATE INDEX IF NOT EXISTS idx_finding_assessment ON finding (assessment_id);
 CREATE INDEX IF NOT EXISTS idx_hearing_published ON hearing (published_date);
 CREATE INDEX IF NOT EXISTS idx_job_started ON job (started_at);
+
+-- What changed in a hearing after it was first seen (deadline and documents; not status).
+CREATE TABLE IF NOT EXISTS hearing_change (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    hearing_id INTEGER NOT NULL REFERENCES hearing(id),
+    detected_at TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    old_value TEXT,
+    new_value TEXT,
+    document_id INTEGER REFERENCES document(id),
+    document_title TEXT
+);
+CREATE INDEX IF NOT EXISTS idx_change_hearing ON hearing_change (hearing_id, detected_at);
+
+-- Which assessment and deadline each operational report showed; the baseline for changes.
+CREATE TABLE IF NOT EXISTS report_item (
+    report_id INTEGER NOT NULL REFERENCES report(id),
+    hearing_id INTEGER NOT NULL REFERENCES hearing(id),
+    assessment_id INTEGER REFERENCES assessment(id),
+    deadline TEXT,
+    PRIMARY KEY (report_id, hearing_id)
+);
 """
 
 
@@ -197,6 +219,23 @@ def loads(value: str | None, default: Any = None) -> Any:
     if value is None or value == "":
         return default
     return json.loads(value)
+
+
+def record_change(
+    conn: sqlite3.Connection,
+    hearing_id: int,
+    kind: str,
+    old: str | None = None,
+    new: str | None = None,
+    document_id: int | None = None,
+    document_title: str | None = None,
+) -> None:
+    """kind: deadline | document_added | document_changed | document_removed."""
+    conn.execute(
+        "INSERT INTO hearing_change (hearing_id, detected_at, kind, old_value, new_value,"
+        " document_id, document_title) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (hearing_id, now_iso(), kind, old, new, document_id, document_title),
+    )
 
 
 def get_setting(conn: sqlite3.Connection, key: str, default: str | None = None) -> str | None:

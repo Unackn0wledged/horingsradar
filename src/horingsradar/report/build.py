@@ -1,7 +1,8 @@
 """PDF report (A4) built with Jinja2 + WeasyPrint.
 
 By default the report contains every tracked hearing that has not been in an earlier report,
-plus hearings re-assessed since they were reported (marked «oppdatert»). `--week YYYY-Www`
+plus high/medium hearings that changed since the report that last showed them (see
+select_for_report). `--week YYYY-Www`
 regenerates the hearings published in that ISO week without touching `reported_in`.
 """
 
@@ -23,6 +24,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from horingsradar import db
 from horingsradar.config import Settings
 from horingsradar.llm.schema import RELEVANCE_LABELS, RELEVANCE_ORDER
+from horingsradar.quotes import normalize
 
 log = logging.getLogger(__name__)
 
@@ -129,17 +131,63 @@ def linked_ranges(
 
 
 @dataclass
+class Changes:
+    """What changed for a hearing since the operational report that last showed it."""
+
+    since: str  # created_at of that report
+    deadline: tuple[str | None, str | None] | None = None
+    relevance: tuple[str, str] | None = None
+    documents: list[dict[str, Any]] = field(default_factory=list)
+    new_findings: int = 0
+    dropped_findings: int = 0
+
+    @property
+    def material(self) -> bool:
+        """Worth showing the full analysis again (a deadline alone is not)."""
+        return bool(self.relevance or self.documents or self.new_findings or self.dropped_findings)
+
+    @property
+    def tags(self) -> list[str]:
+        tags = []
+        if self.deadline:
+            tags.append("Ny frist")
+        kinds = {d["kind"] for d in self.documents}
+        if "document_added" in kinds:
+            tags.append("Nytt dokument")
+        if kinds & {"document_changed", "document_removed"}:
+            tags.append("Endret dokument")
+        if self.relevance:
+            tags.append("Endret relevans")
+        if not self.relevance and self.new_findings:
+            tags.append("Nye funn")
+        elif not self.relevance and self.dropped_findings:
+            tags.append("Endrede funn")
+        return tags
+
+
+DOCUMENT_CHANGE_LABELS = {
+    "document_added": "Nytt dokument",
+    "document_changed": "Endret dokument",
+    "document_removed": "Fjernet dokument",
+}
+
+
+@dataclass
 class HearingView:
     row: dict[str, Any]
     assessment: dict[str, Any] | None
     findings: list[dict[str, Any]] = field(default_factory=list)
     documents: list[dict[str, Any]] = field(default_factory=list)
-    updated: bool = False
+    changes: Changes | None = None  # set when shown again after an earlier report
     today: date = field(default_factory=date.today)
 
     @property
     def id(self) -> int:
         return int(self.row["id"])
+
+    @property
+    def updated(self) -> bool:
+        return self.changes is not None
 
     @property
     def relevance(self) -> str:
@@ -239,13 +287,6 @@ class HearingView:
         return db.loads(self.assessment.get("notes"), []) or []
 
 
-def _latest_reported_at(conn: sqlite3.Connection, report_id: int | None) -> str | None:
-    if report_id is None:
-        return None
-    row = conn.execute("SELECT created_at FROM report WHERE id = ?", (report_id,)).fetchone()
-    return row["created_at"] if row else None
-
-
 def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> HearingView:
     assessment = db.latest_assessment(conn, row["id"], "drift")
     a = dict(assessment) if assessment else None
@@ -256,18 +297,124 @@ def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> HearingVie
         f["category_label"] = CATEGORY_LABELS.get(f["category"], f["category"])
         f["page_href"] = page_link(f.get("document_url"), f.get("page"))
     documents = [dict(d) for d in db.documents_for(conn, row["id"])]
-    reported_at = _latest_reported_at(conn, row["reported_in"])
-    updated = bool(reported_at and a and a["created_at"] > reported_at)
-    return HearingView(dict(row), a, findings, documents, updated, today)
+    return HearingView(dict(row), a, findings, documents, None, today)
 
 
-def select_for_report(conn: sqlite3.Connection, today: date) -> list[HearingView]:
-    views = []
+def _quote_key(quote: str | None) -> str:
+    return normalize(quote or "")
+
+
+def _baseline(conn: sqlite3.Connection, hearing_id: int, report_id: int) -> dict[str, Any] | None:
+    """The assessment and deadline the given report showed for this hearing."""
+    report = conn.execute("SELECT created_at FROM report WHERE id = ?", (report_id,)).fetchone()
+    if report is None:
+        return None
+    item = conn.execute(
+        "SELECT assessment_id, deadline FROM report_item WHERE report_id = ? AND hearing_id = ?",
+        (report_id, hearing_id),
+    ).fetchone()
+    if item is not None:
+        return {
+            "since": report["created_at"],
+            "assessment_id": item["assessment_id"],
+            "deadline": item["deadline"],
+            "known_deadline": True,
+        }
+    # Reports made before report_item existed: the latest assessment at report time.
+    a = conn.execute(
+        "SELECT id FROM assessment WHERE hearing_id = ? AND context = 'drift' AND created_at <= ?"
+        " ORDER BY created_at DESC, id DESC LIMIT 1",
+        (hearing_id, report["created_at"]),
+    ).fetchone()
+    return {
+        "since": report["created_at"],
+        "assessment_id": a["id"] if a else None,
+        "deadline": None,
+        "known_deadline": False,
+    }
+
+
+def compare(conn: sqlite3.Connection, view: HearingView, base: dict[str, Any]) -> Changes:
+    """Changes since the baseline. Marks findings that are new with `is_new`."""
+    since = base["since"]
+    changes = Changes(since=since)
+    rows = conn.execute(
+        "SELECT * FROM hearing_change WHERE hearing_id = ? AND detected_at > ? ORDER BY detected_at, id",
+        (view.id, since),
+    ).fetchall()
+
+    current_deadline = view.row.get("deadline")
+    if base["known_deadline"]:
+        old_deadline = base["deadline"]
+    else:
+        logged = [r for r in rows if r["kind"] == "deadline"]
+        old_deadline = logged[0]["old_value"] if logged else current_deadline
+    if old_deadline and current_deadline and old_deadline != current_deadline:
+        changes.deadline = (old_deadline, current_deadline)
+
+    seen_docs: set[tuple[str, str]] = set()
+    for r in rows:
+        if r["kind"].startswith("document_") and (r["kind"], r["document_title"]) not in seen_docs:
+            seen_docs.add((r["kind"], r["document_title"]))
+            changes.documents.append(
+                {
+                    "kind": r["kind"],
+                    "label": DOCUMENT_CHANGE_LABELS.get(r["kind"], r["kind"]),
+                    "title": r["document_title"],
+                    "date": r["detected_at"],
+                }
+            )
+
+    if view.assessment and base["assessment_id"] and view.assessment["id"] != base["assessment_id"]:
+        old = conn.execute(
+            "SELECT * FROM assessment WHERE id = ?", (base["assessment_id"],)
+        ).fetchone()
+        if old is not None and old["status"] == "ok":
+            if (
+                view.assessment["status"] == "ok"
+                and old["relevance"] != view.assessment["relevance"]
+            ):
+                changes.relevance = (old["relevance"], view.assessment["relevance"])
+            old_quotes = {_quote_key(f["quote"]) for f in db.findings_for(conn, old["id"])}
+            new_quotes = {_quote_key(f["quote"]) for f in view.findings}
+            for f in view.findings:
+                f["is_new"] = _quote_key(f["quote"]) not in old_quotes
+            changes.new_findings = len(new_quotes - old_quotes)
+            changes.dropped_findings = len(old_quotes - new_quotes)
+    return changes
+
+
+def select_for_report(
+    conn: sqlite3.Connection, today: date
+) -> tuple[list[HearingView], list[HearingView]]:
+    """Hearings for the next operational report.
+
+    Returns (full, deadline_only):
+    - full: never reported before, or high/medium with a new assessment that changed something
+      (relevance, findings or documents) since the report that last showed it;
+    - deadline_only: high/medium hearings shown before whose only change is the deadline.
+    Hearings that are now low/none are not shown again, and a re-assessment with the same
+    result is not an update.
+    """
+    full, deadline_only = [], []
     for row in conn.execute("SELECT * FROM hearing WHERE tracked = 1"):
         view = _view(conn, row, today)
-        if row["reported_in"] is None or view.updated:
-            views.append(view)
-    return sorted(views, key=lambda v: v.sort_key)
+        if row["reported_in"] is None:
+            full.append(view)
+            continue
+        if view.relevance not in ("hoy", "middels"):
+            continue
+        base = _baseline(conn, view.id, row["reported_in"])
+        if base is None:
+            continue
+        changes = compare(conn, view, base)
+        if changes.material:
+            view.changes = changes
+            full.append(view)
+        elif changes.deadline:
+            view.changes = changes
+            deadline_only.append(view)
+    return sorted(full, key=lambda v: v.sort_key), sorted(deadline_only, key=lambda v: v.sort_key)
 
 
 def select_week(conn: sqlite3.Connection, start: date, end: date, today: date) -> list[HearingView]:
@@ -328,6 +475,7 @@ def build_report(
 ) -> dict[str, Any]:
     now = now or datetime.now().astimezone()
     today = now.date()
+    deadline_only: list[HearingView] = []
     if week:
         start, end = parse_week(week)
         views = select_week(conn, start, end, today)
@@ -337,7 +485,7 @@ def build_report(
         )
         kind = "week"
     else:
-        views = select_for_report(conn, today)
+        views, deadline_only = select_for_report(conn, today)
         previous = conn.execute(
             "SELECT created_at FROM report WHERE kind = 'drift' ORDER BY id DESC LIMIT 1"
         ).fetchone()
@@ -346,7 +494,7 @@ def build_report(
         period_label = f"Uke {iso.week} {iso.year} ({since}{fmt_date(today)})"
         kind = "drift"
 
-    in_report = {v.id for v in views}
+    in_report = {v.id for v in views} | {v.id for v in deadline_only}
     upcoming = upcoming_deadlines(conn, in_report, today) if kind == "drift" else []
     detailed = [v for v in views if v.relevance in ("hoy", "middels")]
     brief = [v for v in views if v.relevance in ("lav", "ingen")]
@@ -367,6 +515,8 @@ def build_report(
         "brief": brief,
         "not_assessed": not_assessed,
         "upcoming": upcoming,
+        "deadline_only": deadline_only,
+        "relevance_labels": RELEVANCE_LABELS,
         "status_labels": STATUS_LABELS,
         "kind": kind,
         "fonts_dir": (HERE / "fonts").as_uri(),
@@ -381,9 +531,24 @@ def build_report(
         (db.now_iso(), period_label, str(path), len(views), kind),
     )
     report_id = int(cur.lastrowid)
-    if kind == "drift" and views:
+    shown = views + deadline_only
+    if kind == "drift" and shown:
         conn.executemany(
-            "UPDATE hearing SET reported_in = ? WHERE id = ?", [(report_id, v.id) for v in views]
+            "UPDATE hearing SET reported_in = ? WHERE id = ?", [(report_id, v.id) for v in shown]
+        )
+        # The baseline for the next report: what this report showed.
+        conn.executemany(
+            "INSERT OR REPLACE INTO report_item (report_id, hearing_id, assessment_id, deadline)"
+            " VALUES (?, ?, ?, ?)",
+            [
+                (
+                    report_id,
+                    v.id,
+                    v.assessment["id"] if v.assessment else None,
+                    v.row.get("deadline"),
+                )
+                for v in shown
+            ],
         )
     log.info("Report %s written to %s (%s hearings)", report_id, path, len(views))
     return {
@@ -392,5 +557,6 @@ def build_report(
         "hearings": len(views),
         "detailed": len(detailed),
         "upcoming": len(upcoming),
+        "deadline_changes": len(deadline_only),
         "kind": kind,
     }

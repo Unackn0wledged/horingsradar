@@ -55,7 +55,8 @@ Alle jobber tar en felles fil-lås i `DATA_DIR`. Bare én jobb kan kjøre om gan
 2. **Henting.** Høringsside, høringsbrev, høringsnotat og vedlegg hentes høflig:
    - identifiserende User-Agent og minst 2 sekunder mellom kall,
    - disk-cache, og robots.txt respekteres.
-   - Et nytt eller endret dokument (ny sha256) gir ny vurdering og merkes «oppdatert» i rapporten.
+   - Et nytt eller endret dokument (ny sha256) gir ny vurdering. Endret frist og endrede dokumenter logges.
+   - Har en høring med høy eller middels relevans vært i en tidligere rapport, viser neste rapport hva som er endret siden da: merker i oversikten («Ny frist», «Nytt dokument», «Endret relevans» …), en boks med før og etter i analysen og «Ny» på nye funn. Endret frist alene gir én linje i en egen seksjon. Lav og ingen vises ikke på nytt, og en ny vurdering med samme resultat regnes ikke som en endring.
 3. **Tekst.** PDF-er trekkes ut side for side med `[[side N]]`-markører. Høringsbrevet hentes fra HTML.
 4. **Vurdering.** Dette er `prompts/assess_v1.md` med strukturert JSON-output, validert med Pydantic.
    - Ugyldig svar gir ett nytt forsøk. Feiler det igjen, markeres vurderingen som feilet.

@@ -129,8 +129,10 @@ class RegjeringenSource:
 
     def _upsert_listing(self, item: ListingItem, tracked: bool, insert: bool) -> bool:
         exists = self.conn.execute(
-            "SELECT tracked FROM hearing WHERE id = ?", (item.id,)
+            "SELECT tracked, deadline FROM hearing WHERE id = ?", (item.id,)
         ).fetchone()
+        if exists is not None:
+            self._note_deadline(item.id, exists["deadline"], _iso(item.deadline))
         if exists is None:
             if not insert:
                 return False
@@ -201,6 +203,7 @@ class RegjeringenSource:
         page = parse_hearing(page_result.text, url)
         if not page.title and page.status == "unknown" and not page.documents:
             log.warning("Hearing %s: unexpected page structure (%s)", hearing_id, url)
+        self._note_deadline(hearing_id, row["deadline"], _iso(page.deadline))
 
         self.conn.execute(
             "UPDATE hearing SET title = ?, doc_type = COALESCE(?, doc_type),"
@@ -242,6 +245,11 @@ class RegjeringenSource:
                 log.warning("Could not fetch responses for %s: %s", hearing_id, exc)
         return result
 
+    def _note_deadline(self, hearing_id: int, old: str | None, new: str | None) -> None:
+        if old and new and old != new:
+            db.record_change(self.conn, hearing_id, "deadline", old, new)
+            log.info("Hearing %s: deadline changed from %s to %s", hearing_id, old, new)
+
     def _sync_documents(
         self, hearing_id: int, links: list[DocumentLink], max_age: float
     ) -> RefreshResult:
@@ -278,15 +286,29 @@ class RegjeringenSource:
                 result.transient_errors += 1
             elif outcome == "changed" or was_removed:
                 result.changed = True
-                if old_sha is None and row is None:
+                added = old_sha is None and row is None
+                if added:
                     result.new_documents += 1
                 else:
                     result.changed_documents += 1
+                # Only log changes to hearings that already had documents, not the first fetch.
+                if existing:
+                    kind = "document_added" if added or old_sha is None else "document_changed"
+                    db.record_change(
+                        self.conn, hearing_id, kind, document_id=doc_id, document_title=link.title
+                    )
         for url, row in existing.items():
             if url not in seen and not row["removed"]:
                 self.conn.execute("UPDATE document SET removed = 1 WHERE id = ?", (row["id"],))
                 result.removed_documents += 1
                 result.changed = True
+                db.record_change(
+                    self.conn,
+                    hearing_id,
+                    "document_removed",
+                    document_id=row["id"],
+                    document_title=row["title"],
+                )
         return result
 
     def _store_content(
