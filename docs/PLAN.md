@@ -102,16 +102,56 @@ docs/INSTALL-LXC.md  installasjonsguide for Proxmox-LXC
 - **`backtest_run`**: `status`, `metrics` (JSON).
 - **`job`**: `progress` (JSON), `args`.
 
-## Status (14.10.2026)
+## Status (23.10.2026)
 
-Milepæl 1–4 og 6–8 er ferdige, med tester. Milepæl 5 (backtest) er bygget og testet, men selve kjøringene gjenstår. De skal startes manuelt av operatøren.
+Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er bygget og testet, men kjøringene gjenstår. De startes manuelt av operatøren.
 
-Gjenstår for operatøren:
+### Lagt til etter den opprinnelige planen
 
-1. Legg inn `ANTHROPIC_API_KEY`. Kjør `assess <id>` på noen få høringer og se over output og pris.
-2. Tilpass sektorlisten (`llm/schema.py` og `report/build.py`, TODO i SPEC).
-3. Backtest på dev-settet: start med `--limit 20` og deretter hele 2024. Iterer med `prompts/assess_v2.md` osv., lås prompten og kjør testsettet (2025).
-4. Sett terskelen for «andel flagget» etter dev-kjøringen (SPEC, Suksesskriterier).
+- **Validering av egne anbefalinger:**
+  - Bare modellens egen stemme avvises («vi anbefaler», «juristene bør»).
+  - «Det anbefales» og «utvalget anbefaler» er tillatt som gjengivelse av kilden.
+  - «Datatilsynet bør/burde» er tillatt når det står i høringsdokumentene. Det sjekkes mot kildeteksten i `assess.check_against_sources`.
+- **Rapporten:**
+  - Hver rad i oversikten hopper til analysen («Gå til analyse»), og analysene lenker tilbake.
+  - Sidetall i funn, leseguide og personvernkapittel lenker til PDF-en med `#page=N`. Det gjelder også i panelet.
+- **Endringer siden forrige rapport:**
+  - Tabellen `hearing_change` logger endringer i frist og dokumenter. Status spores ikke.
+  - Tabellen `report_item` lagrer hvilken vurdering og frist hver rapport viste. Det er grunnlaget for sammenligningen.
+  - Høy og middels med en ny vurdering som har endret relevans, funn eller dokumenter, vises igjen med:
+    - merker i oversikten,
+    - en boks med før og etter,
+    - «Ny» på nye funn.
+  - Endret frist alene gir én linje i en egen seksjon.
+  - Lav og ingen vises ikke igjen.
+  - En ny vurdering med samme resultat regnes ikke som en endring.
+  - Ingen ekstra LLM-kall.
+- **Adminpanelet:**
+  - Nytt utseende: blekk på arkivpapir, relevans som eneste farge, Source Sans 3 fra repoet.
+  - Responsivt for mobil.
+  - Radarstripe på statussiden.
+  - Høringslisten kan filtreres på relevans og fritekst. Filteret bruker GET og endrer ingenting.
+- **Drift:**
+  - `DATA_DIR` gjøres absolutt.
+  - Tydelig feil hvis databasen ikke kan åpnes. Panelet sjekker dette ved oppstart.
+  - Installasjonsguiden har blokker som er trygge å kopiere og lime inn, og nevner ikke Tailscale (se README).
+
+### Gjenstår
+
+1. Tilpass sektorlisten (`llm/schema.py` og `report/build.py`, TODO i SPEC).
+2. Backtest på dev-settet:
+   - Start med `--limit 20`, deretter hele 2024.
+   - Iterer med `prompts/assess_v2.md` osv.
+   - Lås prompten og kjør testsettet (2025).
+3. Sett terskelen for «andel flagget» etter dev-kjøringen (SPEC, Suksesskriterier).
+4. Mulige forbedringer som er diskutert, men ikke bestemt:
+   - endringsmerker og tidslinje også i panelet,
+   - kostnadstak per måned,
+   - batch-API for daglig `run`,
+   - løpende treffsikkerhet i drift (svar fra Datatilsynet registreres etter fristen),
+   - sammenligning av promptversjoner side om side,
+   - backtest-resultater i panelet,
+   - `report --reset`.
 
 ## Ting som bevisst ikke er med
 
