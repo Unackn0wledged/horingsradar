@@ -1,67 +1,81 @@
 {% extends "base.html" %}
 {% block title %}Statistikk{% endblock %}
 {% block content %}
-<h1>Statistikk</h1>
-<div class="grid">
-  <div class="card">
-    <h2>Høringer behandlet per uke</h2>
+<div class="page-head">
+  <div>
+    <h1>Statistikk</h1>
+    <p class="lede">Tallene piloten måles på: hvor mye som flagges, om sitatene holder, og hva det koster.</p>
+  </div>
+</div>
+
+<div class="split">
+  <section class="sheet" aria-labelledby="dist-heading">
+    <h2 id="dist-heading">Fordeling per relevansnivå</h2>
+    {% set total = s.relevance.values()|sum %}
+    {% if total %}
+    <div class="bars">
+      {% for level, count in s.relevance.items() %}
+        <a class="rel rel-{{ level }}" href="/hearings?relevans={{ level }}">{{ s.relevance_labels.get(level, level) }}</a>
+        <div class="bar {{ level }}" aria-hidden="true"><div style="width: {{ (100 * count / total)|round|int }}%"></div></div>
+        <span class="num">{{ count }}</span>
+      {% endfor %}
+    </div>
+    <p style="margin-top: 14px">Andel flagget som høy eller middels: <strong class="num">{{ s.flagged_share|pct }}</strong> av <span class="num">{{ s.assessed }}</span> vurderte høringer.</p>
+    {% else %}<p class="empty">Ingen vurderinger ennå.</p>{% endif %}
+  </section>
+
+  <section class="sheet" aria-labelledby="quality-heading">
+    <h2 id="quality-heading">Kvalitet</h2>
+    <dl class="facts">
+      <dt>Verifiserte sitater</dt>
+      <dd><span class="figure">{{ s.quotes_verified_share|pct }}</span><div class="small muted">av {{ s.quotes_total }} funn</div></dd>
+      <dt>Feilede vurderinger</dt>
+      <dd><span class="figure">{{ s.failed_assessments }}</span></dd>
+    </dl>
+  </section>
+</div>
+
+<div class="split" style="margin-top: 18px">
+  <section class="sheet" aria-labelledby="weeks-heading">
+    <h2 id="weeks-heading">Høringer vurdert per uke</h2>
     {% if s.per_week %}
     <div class="bars">
       {% for w in s.per_week %}
-        <span class="small">{{ w.week }}</span>
-        <div class="bar"><div style="width: {{ (100 * w.count / s.max_week)|round|int if s.max_week else 0 }}%"></div></div>
-        <span class="small">{{ w.count }}</span>
+        <span class="small num">{{ w.week|replace("-U", ", uke ") }}</span>
+        <div class="bar" aria-hidden="true"><div style="width: {{ (100 * w.count / s.max_week)|round|int if s.max_week else 0 }}%"></div></div>
+        <span class="num">{{ w.count }}</span>
       {% endfor %}
     </div>
-    {% else %}<p class="muted">Ingen vurderinger de siste 12 ukene.</p>{% endif %}
-  </div>
+    {% else %}<p class="empty">Ingen vurderinger de siste 12 ukene.</p>{% endif %}
+  </section>
 
-  <div class="card">
-    <h2>Fordeling per relevansnivå</h2>
-    {% set total = s.relevance.values()|sum %}
-    <div class="bars">
-      {% for level, count in s.relevance.items() %}
-        <span class="small">{{ s.relevance_labels.get(level, level) }}</span>
-        <div class="bar {{ level }}"><div style="width: {{ (100 * count / total)|round|int if total else 0 }}%"></div></div>
-        <span class="small">{{ count }}</span>
-      {% endfor %}
-    </div>
-    <p style="margin-top:12px">Andel flagget (høy + middels): <strong>{{ s.flagged_share|pct }}</strong> av {{ s.assessed }} vurderte høringer.</p>
-  </div>
-
-  <div class="card">
-    <h2>Kvalitet</h2>
-    <dl class="kv">
-      <dt>Verifiserte sitater</dt><dd><span class="stat">{{ s.quotes_verified_share|pct }}</span> <span class="muted small">av {{ s.quotes_total }} funn</span></dd>
-      <dt>Feilede vurderinger</dt><dd><span class="stat">{{ s.failed_assessments }}</span></dd>
-    </dl>
-  </div>
-
-  <div class="card">
-    <h2>Siste backtest</h2>
+  <section class="sheet" aria-labelledby="backtest-heading">
+    <h2 id="backtest-heading">Siste backtest</h2>
     {% if s.last_backtest %}
     {% set b = s.last_backtest %}
-    <dl class="kv">
-      <dt>Dato</dt><dd>{{ b.created_at|ts }}</dd>
-      <dt>Split</dt><dd>{{ b.split or "egendefinert" }} ({{ b.period_from|d }}–{{ b.period_to|d }})</dd>
-      <dt>Modell / prompt</dt><dd>{{ b.model }} / {{ b.prompt_version }}</dd>
-      <dt>Recall høy + middels</dt><dd><strong>{{ b.recall|pct }}</strong></dd>
-      <dt>Andel flagget</dt><dd><strong>{{ b.flagged_share|pct }}</strong></dd>
+    <dl class="facts">
+      <dt>Recall, høy og middels</dt><dd><span class="figure">{{ b.recall|pct }}</span></dd>
+      <dt>Andel flagget</dt><dd class="num">{{ b.flagged_share|pct }}</dd>
+      <dt>Høringer fra</dt><dd>{{ {"dev": "Dev (2024)", "test": "Test (2025)"}.get(b.split, "Egendefinert") }}, <span class="date">{{ b.period_from|d }}–{{ b.period_to|d }}</span></dd>
+      <dt>Modell og prompt</dt><dd>{{ b.model }}, prompt {{ b.prompt_version }}</dd>
+      <dt>Kjørt</dt><dd class="num">{{ b.created_at|ts }}</dd>
     </dl>
-    {% else %}<p class="muted">Ingen fullført backtest ennå.</p>{% endif %}
-  </div>
+    {% else %}<p class="empty">Ingen fullført backtest ennå. <a href="/backtest">Start en backtest</a>.</p>{% endif %}
+  </section>
 </div>
 
-<div class="card">
-  <h2>API-forbruk per måned</h2>
-  <p class="muted small">Faktiske tokens fra API-svarene. Kostnaden er et estimat beregnet med prisene i konfigurasjonen da vurderingen ble gjort, inkludert backtest og avbrutte jobber.</p>
-  <table>
-    <thead><tr><th>Måned</th><th class="num">Vurderinger</th><th class="num">Tokens inn</th><th class="num">Tokens ut</th><th class="num">Estimert kostnad</th></tr></thead>
-    <tbody>
-    {% for u in s.usage %}
-      <tr><td>{{ u.month }}</td><td class="num">{{ u.assessments }}</td><td class="num">{{ u.input_tokens|num }}</td><td class="num">{{ u.output_tokens|num }}</td><td class="num">${{ "%.2f"|format(u.cost) }}</td></tr>
-    {% else %}<tr><td colspan="5" class="muted">Ingen forbruk ennå.</td></tr>{% endfor %}
-    </tbody>
-  </table>
-</div>
+<section class="sheet" style="margin-top: 18px" aria-labelledby="usage-heading">
+  <h2 id="usage-heading">API-forbruk per måned</h2>
+  <p class="small muted">Faktiske tokens fra API-svarene, også backtest og avbrutte jobber. Kostnaden er beregnet med prisene som gjaldt da vurderingen ble gjort.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Måned</th><th class="num">Kostnad (est.)</th><th class="num opt">Vurderinger</th><th class="num">Tokens inn</th><th class="num opt">Tokens ut</th></tr></thead>
+      <tbody>
+      {% for u in s.usage %}
+        <tr><td class="num">{{ u.month }}</td><td class="num">${{ "%.2f"|format(u.cost) }}</td><td class="num opt">{{ u.assessments }}</td><td class="num">{{ u.input_tokens|num }}</td><td class="num opt">{{ u.output_tokens|num }}</td></tr>
+      {% else %}<tr><td colspan="5" class="empty">Ingen forbruk ennå.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

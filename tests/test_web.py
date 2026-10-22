@@ -221,3 +221,33 @@ def test_cancel_marks_dead_job_cancelled(web):
 def test_spawn_only_allows_known_jobs(settings):
     with pytest.raises(ValueError):
         runner.spawn(settings, ["web"])
+
+
+def test_hearing_list_filters_by_relevance_and_text(web):
+    now = db.now_iso()
+    for hid, title, relevance in ((1, "Politiregister", "hoy"), (2, "Fiskekvoter", "ingen")):
+        web.conn.execute(
+            "INSERT INTO hearing (id, url, title, department, tracked, first_seen, status)"
+            " VALUES (?, 'u', ?, 'JD', 1, ?, 'open')",
+            (hid, title, now),
+        )
+        web.conn.execute(
+            "INSERT INTO assessment (hearing_id, created_at, model, prompt_version, status, context, relevance)"
+            " VALUES (?, ?, 'm', 'v1', 'ok', 'drift', ?)",
+            (hid, now, relevance),
+        )
+    web.conn.execute(
+        "INSERT INTO hearing (id, url, title, tracked, first_seen) VALUES (3, 'u', 'Uvurdert sak', 1, ?)",
+        (now,),
+    )
+    assert (
+        "Politiregister" in web.get("/hearings").text and "Fiskekvoter" in web.get("/hearings").text
+    )
+    hoy = web.get("/hearings?relevans=hoy").text
+    assert "Politiregister" in hoy and "Fiskekvoter" not in hoy
+    assert "Uvurdert sak" in web.get("/hearings?relevans=ikke_vurdert").text
+    search = web.get("/hearings?q=fiske").text
+    assert "Fiskekvoter" in search and "Politiregister" not in search
+    # Unknown filter values are ignored, and the radar on the status page links to the filters.
+    assert "Politiregister" in web.get("/hearings?relevans=drop table").text
+    assert 'href="/hearings?relevans=hoy"' in web.get("/").text

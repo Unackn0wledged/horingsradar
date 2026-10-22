@@ -2,97 +2,133 @@
 {% block title %}{{ hearing.title }}{% endblock %}
 {% block content %}
 {% macro page_ranges(items) %}{% for r in items %}{% if not loop.first %}{{ " og " if loop.last else ", " }}{% endif %}{% if r.href %}<a href="{{ r.href }}" target="_blank" rel="noopener">{{ r.label }}</a>{% else %}{{ r.label }}{% endif %}{% endfor %}{% endmacro %}
-<p><a href="/hearings">← Høringer</a></p>
-<h1>{{ hearing.title }}</h1>
-<div class="grid">
-  <div class="card">
-    <h2>Fra regjeringen.no</h2>
-    <dl class="kv">
-      <dt>ID</dt><dd>{{ hearing.id }} · <a href="{{ hearing.url }}" target="_blank" rel="noopener">åpne på regjeringen.no ↗</a></dd>
-      <dt>Departement</dt><dd>{{ hearing.department or "–" }}{% if hearing.original_department %} (opprinnelig {{ hearing.original_department }}){% endif %}</dd>
-      <dt>Publisert</dt><dd>{{ hearing.published_date|d }}</dd>
-      <dt>Frist</dt><dd>{{ hearing.deadline|d }}</dd>
-      <dt>Status</dt><dd>{{ hearing.status_raw or "–" }}</dd>
-      <dt>DT på adresselisten</dt><dd>{% if hearing.dt_on_address_list %}Ja{% elif hearing.dt_on_address_list is none %}–{% else %}Nei{% endif %}</dd>
-      <dt>DT har svart</dt><dd>{% if hearing.dt_responded is none %}–{% elif hearing.dt_responded %}Ja{% if hearing.dt_response_no_comments %} (uten merknader){% endif %}{% else %}Nei{% endif %}</dd>
-      <dt>Først sett / sjekket</dt><dd>{{ hearing.first_seen|ts }} / {{ hearing.last_checked|ts }}</dd>
-    </dl>
-    {% if address_list %}
-    <details style="margin-top:10px"><summary>Adresseliste ({{ address_list|length }})</summary><p class="small">{{ address_list|join(" · ") }}</p></details>
-    {% endif %}
+{% set rel = (assessment.relevance if assessment.status == 'ok' else 'feilet') if assessment else 'ikke_vurdert' %}
+<a class="back" href="/hearings">Alle høringer</a>
+<div class="page-head">
+  <div>
+    <h1 class="long">{{ hearing.title }}</h1>
+    <p class="meta">
+      <span class="rel rel-{{ rel }}">{{ relevance_labels.get(rel, rel) }}</span>
+      <span>{{ hearing.department or "Ukjent departement" }}</span>
+      <span>Frist <span class="date">{{ hearing.deadline|d }}</span></span>
+      <a href="{{ hearing.url }}" target="_blank" rel="noopener">Åpne på regjeringen.no</a>
+    </p>
   </div>
-  <div class="card">
-    <h2>Siste vurdering</h2>
-    {% if assessment %}
-      {% set rel = assessment.relevance if assessment.status == 'ok' else 'feilet' %}
-      <p><span class="badge rel-{{ rel }}">{{ relevance_labels.get(rel, rel) }}</span>
-        <span class="muted small">{{ assessment.created_at|ts }} · {{ assessment.model }} · prompt {{ assessment.prompt_version }}{% if assessment.chunk_count and assessment.chunk_count > 1 %} · {{ assessment.chunk_count }} deler{% endif %}</span></p>
-      {% if assessment.status != 'ok' %}<div class="alert">Vurderingen feilet: {{ assessment.error }}</div>{% endif %}
-      <dl class="kv small">
-        <dt>Tokens</dt><dd>{{ assessment.input_tokens|num }} inn / {{ assessment.output_tokens|num }} ut</dd>
-        <dt>Estimert kostnad</dt><dd>${{ "%.3f"|format(assessment.cost_estimate or 0) }}</dd>
-      </dl>
-    {% else %}<p class="muted">Ikke vurdert ennå.</p>{% endif %}
-    <form method="post" action="/actions/assess/{{ hearing.id }}" onsubmit="return confirm('Vurdere høringen på nytt? Det koster API-tokens.');" style="margin-top:12px">
+  <div class="actions">
+    <form method="post" action="/actions/assess/{{ hearing.id }}" onsubmit="return confirm('Vurdere høringen på nytt? Det koster API-tokens.');">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <button type="submit" class="secondary">Vurder på nytt</button>
+      <button type="submit" class="btn quiet">Vurder på nytt</button>
     </form>
   </div>
 </div>
 
+<div class="split">
+  <section class="sheet" aria-labelledby="assessment-heading">
+    <h2 id="assessment-heading">Vurdering</h2>
+    {% if not assessment %}
+      <p class="empty">Ikke vurdert ennå. Høringen vurderes ved neste kjøring, eller med «Vurder på nytt».</p>
+    {% elif assessment.status != 'ok' %}
+      <div class="alert">Vurderingen feilet: {{ assessment.error }}</div>
+      <p class="small muted">Høringen prøves på nytt ved neste kjøring, maks to ganger per dokumentversjon.</p>
+    {% else %}
+      <h3 style="margin-top: 0">Hva foreslås</h3>
+      <p class="prose">{{ assessment.summary }}</p>
+      <h3>Begrunnelse for relevansnivå</h3>
+      <p class="prose">{{ assessment.relevance_reason }}</p>
+      {% set guide = loads(assessment.reading_guide, {}) %}
+      <h3>Leseguide</h3>
+      {% if guide.documents %}
+      <ul>{% for g in guide.documents if g.ranges %}<li>{{ g.title }}: s. {{ page_ranges(linked_ranges(doc_urls.get(g.document_id), g.ranges)) }}{% if g.page_count %} av {{ g.page_count }}{% endif %}</li>{% endfor %}</ul>
+      <p class="small muted">{{ guide.relevant_pages }} av {{ guide.total_pages }} sider pekt ut. Sidetallene åpner dokumentet på riktig side.</p>
+      {% else %}<p class="empty">Ingen sider pekt ut.</p>{% endif %}
+    {% endif %}
+  </section>
+
+  <section class="sheet" aria-labelledby="facts-heading">
+    <h2 id="facts-heading">Fra regjeringen.no</h2>
+    <dl class="facts">
+      <dt>ID</dt><dd class="num">{{ hearing.id }}</dd>
+      <dt>Departement</dt><dd>{{ hearing.department or "–" }}{% if hearing.original_department %} (opprinnelig {{ hearing.original_department }}){% endif %}</dd>
+      <dt>Publisert</dt><dd class="date">{{ hearing.published_date|d }}</dd>
+      <dt>Frist</dt><dd class="date">{{ hearing.deadline|d }}</dd>
+      <dt>Status</dt><dd>{{ hearing.status_raw or "–" }}</dd>
+      <dt>Datatilsynet på adresselisten</dt><dd>{% if hearing.dt_on_address_list %}Ja{% elif hearing.dt_on_address_list is none %}–{% else %}Nei{% endif %}</dd>
+      <dt>Datatilsynet har svart</dt><dd>{% if hearing.dt_responded is none %}–{% elif hearing.dt_responded %}Ja{% if hearing.dt_response_no_comments %}, uten merknader{% endif %}{% else %}Nei{% endif %}</dd>
+      {% if assessment and assessment.status == 'ok' %}
+      {% set sectors = loads(assessment.sectors, []) %}
+      <dt>Sektor</dt><dd>{% for sector in sectors %}{{ sector_labels.get(sector, sector) }}{% if not loop.last %}, {% endif %}{% else %}–{% endfor %}</dd>
+      {% set ps = loads(assessment.privacy_section, {}) %}
+      <dt>Eget personvernkapittel</dt>
+      <dd>{% if ps.exists %}Ja{% if ps.chapter %}, «{{ ps.chapter }}»{% endif %}{% if ps.pages %}, s. {{ page_ranges(linked_ranges(doc_urls.get(ps.document_id), [ps.pages])) }}{% endif %}{% if ps.document_title %} i {{ ps.document_title }}{% endif %}{% else %}Nei{% endif %}</dd>
+      {% endif %}
+      <dt>Sist sjekket</dt><dd class="num">{{ hearing.last_checked|ts }}</dd>
+    </dl>
+    {% if address_list %}
+    <details style="margin-top: 14px"><summary>Adresseliste ({{ address_list|length }} instanser)</summary>
+      <ul class="small" style="columns: 2 14em; margin: 10px 0 0; padding-left: 18px">{% for name in address_list %}<li>{{ name }}</li>{% endfor %}</ul>
+    </details>
+    {% endif %}
+  </section>
+</div>
+
 {% if assessment and assessment.status == 'ok' %}
-<div class="card">
-  <h2>Vurdering</h2>
-  <h3>Hva foreslås</h3><p>{{ assessment.summary }}</p>
-  <h3>Begrunnelse</h3><p>{{ assessment.relevance_reason }}</p>
-  {% set sectors = loads(assessment.sectors, []) %}
-  <h3>Sektor</h3><p>{% for sector in sectors %}{{ sector_labels.get(sector, sector) }}{% if not loop.last %}, {% endif %}{% else %}–{% endfor %}</p>
-  {% set ps = loads(assessment.privacy_section, {}) %}
-  <h3>Eget personvernkapittel</h3>
-  <p>{% if ps.exists %}Ja{% if ps.chapter %} – «{{ ps.chapter }}»{% endif %}{% if ps.pages %}, s. {{ page_ranges(linked_ranges(doc_urls.get(ps.document_id), [ps.pages])) }}{% endif %}{% if ps.document_title %} i {{ ps.document_title }}{% endif %}{% else %}Nei{% endif %}</p>
-  {% set guide = loads(assessment.reading_guide, {}) %}
-  <h3>Leseguide</h3>
-  {% if guide.documents %}
-  <ul>{% for g in guide.documents if g.ranges %}<li>{{ g.title }}: s. {{ page_ranges(linked_ranges(doc_urls.get(g.document_id), g.ranges)) }}{% if g.page_count %} av {{ g.page_count }}{% endif %}</li>{% endfor %}</ul>
-  <p class="muted small">Totalt {{ guide.relevant_pages }} av {{ guide.total_pages }} sider.</p>
-  {% else %}<p class="muted">Ingen sider pekt ut.</p>{% endif %}
-  <h3>Funn ({{ findings|length }})</h3>
+<section class="sheet" style="margin-top: 18px" aria-labelledby="findings-heading">
+  <h2 id="findings-heading">Funn ({{ findings|length }})</h2>
   {% for f in findings %}
-  <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
-    <div class="small"><strong>{{ category_labels.get(f.category, f.category) }}</strong> · {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %}, {% set href = page_link(f.document_url, f.page) %}{% if href %}<a href="{{ href }}" target="_blank" rel="noopener">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.page_stated != f.page %} <span class="muted">(oppgitt s. {{ f.page_stated }})</span>{% endif %}</div>
-    <div>{{ f.description }}</div>
-    <div class="quote">«{{ f.quote }}»</div>
-    {% if f.quote_verified %}<span class="badge st-ok">Verifisert ({{ f.match_score }})</span>{% else %}<span class="badge st-failed">Ikke verifisert ({{ f.match_score }})</span>{% endif %}
-  </div>
-  {% else %}<p class="muted">Ingen funn.</p>{% endfor %}
+  <article class="finding{% if not f.quote_verified %} unverified{% endif %}">
+    <div class="where">
+      <strong>{{ category_labels.get(f.category, f.category) }}</strong><br>
+      {{ f.document_title or f.document_ref }}{% if f.chapter %}, {{ f.chapter }}{% endif %},
+      {% set href = page_link(f.document_url, f.page) %}{% if href %}<a href="{{ href }}" target="_blank" rel="noopener">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}
+    </div>
+    <p class="prose" style="margin: 6px 0 0">{{ f.description }}</p>
+    <blockquote class="quote" style="margin-left: 0">«{{ f.quote }}»</blockquote>
+    {% if f.quote_verified %}<span class="verdict ok">Sitatet er funnet i dokumentet ({{ f.match_score }} % samsvar)</span>{% else %}<span class="verdict bad">Ikke verifisert: sitatet ble ikke funnet i dokumentet ({{ f.match_score }} % samsvar). Kontroller mot kilden.</span>{% endif %}
+  </article>
+  {% else %}<p class="empty">Ingen funn.</p>{% endfor %}
   {% set notes = loads(assessment.notes, []) %}
   {% if notes %}<h3>Merknader</h3><ul class="small">{% for n in notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
-</div>
-{% endif %}
+</section>
+{% else %}<div style="height: 18px"></div>{% endif %}
 
-<div class="card">
-  <h2>Dokumenter</h2>
-  <table>
-    <thead><tr><th>Type</th><th>Tittel</th><th class="num">Sider</th><th>Status</th><th>Merknad</th></tr></thead>
-    <tbody>
-    {% for d in documents %}
-      <tr><td class="small">{{ d.kind }}</td><td><a href="{{ d.url }}" target="_blank" rel="noopener">{{ d.title }}</a></td><td class="num">{{ d.page_count or "–" }}</td><td class="small">{{ d.fetch_status }}</td><td class="small muted">{{ d.note or "" }}</td></tr>
-    {% else %}<tr><td colspan="5" class="muted">Ingen dokumenter hentet.</td></tr>{% endfor %}
-    </tbody>
-  </table>
-</div>
+<section class="sheet" aria-labelledby="docs-heading">
+  <h2 id="docs-heading">Dokumenter</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dokument</th><th class="opt">Type</th><th class="num">Sider</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for d in documents %}
+        <tr>
+          <td><a href="{{ d.url }}" target="_blank" rel="noopener">{{ d.title }}</a>{% if d.note %}<div class="small muted">{{ d.note }}</div>{% endif %}</td>
+          <td class="opt small">{{ doc_kinds.get(d.kind, d.kind) }}</td>
+          <td class="num">{{ d.page_count or "–" }}</td>
+          <td class="small">{{ doc_states.get(d.fetch_status, d.fetch_status) }}</td>
+        </tr>
+      {% else %}<tr><td colspan="4" class="empty">Ingen dokumenter hentet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 
-<div class="card">
-  <h2>Vurderingshistorikk</h2>
-  <table>
-    <thead><tr><th>Tid</th><th>Kontekst</th><th>Modell / prompt</th><th>Status</th><th>Relevans</th><th class="num">Tokens inn/ut</th><th class="num">Kostnad</th></tr></thead>
-    <tbody>
-    {% for a in history %}
-      <tr><td class="nowrap">{{ a.created_at|ts }}</td><td>{{ a.context }}{% if a.backtest_run_id %} #{{ a.backtest_run_id }}{% endif %}</td><td class="small">{{ a.model }} / {{ a.prompt_version }}</td>
-        <td><span class="badge st-{{ a.status }}">{{ a.status }}</span></td><td>{{ relevance_labels.get(a.relevance, "–") if a.relevance else "–" }}</td>
-        <td class="num">{{ a.input_tokens|num }} / {{ a.output_tokens|num }}</td><td class="num">${{ "%.3f"|format(a.cost_estimate or 0) }}</td></tr>
-    {% else %}<tr><td colspan="7" class="muted">Ingen vurderinger.</td></tr>{% endfor %}
-    </tbody>
-  </table>
-</div>
+<section class="sheet" aria-labelledby="history-heading">
+  <h2 id="history-heading">Vurderingshistorikk</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tidspunkt</th><th>Relevans</th><th class="opt">Modell og prompt</th><th class="opt">Kontekst</th><th class="num opt">Tokens inn og ut</th><th class="num">Kostnad</th></tr></thead>
+      <tbody>
+      {% for a in history %}
+        {% set arel = a.relevance if a.status == 'ok' else 'feilet' %}
+        <tr>
+          <td class="num nowrap">{{ a.created_at|ts }}</td>
+          <td><span class="rel rel-{{ arel }}">{{ relevance_labels.get(arel, arel) }}</span></td>
+          <td class="opt small">{{ a.model }}, prompt {{ a.prompt_version }}</td>
+          <td class="opt small">{{ "Drift" if a.context == "drift" else "Backtest " ~ a.backtest_run_id }}</td>
+          <td class="num opt">{{ a.input_tokens|num }} / {{ a.output_tokens|num }}</td>
+          <td class="num">${{ "%.3f"|format(a.cost_estimate or 0) }}</td>
+        </tr>
+      {% else %}<tr><td colspan="6" class="empty">Ingen vurderinger.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock %}

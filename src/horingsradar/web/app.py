@@ -10,7 +10,7 @@ import hashlib
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, quote, urlparse
@@ -43,6 +43,8 @@ from horingsradar.web import runner, stats
 from horingsradar.web.auth import check_basic_auth, check_csrf, csrf_token
 
 HERE = Path(__file__).parent
+FONTS_DIR = HERE.parent / "report" / "fonts"  # same typeface as the PDF report
+RELEVANCE_KEYS = ("hoy", "middels", "lav", "ingen", "feilet", "ikke_vurdert")
 ESTIMATE_MAX_AGE = timedelta(hours=24)
 
 
@@ -98,6 +100,7 @@ def create_app(settings: Settings) -> FastAPI:
     app = FastAPI(title="Høringsradar", docs_url=None, redoc_url=None, openapi_url=None)
     app.add_middleware(AuthMiddleware, settings=settings)
     app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
+    app.mount("/fonts", StaticFiles(directory=FONTS_DIR), name="fonts")
     templates = Jinja2Templates(directory=HERE / "templates")
     env = templates.env
     env.filters.update(ts=_fmt_ts, d=_fmt_date, pct=_pct, num=_num, ranges=format_ranges)
@@ -109,6 +112,33 @@ def create_app(settings: Settings) -> FastAPI:
         loads=db.loads,
         page_link=page_link,
         linked_ranges=linked_ranges,
+        job_states={
+            "ok": "Ferdig",
+            "running": "Kjører",
+            "failed": "Feilet",
+            "cancelled": "Avbrutt",
+            "skipped": "Hoppet over",
+        },
+        job_kinds={
+            "run": "Kjøring",
+            "report": "Rapport",
+            "assess": "Vurdering",
+            "backtest": "Backtest",
+        },
+        doc_kinds={
+            "horingsbrev": "Høringsbrev",
+            "horingsnotat": "Høringsnotat",
+            "lovutkast": "Lov- eller forskriftsutkast",
+            "annet": "Vedlegg",
+        },
+        doc_states={
+            "ok": "Lest",
+            "pending": "Venter",
+            "unsupported": "Ikke lest",
+            "missing": "Finnes ikke",
+            "error": "Hentefeil",
+            "unreadable": "Kan ikke leses",
+        },
     )
     token = csrf_token(settings.web_password_hash, settings.web_username)
 
@@ -172,19 +202,47 @@ def create_app(settings: Settings) -> FastAPI:
             ).fetchone()[0],
         }
 
+    def tracked_hearings(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+        rows = conn.execute(
+            "SELECT h.*, (SELECT a.relevance || '|' || a.status FROM assessment a"
+            "  WHERE a.hearing_id = h.id AND a.context = 'drift'"
+            "  ORDER BY a.created_at DESC, a.id DESC LIMIT 1) AS latest"
+            " FROM hearing h WHERE h.tracked = 1"
+            " ORDER BY h.published_date DESC, h.id DESC"
+        ).fetchall()
+        today = date.today()
+        items = []
+        for r in rows:
+            item = dict(r)
+            relevance, _, status = (r["latest"] or "|").partition("|")
+            item["relevance"] = (
+                "ikke_vurdert" if not status else (relevance if status == "ok" else "feilet")
+            )
+            item["days_left"] = (
+                (date.fromisoformat(r["deadline"]) - today).days if r["deadline"] else None
+            )
+            items.append(item)
+        return items
+
+    def relevance_counts(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        counts = {key: 0 for key in RELEVANCE_KEYS}
+        for item in items:
+            counts[item["relevance"]] += 1
+        return [{"key": key, "count": counts[key]} for key in RELEVANCE_KEYS]
+
     @app.get("/", response_class=HTMLResponse)
     def index(request: Request):
         with connection() as conn:
             last = stats.last_job(conn)
+            items = tracked_hearings(conn)
             return render(
                 request,
                 "index.html",
                 **status_context(conn),
                 last_job=last,
                 log_tail=stats.tail(last["log_path"] if last else None, 60),
-                tracked=conn.execute("SELECT COUNT(*) FROM hearing WHERE tracked = 1").fetchone()[
-                    0
-                ],
+                tracked=len(items),
+                radar=[seg for seg in relevance_counts(items) if seg["count"]],
             )
 
     @app.get("/partials/status", response_class=HTMLResponse)
@@ -196,23 +254,33 @@ def create_app(settings: Settings) -> FastAPI:
 
     @app.get("/hearings", response_class=HTMLResponse)
     def hearings(request: Request):
+        relevance = request.query_params.get("relevans", "")
+        if relevance not in RELEVANCE_KEYS:
+            relevance = ""
+        query = request.query_params.get("q", "").strip()
         with connection() as conn:
-            rows = conn.execute(
-                "SELECT h.*, (SELECT a.relevance || '|' || a.status FROM assessment a"
-                "  WHERE a.hearing_id = h.id AND a.context = 'drift'"
-                "  ORDER BY a.created_at DESC, a.id DESC LIMIT 1) AS latest"
-                " FROM hearing h WHERE h.tracked = 1"
-                " ORDER BY h.published_date DESC, h.id DESC LIMIT 200"
-            ).fetchall()
-            items = []
-            for r in rows:
-                item = dict(r)
-                relevance, _, status = (r["latest"] or "|").partition("|")
-                item["relevance"] = (
-                    "ikke_vurdert" if not status else (relevance if status == "ok" else "feilet")
-                )
-                items.append(item)
-            return render(request, "hearings.html", hearings=items)
+            items = tracked_hearings(conn)
+        counts = relevance_counts(items)
+        shown = [i for i in items if not relevance or i["relevance"] == relevance]
+        if query:
+            needle = query.casefold()
+            shown = [
+                i
+                for i in shown
+                if needle in (i["title"] or "").casefold()
+                or needle in (i["department"] or "").casefold()
+                or needle == str(i["id"])
+            ]
+        return render(
+            request,
+            "hearings.html",
+            hearings=shown[:300],
+            total=len(items),
+            matched=len(shown),
+            counts=counts,
+            relevance=relevance,
+            query=query,
+        )
 
     @app.get("/hearings/{hearing_id}", response_class=HTMLResponse)
     def hearing_detail(request: Request, hearing_id: int):
