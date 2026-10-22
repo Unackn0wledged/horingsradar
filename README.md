@@ -2,7 +2,7 @@
 
 Pilot og proof of concept for Datatilsynet.
 
-Hver morgen henter Høringsradar nye og endrede høringer fra regjeringen.no. En LLM vurderer hvor relevante de er for personvern, med verifiserte sitater og sidehenvisninger. Resultatet blir en PDF-rapport som operatøren videresender manuelt til pilotjuristene. Et enkelt adminpanel på LAN og Tailscale lar operatøren styre jobbene og følge med.
+Hver morgen henter Høringsradar nye og endrede høringer fra regjeringen.no. En LLM vurderer hvor relevante de er for personvern, med verifiserte sitater og sidehenvisninger. Resultatet blir en PDF-rapport som administratoren videresender manuelt til pilotjuristene. Et enkelt adminpanel på LAN og Tailscale lar administratoren styre jobbene og følge med.
 
 Verktøyet beskriver hva som foreslås og hvor det står. Det skriver aldri høringsinnspill og tar ikke stilling til forslagene.
 

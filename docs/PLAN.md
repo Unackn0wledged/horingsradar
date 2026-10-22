@@ -104,7 +104,7 @@ docs/INSTALL-LXC.md  installasjonsguide for Proxmox-LXC
 
 ## Status (23.10.2026)
 
-Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er bygget og testet, men kjøringene gjenstår. De startes manuelt av operatøren.
+Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er bygget og testet, men kjøringene gjenstår. De startes manuelt av administratoren.
 
 ### Lagt til etter den opprinnelige planen
 

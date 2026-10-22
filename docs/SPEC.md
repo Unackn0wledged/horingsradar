@@ -13,7 +13,7 @@ Med i piloten:
 - Daglig innhenting og vurdering
 - PDF-rapport som hentes ut manuelt og videresendes til pilotjuristene
 - Backtest mot historiske høringer
-- Enkelt adminpanel på LAN for operatøren
+- Enkelt adminpanel på LAN for administratoren
 
 Utenfor piloten:
 - Andre kilder (direktorater, særorganer, Stortinget, EU)
@@ -204,7 +204,7 @@ Backtesten måler om modellen og prompten rangerer høringer riktig, med Datatil
 
 ## Adminpanel
 
-Enkelt webgrensesnitt for operatøren, nådd via LAN-IP eller Tailscale. Ikke for juristene.
+Enkelt webgrensesnitt for administratoren, nådd via LAN-IP eller Tailscale. Ikke for juristene.
 
 ### Innhold
 
