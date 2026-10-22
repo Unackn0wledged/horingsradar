@@ -1,13 +1,13 @@
 # Høringsradar
 
-Pilot / proof of concept for Datatilsynet. En daglig jobb henter nye høringer fra regjeringen.no, lar en LLM vurdere personvernrelevans og lager en PDF-rapport som videresendes manuelt til jurister i piloten. Et enkelt adminpanel på LAN lar operatøren styre jobbene og se status. Kjører i en Debian-LXC på privat lab. Ikke produksjon.
+Pilot / proof of concept for Datatilsynet. En daglig jobb henter nye høringer fra regjeringen.no, lar en LLM vurdere personvernrelevans og lager en PDF-rapport som videresendes manuelt til jurister i piloten. Et enkelt adminpanel på LAN lar administratoren styre jobbene og se status. Kjører i en Debian-LXC på privat lab. Ikke produksjon.
 
 Krav og detaljer står i `docs/SPEC.md`. Les den før du jobber med datamodell, parsing, LLM-vurdering, rapport eller backtest.
 
 ## Harde regler
 
 - Eneste kilde er regjeringen.no. Ikke implementer andre kilder, men hold kildespesifikk kode i `sources/`.
-- Ingen e-post, varsler eller tilbakemeldingsfunksjon i piloten. Output er PDF-filer på disk. Eneste web-UI er adminpanelet for operatøren (se SPEC); ingen UI for juristene.
+- Ingen e-post, varsler eller tilbakemeldingsfunksjon i piloten. Output er PDF-filer på disk. Eneste web-UI er adminpanelet for administratoren (se SPEC); ingen UI for juristene.
 - LLM-en skal aldri skrive høringsinnspill, foreslå standpunkt eller vurdere om et forslag er godt eller dårlig. Den beskriver hva som foreslås og hvor det står. Modellen gir aldri egne anbefalinger til juristene («vi anbefaler», «juristene bør» o.l. avvises). Å gjengi hva høringsdokumentene selv sier er tillatt, også «det anbefales» og «Datatilsynet bør» når det står i kildeteksten (sjekkes i kode).
 - Metadata (tittel, publisert, frist, departement, status, adresseliste) parses fra HTML. LLM-en er aldri kilde til dato, frist eller departement.
 - Ingen høring filtreres bort. Alle vurderes og vises i rapporten; lav og ingen relevans som én linje med begrunnelse.
