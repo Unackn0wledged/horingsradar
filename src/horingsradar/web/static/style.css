@@ -190,6 +190,7 @@ input[type="number"], input[type="search"], select {
 .filters { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-end; margin-bottom: 14px; }
 .filters .search { flex: 1 1 260px; display: flex; gap: 8px; align-items: flex-end; }
 .filters .search > div { flex: 1; }
+.filters .sort { flex: 0 1 220px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
   display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; min-height: 36px;
@@ -273,6 +274,7 @@ pre.log {
   .masthead-inner { flex-wrap: wrap; gap: 0; min-height: 0; padding-top: 12px; }
   .wordmark { margin-bottom: 4px; }
   .wordmark svg { width: 24px; height: 24px; }
+  .filters .sort { flex-basis: 100%; }
   .sections {
     flex-basis: 100%; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter);
     /* fade at the right edge shows that the menu scrolls */

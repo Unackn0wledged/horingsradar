@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, quote, urlparse
+from urllib.parse import parse_qs, quote, urlencode, urlparse
 
 from fastapi import FastAPI, Request
 from fastapi.responses import (
@@ -46,6 +46,46 @@ HERE = Path(__file__).parent
 FONTS_DIR = HERE.parent / "report" / "fonts"  # same typeface as the PDF report
 RELEVANCE_KEYS = ("hoy", "middels", "lav", "ingen", "feilet", "ikke_vurdert")
 ESTIMATE_MAX_AGE = timedelta(hours=24)
+# Sort options on the hearings page: URL value -> label. The first one is the default.
+HEARING_SORTS = {
+    "nyeste": "Publisert, nyeste først",
+    "eldste": "Publisert, eldste først",
+    "relevans": "Relevans, høy til lav",
+    "relevans-lav": "Relevans, lav til høy",
+    "frist": "Frist, stigende",
+    "frist-synkende": "Frist, synkende",
+}
+DEFAULT_SORT = next(iter(HEARING_SORTS))
+
+
+def sort_hearings(items: list[dict[str, Any]], sort: str) -> list[dict[str, Any]]:
+    """Sort hearings that come newest first, as from `tracked_hearings`.
+
+    Hearings without the value sorted on (no deadline, failed or not assessed) always come
+    last, and ties keep the newest-first order. Ascending deadline puts upcoming deadlines
+    first, then passed ones, most recently passed first.
+    """
+    if sort == "eldste":
+        return items[::-1]
+    if sort in ("relevans", "relevans-lav"):
+        rank = {key: i for i, key in enumerate(("hoy", "middels", "lav", "ingen"))}
+        sign = 1 if sort == "relevans" else -1
+        return sorted(
+            items,
+            key=lambda i: (i["relevance"] not in rank, sign * rank.get(i["relevance"], 0)),
+        )
+    if sort == "frist":
+
+        def deadline_key(item: dict[str, Any]) -> tuple[int, int]:
+            days = item["days_left"]
+            if days is None:
+                return (2, 0)
+            return (0, days) if days >= 0 else (1, -days)
+
+        return sorted(items, key=deadline_key)
+    if sort == "frist-synkende":
+        return sorted(items, key=lambda i: (i["days_left"] is None, -(i["days_left"] or 0)))
+    return items
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -204,7 +244,7 @@ def create_app(settings: Settings) -> FastAPI:
 
     def tracked_hearings(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         rows = conn.execute(
-            "SELECT h.*, (SELECT a.relevance || '|' || a.status FROM assessment a"
+            "SELECT h.*, (SELECT COALESCE(a.relevance, '') || '|' || a.status FROM assessment a"
             "  WHERE a.hearing_id = h.id AND a.context = 'drift'"
             "  ORDER BY a.created_at DESC, a.id DESC LIMIT 1) AS latest"
             " FROM hearing h WHERE h.tracked = 1"
@@ -258,9 +298,21 @@ def create_app(settings: Settings) -> FastAPI:
         if relevance not in RELEVANCE_KEYS:
             relevance = ""
         query = request.query_params.get("q", "").strip()
+        sort = request.query_params.get("sorter", "")
+        if sort not in HEARING_SORTS:
+            sort = DEFAULT_SORT
         with connection() as conn:
             items = tracked_hearings(conn)
         counts = relevance_counts(items)
+
+        def link(**changes: str) -> str:
+            """URL for this page with the current filter, search and sort, plus `changes`."""
+            params = {"relevans": relevance, "q": query, "sorter": sort, **changes}
+            if params["sorter"] == DEFAULT_SORT:
+                params["sorter"] = ""
+            kept = {k: v for k, v in params.items() if v}
+            return "/hearings" + (f"?{urlencode(kept)}" if kept else "")
+
         shown = [i for i in items if not relevance or i["relevance"] == relevance]
         if query:
             needle = query.casefold()
@@ -271,6 +323,7 @@ def create_app(settings: Settings) -> FastAPI:
                 or needle in (i["department"] or "").casefold()
                 or needle == str(i["id"])
             ]
+        shown = sort_hearings(shown, sort)
         return render(
             request,
             "hearings.html",
@@ -280,6 +333,9 @@ def create_app(settings: Settings) -> FastAPI:
             counts=counts,
             relevance=relevance,
             query=query,
+            sort=sort,
+            sorts=HEARING_SORTS,
+            link=link,
         )
 
     @app.get("/hearings/{hearing_id}", response_class=HTMLResponse)

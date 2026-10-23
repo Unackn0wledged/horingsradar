@@ -5,21 +5,21 @@
   <div>
     <h1>Høringer</h1>
     <p class="lede">
-      {% if relevance or query %}Viser {{ matched }} av {{ total }} høringer i drift.{% else %}{{ total }} høringer i drift, nyeste først. Relevansen er fra siste vurdering.{% endif %}
+      {% if relevance or query %}Viser {{ matched }} av {{ total }} høringer i drift.{% else %}{{ total }} høringer i drift. Relevansen er fra siste vurdering.{% endif %}
     </p>
   </div>
 </div>
 
 <div class="filters">
   <nav class="chips" aria-label="Filtrer på relevans">
-    <a class="chip" href="/hearings{% if query %}?q={{ query|urlencode }}{% endif %}"{% if not relevance %} aria-current="true"{% endif %}>Alle <span class="num">{{ total }}</span></a>
+    <a class="chip" href="{{ link(relevans='') }}"{% if not relevance %} aria-current="true"{% endif %}>Alle <span class="num">{{ total }}</span></a>
     {% for c in counts if c.count %}
-    <a class="chip" href="/hearings?relevans={{ c.key }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}"{% if relevance == c.key %} aria-current="true"{% endif %}>
+    <a class="chip" href="{{ link(relevans=c.key) }}"{% if relevance == c.key %} aria-current="true"{% endif %}>
       <span class="rel rel-{{ c.key }}">{{ relevance_labels.get(c.key, c.key) }}</span> <span class="num">{{ c.count }}</span>
     </a>
     {% endfor %}
   </nav>
-  <form class="search" method="get" action="/hearings" role="search">
+  <form id="hearing-filter" class="search" method="get" action="/hearings" role="search">
     {% if relevance %}<input type="hidden" name="relevans" value="{{ relevance }}">{% endif %}
     <div>
       <label for="q">Søk i tittel, departement eller ID</label>
@@ -27,6 +27,14 @@
     </div>
     <button class="btn quiet" type="submit">Søk</button>
   </form>
+  <div class="sort">
+    <label for="sorter">Sorter</label>
+    <select id="sorter" name="sorter" form="hearing-filter" onchange="this.form.submit()">
+      {% for key, label in sorts.items() %}
+      <option value="{{ key }}"{% if key == sort %} selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
 </div>
 
 {% if hearings %}
@@ -59,7 +67,7 @@
   {% endfor %}
 </ul>
 {% elif total %}
-<p class="empty">Ingen høringer passer filteret. <a href="/hearings">Vis alle</a>.</p>
+<p class="empty">Ingen høringer passer filteret. <a href="{{ link(relevans='', q='') }}">Vis alle</a>.</p>
 {% else %}
 <p class="empty">Ingen høringer ennå. Start en kjøring fra <a href="/">statussiden</a>.</p>
 {% endif %}
