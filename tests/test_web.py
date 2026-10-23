@@ -1,5 +1,6 @@
 import base64
 import os
+from datetime import date, timedelta
 from urllib.parse import unquote
 
 import pytest
@@ -251,3 +252,65 @@ def test_hearing_list_filters_by_relevance_and_text(web):
     # Unknown filter values are ignored, and the radar on the status page links to the filters.
     assert "Politiregister" in web.get("/hearings?relevans=drop table").text
     assert 'href="/hearings?relevans=hoy"' in web.get("/").text
+
+
+def test_hearing_list_sorts(web):
+    today = date.today()
+    now = db.now_iso()
+    # title, published, days to deadline, relevance (None = not assessed)
+    rows = (
+        ("Sak Alfa", "2026-01-01", 30, "lav"),
+        ("Sak Bravo", "2026-01-02", None, "hoy"),
+        ("Sak Charlie", "2026-01-03", -2, "ingen"),
+        ("Sak Delta", "2026-01-04", 5, None),
+        ("Sak Echo", "2026-01-05", -20, "middels"),
+    )
+    for hid, (title, published, days, relevance) in enumerate(rows, start=1):
+        deadline = (today + timedelta(days=days)).isoformat() if days is not None else None
+        web.conn.execute(
+            "INSERT INTO hearing (id, url, title, tracked, first_seen, status, published_date, deadline)"
+            " VALUES (?, 'u', ?, 1, ?, 'open', ?, ?)",
+            (hid, title, now, published, deadline),
+        )
+        if relevance:
+            web.conn.execute(
+                "INSERT INTO assessment (hearing_id, created_at, model, prompt_version, status, context, relevance)"
+                " VALUES (?, ?, 'm', 'v1', 'ok', 'drift', ?)",
+                (hid, now, relevance),
+            )
+
+    def order(sort):
+        text = web.get(f"/hearings?sorter={sort}").text
+        return [t.removeprefix("Sak ") for t in sorted((r[0] for r in rows), key=text.index)]
+
+    assert order("nyeste") == ["Echo", "Delta", "Charlie", "Bravo", "Alfa"]
+    assert order("eldste") == ["Alfa", "Bravo", "Charlie", "Delta", "Echo"]
+    # Not assessed and no deadline always come last.
+    assert order("relevans") == ["Bravo", "Echo", "Alfa", "Charlie", "Delta"]
+    assert order("relevans-lav") == ["Charlie", "Alfa", "Echo", "Bravo", "Delta"]
+    # Upcoming deadlines first, then passed ones, most recently passed first.
+    assert order("frist") == ["Delta", "Alfa", "Charlie", "Echo", "Bravo"]
+    assert order("frist-synkende") == ["Alfa", "Delta", "Charlie", "Echo", "Bravo"]
+    assert order("drop table") == order("nyeste")
+
+    # Filter links keep the sort, and the default sort stays out of the URL.
+    page = web.get("/hearings?sorter=frist&q=sak").text
+    assert 'href="/hearings?relevans=lav&amp;q=sak&amp;sorter=frist"' in page
+    assert '<option value="frist" selected>' in page
+    assert 'href="/hearings?relevans=lav"' in web.get("/hearings?sorter=nyeste").text
+
+
+def test_failed_assessment_is_shown_as_failed(web):
+    now = db.now_iso()
+    web.conn.execute(
+        "INSERT INTO hearing (id, url, title, tracked, first_seen) VALUES (1, 'u', 'Feilet sak', 1, ?)",
+        (now,),
+    )
+    # A failed assessment has no relevance.
+    web.conn.execute(
+        "INSERT INTO assessment (hearing_id, created_at, model, prompt_version, status, context, error)"
+        " VALUES (1, ?, 'm', 'v1', 'failed', 'drift', 'ugyldig svar')",
+        (now,),
+    )
+    assert "Feilet sak" in web.get("/hearings?relevans=feilet").text
+    assert "Feilet sak" not in web.get("/hearings?relevans=ikke_vurdert").text
