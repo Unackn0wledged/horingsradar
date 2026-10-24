@@ -241,7 +241,7 @@ Ikke med: redigering av prompts, konfigurasjon eller API-nøkkel, brukerhåndter
 ### Sikkerhet
 
 - Bindes til LAN- og Tailscale-grensesnittet (`WEB_BIND`). Ingen portvideresending.
-- HTTP Basic auth med brukernavn og passord-hash fra `.env`. Knappene koster penger, og alt på LAN-et kan nå panelet.
+- HTTP Basic auth med brukernavn og passord-hash fra `.env`, siden alt på LAN-et kan nå panelet.
 - Alle handlinger er POST med CSRF-token. GET endrer aldri tilstand.
 - Panelet viser aldri API-nøkkelen eller annet innhold fra `.env`.
 

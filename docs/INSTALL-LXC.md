@@ -245,7 +245,7 @@ Lag passord-hashen. Passordet tastes inn og vises ikke:
 cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar hash-password
 ```
 
-Lim hele linjen som starter med `scrypt$` inn som `WEB_PASSWORD_HASH=...`. Bruk et sterkt, unikt passord: knappene i panelet koster penger.
+Lim hele linjen som starter med `scrypt$` inn som `WEB_PASSWORD_HASH=...`. Bruk et sterkt, unikt passord.
 
 > `.env` skal aldri i git (den står i `.gitignore`). Panelet viser aldri innholdet i den.
 
