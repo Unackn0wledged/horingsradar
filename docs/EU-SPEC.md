@@ -194,7 +194,17 @@ EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som 
 - EØS-status fra EEA-Lex
 - flagg hvis EDPS har avgitt uttalelse
 
-Sortering som i Høringsradar: relevans og deretter frist. Lav og ingen relevans som én linje med begrunnelse.
+Sortering: relevans og deretter nyeste dato (EUR-Lex-forslag har ingen frist; frister fra Have Your Say kommer i milepæl 5). Lav og ingen relevans som én linje med begrunnelse.
+
+**Bygget i milepæl 4** (`horingsradar-eu report`, `eu/report.py`, `eu/templates/eu_report.html.j2`):
+- Toppfelt med periode, modell og prompt, og hvor mange forslag som ble hentet, ble kandidater og ble **filtrert bort uten LLM** i perioden.
+- Merknad om KI-generert sortering, kildene for metadata, at «registrert i EEA-Lex» er utledet, og maskinell sitatsjekk.
+- Seksjoner: Oversikt · Endringer i tidligere rapporterte saker · Høy og middels relevans (full analyse) · Lav og ingen relevans · Ikke vurdert (med årsak) · Tidligere forslag.
+- **Kandidater eldre enn 8 uker** som ikke har vært rapportert, vises bare som én linje under «Tidligere forslag» (valgt 29.10.2026, så første rapport ikke blir på 60 sider).
+- **Regler for gjentak, som i Høringsradar:** høy og middels vises på nytt med merker når en ny vurdering endrer relevans eller funn; statusendringer (prosedyre, EØS-status, rettelse) gir én linje; lav og ingen vises ikke på nytt; en ny vurdering med samme resultat er ikke en endring. I tillegg: en sak som sto under «Ikke vurdert», vises igjen når den har fått sin første vurdering, uansett nivå.
+- Sidetall i funn lenker til den engelske PDF-en (`#page=N`). Referansen lenker til EUR-Lex, og EØS-statusen til EEA-Lex.
+- Grunnlaget for neste rapport lagres i `eu_report` og `eu_report_item` (vurdering, prosedyrestatus og EØS-status per sak).
+- Stilen er kopiert fra Høringsradar-rapporten; pilotens mal er ikke endret.
 
 ## Panel og statistikk
 
@@ -215,7 +225,7 @@ Sortering som i Høringsradar: relevans og deretter frist. Lav og ingen relevans
 1. EUR-Lex SPARQL-henting med EuroVoc-filter. Egen datamodell i egen database.
 2. EEA-Lex: liste over registrerte forslag, og faktaark for vedtatte rettsakter.
 3. LLM-vurdering av begrunnelsen med egen prompt, eget skjema og egen sektorliste.
-4. Egen PDF-rapport.
+4. Egen PDF-rapport (`horingsradar-eu report`).
 5. Have Your Say-henting og kobling mot EUR-Lex-saker.
 6. EDPS som relevanssignal.
 7. OEIL-status, valgfritt.

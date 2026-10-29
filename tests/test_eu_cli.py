@@ -63,7 +63,7 @@ def test_timer_run_when_paused_exits_cleanly(env):
     assert not db.runs_paused(conn)
 
 
-@pytest.mark.parametrize("command", ["report", "backtest"])
+@pytest.mark.parametrize("command", ["backtest"])
 def test_commands_not_built_yet_say_so(env, command, capsys):
     assert cli.main([command]) == 2
     assert "milepæl" in capsys.readouterr().err
@@ -101,3 +101,14 @@ def test_assess_one_case_by_com_reference_or_celex(env, monkeypatch, capsys):
     assert conn.execute("SELECT COUNT(*) FROM eu_assessment WHERE status = 'ok'").fetchone()[0] == 2
     with pytest.raises(SystemExit, match="Fant ingen sak"):
         cli.main(["assess", "COM(1999) 1"])
+
+
+def test_report_command_writes_a_pdf(env, capsys):
+    assert cli.main(["run", "--no-assess"]) == 0
+    capsys.readouterr()
+    assert cli.main(["report"]) == 0
+    path = capsys.readouterr().out.strip().splitlines()[-1]
+    assert path.endswith(".pdf") and "horingsradar-eu_" in path
+    conn = db.connect(env / "horingsradar.sqlite3")
+    job = conn.execute("SELECT * FROM job WHERE kind = 'report'").fetchone()
+    assert job["status"] == "ok"

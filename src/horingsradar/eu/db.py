@@ -118,6 +118,24 @@ CREATE TABLE IF NOT EXISTS eu_finding (
     match_score REAL
 );
 
+CREATE TABLE IF NOT EXISTS eu_report (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT NOT NULL,
+    period_label TEXT NOT NULL,
+    path TEXT NOT NULL,
+    case_count INTEGER NOT NULL
+);
+
+-- What each report showed for a case; the baseline for "changed since the last report".
+CREATE TABLE IF NOT EXISTS eu_report_item (
+    report_id INTEGER NOT NULL REFERENCES eu_report(id),
+    case_id INTEGER NOT NULL REFERENCES eu_case(id),
+    assessment_id INTEGER REFERENCES eu_assessment(id),
+    procedure_status TEXT,
+    eea_status TEXT,
+    PRIMARY KEY (report_id, case_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_eu_case_date ON eu_case (date_document);
 CREATE INDEX IF NOT EXISTS idx_eu_assessment_case ON eu_assessment (case_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_eu_finding_assessment ON eu_finding (assessment_id);
@@ -135,6 +153,7 @@ EU_CASE_COLUMNS = {
     "eea_areas": "TEXT",  # JSON list, e.g. ["XI.III Data Protection"]
     "eea_jcd": "TEXT",
     "eea_checked_at": "TEXT",
+    "reported_in": "INTEGER",  # the last EU report that showed the case
 }
 
 

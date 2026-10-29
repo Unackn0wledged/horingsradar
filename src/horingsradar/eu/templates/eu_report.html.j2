@@ -1,0 +1,241 @@
+{# The EU/EEA radar report. The stylesheet is copied from report/templates/report.html.j2. #}
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<title>EU/EØS-radar – {{ period_label }}</title>
+<style>
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Regular.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-It.ttf"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Semibold.ttf"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Bold.ttf"); font-weight: 700; font-style: normal; }
+
+@page {
+  size: A4;
+  margin: 17mm 15mm 18mm 15mm;
+  @bottom-left { content: "EU/EØS-radar · KI-generert sortering – verifiser mot kilden"; font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+  @bottom-right { content: "Side " counter(page) " av " counter(pages); font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+}
+@page :first { @bottom-left { content: none; } }
+
+html { font-family: "Source Sans 3", sans-serif; font-size: 9.8pt; color: #1b1f24; line-height: 1.38; }
+body { margin: 0; }
+a { color: #1d4f91; text-decoration: none; }
+h1 { font-size: 22pt; font-weight: 700; margin: 0; letter-spacing: -0.2pt; }
+h2 { font-size: 13.5pt; font-weight: 700; margin: 8mm 0 3mm; padding-bottom: 1.2mm; border-bottom: 0.5mm solid #1b1f24; break-after: avoid; }
+h3 { font-size: 11.5pt; font-weight: 600; margin: 0 0 1.5mm; break-after: avoid; }
+h4 { font-size: 9.8pt; font-weight: 700; margin: 3mm 0 1mm; text-transform: uppercase; letter-spacing: 0.4pt; color: #3d4652; break-after: avoid; }
+p { margin: 0 0 2mm; }
+
+.masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.2mm solid #1b1f24; padding-bottom: 2mm; }
+.masthead .sub { font-size: 10pt; color: #3d4652; }
+.meta { margin: 3mm 0; font-size: 9pt; color: #3d4652; }
+.meta span { margin-right: 6mm; }
+.notice { border: 0.35mm solid #a15c07; background: #fff7e8; padding: 2.5mm 3.5mm; font-size: 9pt; margin: 3mm 0 2mm; }
+
+.badge { display: inline-block; padding: 0.3mm 1.8mm; border-radius: 1.2mm; border: 0.3mm solid; font-weight: 700; font-size: 8pt; white-space: nowrap; }
+.rel-hoy { background: #fde4e2; border-color: #a8231b; color: #7a160f; }
+.rel-middels { background: #fff0d4; border-color: #a85a07; color: #683606; }
+.rel-lav { background: #e6f0fa; border-color: #2d68ad; color: #1b4677; }
+.rel-ingen { background: #eff1f3; border-color: #69717d; color: #39414b; }
+.rel-feilet, .rel-ikke_vurdert { background: #ffffff; border-style: dashed; border-color: #69717d; color: #39414b; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 700; color: #ffffff; background: #1d4f91; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-left: 1.5mm; vertical-align: 1px; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-weight: 700; font-size: 8pt; color: #3d4652; border-bottom: 0.4mm solid #1b1f24; padding: 1.2mm 1.5mm; vertical-align: bottom; }
+td { border-bottom: 0.2mm solid #d4d9df; padding: 1.3mm 1.5mm; vertical-align: top; font-size: 8.6pt; }
+tr { break-inside: avoid; }
+td.num { text-align: right; white-space: nowrap; }
+td.date { white-space: nowrap; }
+.muted { color: #5b6470; }
+.empty { color: #5b6470; font-style: italic; }
+
+.hearing { border-top: 0.3mm solid #b7bec7; padding-top: 3.5mm; margin-top: 5mm; }
+.hearing:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.facts { display: table; width: 100%; font-size: 8.8pt; margin: 1.5mm 0 2.5mm; }
+.facts div { display: table-row; }
+.facts dt, .facts dd { display: table-cell; padding: 0.4mm 0; }
+.facts dt { width: 46mm; color: #3d4652; font-weight: 600; }
+.facts dd { margin: 0; }
+
+.finding { border-left: 1mm solid #b7bec7; padding: 0.5mm 0 0.5mm 3mm; margin: 0 0 2.5mm; break-inside: avoid; }
+.finding.unverified { border-left-color: #a8231b; }
+.finding .head { font-size: 8.6pt; color: #3d4652; }
+.finding .head strong { color: #1b1f24; }
+.quote { font-style: italic; margin: 1mm 0 0.5mm; }
+.verified { font-size: 8pt; color: #2b6a37; font-weight: 600; }
+.warning { font-size: 8.5pt; color: #a8231b; font-weight: 700; }
+.flag { display: inline-block; background: #a8231b; color: #ffffff; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-right: 1mm; font-size: 7.5pt; letter-spacing: 0.3pt; }
+
+a.jump { display: inline-block; margin-top: 0.8mm; padding: 0.1mm 1.6mm; border: 0.3mm solid #1d4f91; border-radius: 1mm; font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
+a.badge-link { text-decoration: none; }
+a.page { text-decoration: underline; text-decoration-color: #9fb3cf; }
+.back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
+.back-inline { font-size: 8pt; white-space: nowrap; }
+.changes { border: 0.35mm solid #1d4f91; background: #eef3fa; border-radius: 1mm; padding: 2.5mm 3.5mm; margin: 1mm 0 3mm; break-inside: avoid; }
+.changes-head { font-weight: 700; color: #173e72; margin-bottom: 1mm; }
+.changes table { width: auto; }
+.changes td { border: 0; padding: 0.4mm 4mm 0.4mm 0; font-size: 9pt; }
+.changes td.what { color: #3d4652; font-weight: 600; white-space: nowrap; }
+.tag.new { background: #2b6a37; }
+ul.brief { list-style: none; padding: 0; margin: 0; }
+ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside: avoid; }
+.refs { font-size: 8.6pt; color: #3d4652; }
+.masthead h1 { white-space: nowrap; }
+.derived { font-size: 8pt; color: #5b6470; font-style: italic; }
+</style>
+</head>
+<body>
+{% macro badge(v) %}<span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span>{% endmacro %}
+{% macro eea(v) %}{% if v.eea_url %}<a href="{{ v.eea_url }}">{{ v.eea_label }}</a>{% else %}{{ v.eea_label }}{% endif %}{% if v.eea_derived %}<span class="derived"> (utledet)</span>{% endif %}{% endmacro %}
+
+<div class="masthead">
+  <h1>EU/EØS-radar</h1>
+  <div class="sub">Forslag fra Europakommisjonen sortert etter personvernrelevans</div>
+</div>
+<div class="meta">
+  <span><strong>Periode:</strong> {{ period_label }}</span>
+  <span><strong>Generert:</strong> {{ generated_at }}</span>
+  <span><strong>Saker:</strong> {{ full|length + older|length + events_only|length }}</span><br>
+  <span><strong>Hentet i perioden:</strong> {{ counts.fetched }} forslag, {{ counts.candidates }} kandidater, {{ counts.filtered_out }} filtrert bort uten LLM</span><br>
+  <span><strong>Modell og prompt:</strong> {{ models|join(", ") if models else "–" }}</span>
+</div>
+<div class="notice">
+  <strong>Merk:</strong> Relevansnivå, sammendrag og funn er KI-generert sortering av begrunnelsen i forslaget («explanatory memorandum») og må verifiseres mot kilden.
+  Verktøyet tar ikke stilling til forslagene og skriver ikke innspill. Tittel, referanser, datoer og prosedyrestatus er hentet fra EUR-Lex, og EØS-status fra EEA-Lex.
+  «Registrert i EEA-Lex» er utledet av at forslaget står i EEA-Lex; full EØS-status finnes først for vedtatte rettsakter.
+  Forslag uten treff i forfilteret (EuroVoc-emner og nøkkelord) er ikke vurdert av LLM-en. Sitater er kontrollert maskinelt mot teksten; sitater som ikke kunne bekreftes er tydelig merket.
+</div>
+
+<h2 id="oversikt">Oversikt</h2>
+{% if full %}
+<table>
+  <thead>
+    <tr><th>Relevans</th><th>Forslag</th><th>Type</th><th>Dato</th><th>Sektor</th><th>Prosedyre</th><th>EØS-status</th></tr>
+  </thead>
+  <tbody>
+  {% for v in full %}
+    <tr>
+      <td><a class="badge-link" href="#c{{ v.id }}">{{ badge(v) }}</a></td>
+      <td>
+        <a href="#c{{ v.id }}">{{ v.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
+        <span class="refs">{{ v.reference }}</span> <a class="jump" href="#c{{ v.id }}">Gå til analyse ↓</a>
+      </td>
+      <td>{{ v.doc_type }}</td>
+      <td class="date">{{ v.row.date_document|date }}</td>
+      <td>{{ v.sectors|join(", ") if v.sectors else "–" }}</td>
+      <td>{{ v.procedure }}</td>
+      <td>{{ eea(v) }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">Forslag fra de siste 8 ukene (fra {{ recent_since|date }}) og tidligere rapporterte saker med ny vurdering. Sortert etter relevans og deretter nyeste dato.</p>
+{% else %}
+<p class="empty">Ingen nye forslag fra de siste 8 ukene siden forrige rapport.</p>
+{% endif %}
+
+{% if events_only %}
+<h2>Endringer i tidligere rapporterte saker</h2>
+<p class="muted">Saker med høy eller middels relevans fra tidligere rapporter der bare status er endret. Vurderingen er den samme som sist.</p>
+<ul class="brief">
+{% for v in events_only %}
+  <li>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a> <span class="refs">{{ v.reference }}</span><br>
+    {% for e in v.changes.events %}{{ e.text }} ({{ e.date|date }}){% if not loop.last %}<br>{% endif %}{% endfor %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+<h2>Høy og middels relevans</h2>
+{% if not detailed %}<p class="empty">Ingen saker med høy eller middels relevans i perioden.</p>{% endif %}
+{% for v in detailed %}
+<section class="hearing" id="c{{ v.id }}">
+  <h3>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}</h3>
+  <dl class="facts">
+    <div><dt>Referanse</dt><dd>{{ v.reference }} · CELEX {{ v.row.celex }} · <a href="{{ v.eurlex_url }}">EUR-Lex</a></dd></div>
+    <div><dt>Type / dato</dt><dd>{{ v.doc_type }} / {{ v.row.date_document|date }}</dd></div>
+    <div><dt>Prosedyre</dt><dd>{{ v.procedure }}</dd></div>
+    <div><dt>EØS-status</dt><dd>{{ eea(v) }}{% if v.eea_areas %}<br><span class="muted">{{ v.eea_areas|join(" · ") }}</span>{% endif %}{% if v.row.eea_jcd %}<br><span class="muted">EØS-komitébeslutning {{ v.row.eea_jcd }}</span>{% endif %}</dd></div>
+    <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>
+    <div><dt>EuroVoc</dt><dd>{{ v.eurovoc|join(", ") if v.eurovoc else "–" }}</dd></div>
+    {% if v.document and v.document.memo_first_page %}<div><dt>Begrunnelsen</dt><dd><a href="{{ v.page_href(v.document.memo_first_page) }}">s. {{ v.document.memo_first_page }}–{{ v.document.memo_last_page }}</a> av {{ v.document.page_count }} i den engelske PDF-en</dd></div>{% endif %}
+  </dl>
+
+  {% if v.changes %}
+  {% set c = v.changes %}
+  <div class="changes">
+    <div class="changes-head">Endret siden rapporten {{ c.since|date }}</div>
+    <table>
+      {% if c.relevance %}<tr><td class="what">Relevans</td><td>{% if c.relevance[0] == "ikke_vurdert" %}Ikke vurdert{% else %}{{ relevance_labels.get(c.relevance[0], c.relevance[0]) }}{% endif %} → <strong>{{ relevance_labels.get(c.relevance[1], c.relevance[1]) }}</strong></td></tr>{% endif %}
+      {% for e in c.events %}<tr><td class="what">{{ e.tag }}</td><td>{{ e.text }}, {{ e.date|date }}</td></tr>{% endfor %}
+      {% if c.new_findings or c.dropped_findings %}<tr><td class="what">Funn</td><td>{% if c.new_findings %}{{ c.new_findings }} {{ "nytt" if c.new_findings == 1 else "nye" }} (merket «Ny» under){% endif %}{% if c.new_findings and c.dropped_findings %}, {% endif %}{% if c.dropped_findings %}{{ c.dropped_findings }} fra forrige rapport er ikke med lenger{% endif %}</td></tr>{% endif %}
+    </table>
+  </div>
+  {% endif %}
+  <h4>Hva foreslås</h4>
+  <p>{{ v.assessment.summary }}</p>
+  <h4>Begrunnelse for relevansnivå</h4>
+  <p>{{ v.assessment.relevance_reason }}</p>
+
+  <h4>Funn</h4>
+  {% if not v.findings %}<p class="empty">Ingen konkrete funn oppgitt.</p>{% endif %}
+  {% for f in v.findings %}
+  <div class="finding{% if not f.quote_verified %} unverified{% endif %}">
+    <div class="head">{% if v.changes and f.is_new %}<span class="tag new" style="margin: 0 1.5mm 0 0">Ny</span>{% endif %}<strong>{{ f.category_label }}</strong>{% if f.chapter %} · {{ f.chapter }}{% endif %}, {% if f.page_href %}<a class="page" href="{{ f.page_href }}">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.quote_verified and f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}</div>
+    <div>{{ f.description }}</div>
+    <div class="quote">«{{ f.quote }}»</div>
+    {% if f.quote_verified %}
+    <div class="verified">Sitat verifisert mot teksten</div>
+    {% else %}
+    <div class="warning"><span class="flag">UVERIFISERT</span> Sitatet ble ikke funnet i teksten – kontroller mot kilden før bruk.</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  {% if v.notes %}
+  <h4>Merknader</h4>
+  <p class="muted">{% for n in v.notes %}{{ n }}<br>{% endfor %}</p>
+  {% endif %}
+  <p class="back"><a href="#oversikt">↑ Til oversikten</a></p>
+</section>
+{% endfor %}
+
+<h2>Lav og ingen relevans</h2>
+{% if brief %}
+<ul class="brief">
+{% for v in brief %}
+  <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.eea_label }}</span><br>
+    {{ v.assessment.relevance_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
+{% endfor %}
+</ul>
+{% else %}
+<p class="empty">Ingen.</p>
+{% endif %}
+
+{% if not_assessed %}
+<h2>Ikke vurdert</h2>
+<p class="muted">Kandidater som ikke har en gyldig vurdering ennå. De er ikke filtrert bort og vurderes ved en senere kjøring.</p>
+<ul class="brief">
+{% for v in not_assessed %}
+  <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }}</span><br>
+    {{ v.not_assessed_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if older %}
+<h2>Tidligere forslag</h2>
+<p class="muted">Kandidater fra før {{ recent_since|date }} som ikke har vært i en rapport før, én linje hver. Full analyse finnes i databasen og kan hentes med <code>horingsradar-eu assess</code>.</p>
+<ul class="brief">
+{% for v in older %}
+  <li>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.procedure }} · {{ v.eea_label }}</span><br>
+    {% if v.assessment and v.assessment.status == "ok" %}{{ v.assessment.relevance_reason }}{% else %}{{ v.not_assessed_reason }}{% endif %}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+</body>
+</html>

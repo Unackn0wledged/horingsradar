@@ -21,6 +21,7 @@ Arbeidsform:
 | EDPS | Flagg, og minst middels (deterministisk regel, vises som regel) |
 | Sektorer | Egen liste med 15 sektorer (`eu/schema.py`) |
 | Første vurdering på lab | Gradvis: `run --no-assess`, `assess` på noen få, så `run` |
+| Rapport | Saker eldre enn 8 uker som én linje; samme regler for gjentak som Høringsradar |
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
@@ -33,7 +34,7 @@ Arbeidsform:
 | 1 | EUR-Lex SPARQL: ekte svar som fixtures, egen datamodell, henting med EuroVoc-filter | Ferdig |
 | 2 | EEA-Lex: EØS-status fra listen og faktaark for vedtatte rettsakter | Ferdig |
 | 3 | LLM-vurdering av begrunnelsen: egen prompt, eget skjema, sektorliste, sitatsjekk | Ferdig (EDPS-regelen kommer med EDPS-data i milepæl 6) |
-| 4 | Egen PDF-rapport | Ikke startet |
+| 4 | Egen PDF-rapport | Ferdig |
 | 5 | Have Your Say og kobling mot EUR-Lex | Ikke startet |
 | 6 | EDPS som relevanssignal | Ikke startet |
 | 7 | OEIL-status (valgfritt) | Ikke startet |
@@ -86,3 +87,13 @@ Funn underveis:
 - Testdata: to ekte forslag i `tests/fixtures/eurlex/pdf/` (rådsbeslutningen COM(2026) 558, og de første 17 sidene av EU KIDS Act gjenskapt med originalteksten for å holde filen liten).
 - En test i Høringsradar (`test_replaced_document_is_one_changed_document`) var ustabil på raske maskiner: rapporten og endringene fikk samme millisekund. Rettet i testen; Høringsradars kode er uendret.
 - Ekte kjøring uten LLM 29.10.2026: alle 112 PDF-er hentet på 11 minutter (5 sekunder mellom kall). Begrunnelsen funnet i 111; den siste manglet overskriften og startet med «CONTEXT OF THE PROPOSAL», som nå også gjenkjennes. Ingen LLM-kall er gjort lokalt.
+
+## Milepæl 4: Rapport
+
+- `eu/report.py` og `eu/templates/eu_report.html.j2`: egen rapport med Høringsradar-rapportens stil (kopiert), fonter og PDF-skriver (gjenbrukt uten endring).
+- Seksjoner, regler for gjentak og «Tidligere forslag» som beskrevet i EU-SPEC (Rapport).
+- Nye tabeller `eu_report` og `eu_report_item`, og kolonnen `eu_case.reported_in`.
+- `horingsradar-eu report`.
+
+Funn underveis:
+- Høringsradar (piloten) ser ut til å ha samme hull som EU-rapporten nå tetter: en høring som sto under «Ikke vurdert» og senere får en vurdering, vises ikke igjen, fordi grunnlaget ikke har noen vurdering å sammenligne med. Ikke rettet i piloten før presentasjonen.

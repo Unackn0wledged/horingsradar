@@ -94,11 +94,14 @@ Vurder deretter noen få saker for hånd, for å sjekke nøkkel, modell, pris og
 sudo -u horingsradar -H .venv/bin/horingsradar-eu assess <COM-nummer>
 ```
 
-Når det ser bra ut, vurderes resten:
+Når det ser bra ut, vurderes resten, og første rapport lages:
 
 ```bash
 sudo -u horingsradar -H .venv/bin/horingsradar-eu run
+sudo -u horingsradar -H .venv/bin/horingsradar-eu report
 ```
+
+Siste linje fra `report` er stien til PDF-en i `/var/lib/horingsradar-eu/reports/`.
 
 Sjekk at Høringsradar ikke er berørt:
 

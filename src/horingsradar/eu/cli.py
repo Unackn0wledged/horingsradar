@@ -17,7 +17,6 @@ log = logging.getLogger("horingsradar")
 
 # Built in later milestones (docs/EU-PLAN.md).
 NOT_BUILT = {
-    "report": "Rapporten kommer i milepæl 4.",
     "backtest": "Backtesten kommer i milepæl 9.",
 }
 
@@ -37,7 +36,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--prompt-version", help="for eksempel v2 (standard fra EU_PROMPT_VERSION)")
     p.add_argument("--triggered-by", choices=TRIGGERS, default="cli", help=argparse.SUPPRESS)
 
-    sub.add_parser("report", help="lag PDF-rapport (ikke bygget ennå)")
+    p = sub.add_parser("report", help="lag PDF-rapport for saker som ikke er rapportert før")
+    p.add_argument("--triggered-by", choices=TRIGGERS, default="cli", help=argparse.SUPPRESS)
     sub.add_parser("backtest", help="manuell backtest (ikke bygget ennå)")
     sub.add_parser("pause", help="pause planlagt kjøring")
     sub.add_parser("resume", help="gjenoppta planlagt kjøring")
@@ -112,6 +112,13 @@ def _run_job(settings: EUSettings, args: argparse.Namespace) -> int:
         with job_context(settings, conn, args.command, triggered_by, job_args) as job:
             if args.command == "assess":
                 return _assess(settings, conn, job, args.case, args.prompt_version)
+            if args.command == "report":
+                from horingsradar.eu.report import build_report
+
+                result = build_report(settings, conn)
+                job.summary.update(result)
+                print(result["path"])
+                return 0
             from horingsradar.eu.pipeline import run
 
             run(settings, conn, job, assess=not args.no_assess)
@@ -176,7 +183,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     settings = get_eu_settings()
     require_eu_instance(settings)
-    if args.command in ("run", "assess"):
+    if args.command in ("run", "assess", "report"):
         return _run_job(settings, args)
     if args.command in NOT_BUILT:
         print(NOT_BUILT[args.command], file=sys.stderr)
