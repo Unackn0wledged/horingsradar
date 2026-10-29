@@ -1,0 +1,1032 @@
+{
+ "head": {
+  "vars": []
+ },
+ "results": {
+  "bindings": [
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/19ff5d46-a65d-11ef-85f0-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2024-11-19"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a regulation of the European Parliament and of the Council on the welfare of dogs and cats and their traceability - Opinion of the European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_15838_2024_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/e921594e-d278-11ef-be2a-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-01-14"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation on a public interface connected to the Internal Market Information System for the declaration of posting of workers and amending Regulation (EU) No 1024/2012 - Opinion of the European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_5308_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/935f8728-0af2-11f0-b1a3-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-03-27"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposals for Council Decisions on the signing and conclusion, on behalf of the Union, of the Digital Trade Agreement between the European Union and the Republic of Singapore"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_7502_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0008/NLE 2025/0009/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0022 52025PC0023"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cdf23e2e-1f8d-11f0-b1a3-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-04-22"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor (EDPS) on the Proposal for a Regulation of the European Parliament and of the Council amending Regulation (EU) 2018/1727 as regards the extension of the timeframe for the establishment of the Eurojust case management system"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_8176_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0074/COD"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0143"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/933b9ba8-7f6f-11f0-9af8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-08-22"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the signing and conclusion of the Amending Protocol to the Agreement between the European Union and the Principality of Liechtenstein on the automatic exchange of financial account information to improve international tax compliance"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12195_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0213/NLE 2025/0214/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0396 52025PC0397"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/0a1e9c9d-818f-11f0-9af8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-08-25"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the signing and conclusion of the provisional application of the Amending Protocol to the Agreement between the EU and the Swiss Confederation on the automatic exchange of financial account information to improve international tax compliance"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12199_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0199/NLE 2025/0200/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0376 52025PC0377"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/555777aa-818e-11f0-9af8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-08-25"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the signing and conclusion of the Amending Protocol to the Agreement between the European Union and the Principality of Monaco on the exchange of financial account information to improve international tax compliance"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12197_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0219/NLE 2025/0220/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0404 52025PC0405"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/55dfe18b-818e-11f0-9af8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-08-25"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the signing and conclusion of the Amending Protocol to the Agreement between the European Union and the Republic of San Marino on the automatic exchange of financial account information to improve international tax compliance"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12198_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0215/NLE 2025/0216/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0398 52025PC0399"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5652a08c-818e-11f0-9af8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-08-25"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the signing and conclusion of the Amending Protocol to the Agreement between the European Union and the Principality of Andorra on the automatic exchange of financial account information to improve international tax compliance"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12196_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0224/NLE 2025/0225/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0406 52025PC0407"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/e5ba3f12-8c17-11f0-bfe2-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-09-05"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposals for a Council Decision on the signing and conclusion, on behalf of the European Union, of the United Nations Convention against Cybercrime; Strengthening International Cooperation for Combating Certain Crimes Committed by Means of Information and Communications Technology Systems and for the Sharing of Evidence in Electronic Form of Serious Crimes - Opinion of the EDPS"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12541_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0230/NLE 2025/0231/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0415 52025PC0417"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cb57c8dc-9887-11f0-97c8-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-09-23"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor (EDPS) on the two Proposals for Council Decisions on the signing and conclusion, on behalf of the European Union, of the Council of Europe Convention on the protection of the environment through criminal law"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_13116_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0243/NLE 2025/0244/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0433 52025PC0434"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/3121a6eb-bf16-11f0-a612-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2025-11-11"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposals for Council Decisions on the signing and conclusion on behalf of the Union, of the Protocol on the implementation of the Sustainable Fisheries Partnership Agreement between the European Union and the Government of the Cook Islands (2025-2032)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_15248_2025_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0287/NLE 2025/0288/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0511 52025PC0512"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/66415cee-efd4-11f0-8d3c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-01-12"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Regulation of the European Parliament and of the Council amending Regulation (EU) 2019/1238 on a pan-European Personal Pension Product (PEPP)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_5228_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/6653fa8f-efd4-11f0-8d3c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-01-12"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Directive of the European Parliament and of the Council amending Directives (EU) 2016/2341 and 2016/97 as regards the strengthening of the framework for occupational retirement provision"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_5225_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/0a8428a9-f613-11f0-b9bc-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-01-20"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Data Protection Supervisor Opinion on the Proposal for a COUNCIL REGULATION amending Regulation (EU) No 904/2010 as regards the access of the European Public Prosecutor's Office (EPPO) and the European Anti-Fraud Office (OLAF) to value added tax information at Union level"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_5541_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0348/CNS"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0685"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/255f7563-005c-11f1-825d-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-02-02"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Regulation of the European Parliament and of the Council amending Regulations (EU) No 1095/2010, No 648/2012, No 600/2014, No 909/2014, 2015/2365, 2019/1156, 2021/23, 2022/858, 2023/1114, No 1060/2009, 2016/1011, 2017/2402, 2023/2631 and 2024/3005 as regards the further development of capital market integration and supervision within the Union"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_5940_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/0de4e0cf-2864-11f1-a7dd-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-02-20"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Omnibus VII (Digital Omnibus) \u2013 EDPB-EDPS Joint opinion on the Digital Omnibus"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:WK_2859_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2025/0360/COD"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52025PC0837"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/16b62409-1ee7-11f1-8c3a-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-03-13"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Joint Opinion of the European Data Protection Board and European Data Protection Supervisor on the Proposal for a Regulation of the European Parliament and of the Council on establishing a framework of measures for strengthening Union's biotechnology and biomanufacturing sectors particularly in the area of health and amending Regulations (EC) No 178/2002, (EC) No 1394/2007, (EU) No 536/2014, (EU) 2019/6, (EU) 2024/795 and (EU) 2024/1938 (European Biotech Act)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_7272_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/92800eb6-23b3-11f1-8c3a-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-03-19"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation of the European Parliament and of the Council on the European Union Agency for Cybersecurity (ENISA), the European cybersecurity certification framework, and ICT supply chain security and repealing Regulation (EU) 2019/881 (The Cybersecurity Act 2) Proposal for a Directive of the European Parliament and of the Council amending Directive (EU) 2022/2555 as regards simplification measures and alignment with the [Proposal for the Cybersecurity Act 2] - Joint opinion of the European Data Protection Board and European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_7519_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/a154df09-3a7e-11f1-814f-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-04-17"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation of the European Parliament and of the Council establishing a budget expenditure tracking and performance framework and other horizontal rules for the Union programmes and activities - Opinion of the European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_8344_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/7a9ccc9d-5a91-11f1-aa6d-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-05-28"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Directive of the European Parliament and of the Council amending Directives 2001/18/EC and 2010/53/EU as regards the placing on the market of genetically modified micro-organisms and the processing of organs"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_9783_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/1448eabe-9c6c-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-20"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposals for Council Decisions on the signing and conclusion of an Agreement between the European Union and the People's Democratic Republic of Algeria on cooperation between the European Union Agency for Criminal Justice Cooperation (Eurojust) and the authorities of Algeria competent for judicial cooperation in criminal matters - Opinion of the European Data Protection Supervisor (EDPS)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12446_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2026/0151/NLE 2026/0155/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52026PC0283 52026PC0287"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/1b409673-9d2e-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-20"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation of the European Parliament and of the Council amending Regulation (EU) 2018/1725 of the European Parliament and of the Council on the protection of natural persons with regard to the processing of personal data by the Union institutions, bodies, offices and agencies and on the free movement of such data - Opinion of European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12441_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/3fdcd71d-9c6a-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-20"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation of the European Parliament and of the Council on the European Union Agency for Criminal Justice Cooperation (Eurojust) and repealing Regulation (EU) 2018/1727 - Opinion of the European Data Protection Supervisor (EDPS)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12449_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/4c4eb438-b81b-11f1-81de-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-24"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EDPS Opinion on the Proposal for a Regulation establishing a framework of measures for strengthening Europe\u2019s cloud and AI ecosystem (Cloud and AI Development Act)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:WK_13042_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2026/0138/COD"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52026PC0502"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/572f021a-9fc8-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-24"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Directive on administrative cooperation in the field of taxation (recast)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12521_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2026/0168/CNS"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52026PC0308"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/41d59f1f-a533-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-08-31"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Directive of the European Parliament and of the Council regarding the European Investigation Order in criminal matters and the European Remote Participation Order (recast) - Opinion of the European Data Protection Supervisor"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12445_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/f6c6058b-a6b5-11f1-b25c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-02"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the European Union Agency for Law Enforcement Cooperation (Europol), amending Regulation (EU) 2018/1726 and Regulation (EU) 2024/982, and repealing Regulation (EU) 2016/794 - Opinion of the European Data Protection Supervisor (EDPS)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12655_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2026/0165/COD"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52026PC0580"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/465ecf1e-ab5e-11f1-b9e5-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-08"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Proposal for a Council Decision on the conclusion of the Agreement on Electronic Commerce"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_12869_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": "2026/0191/NLE"
+    },
+    "celexes": {
+     "type": "literal",
+     "value": "52026PC0356"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/9075818d-b053-11f1-b9e5-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-14"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a Regulation of the European Parliament and of the Council amending Regulation (EU) 2019/943, as regards future-proofing electricity bills in the Union, through reducing system costs and fostering electrification and digitalisation - Opinion of the European Data Protection Supervisor (EDPS)"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_13144_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/d3cdfd6d-ce25-11f1-8b4c-01aa75ed71a1"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-10-22"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/NOTE_COVER"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Opinion of the European Data Protection Supervisor on the Council General Approach on the Proposal for a Directive of the European Parliament and of the Council amending Directives 2001/18/EC and 2010/53/EU as regards the placing on the market of genetically modified micro-organisms and the processing of organs"
+    },
+    "doc": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "consil:ST_14768_2026_INIT"
+    },
+    "procedures": {
+     "type": "literal",
+     "value": ""
+    },
+    "celexes": {
+     "type": "literal",
+     "value": ""
+    }
+   }
+  ]
+ }
+}

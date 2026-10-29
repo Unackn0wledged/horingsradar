@@ -168,6 +168,7 @@ def _status(settings: EUSettings) -> int:
             f"Have Your Say (kandidater): {c['hys_linked']} med side,"
             f" {c['hys_open']} åpne for tilbakemelding"
         )
+        print(f"EDPS-uttalelser (fra Rådets dokumenter): {c['edps_cases']} kandidater")
         print(
             f"Vurdert: {c['cases_assessed']}, venter: {c['waiting']},"
             f" høy {c['hoy']}, middels {c['middels']}, lav {c['lav']}, ingen {c['ingen']}"

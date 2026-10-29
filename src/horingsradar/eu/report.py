@@ -22,9 +22,10 @@ from typing import Any
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from horingsradar import db
+from horingsradar.eu import rules
 from horingsradar.eu.assess import DOC_TYPE_LABELS
 from horingsradar.eu.schema import EU_SECTOR_LABELS
-from horingsradar.eu.sources import eealex, haveyoursay
+from horingsradar.eu.sources import edps, eealex, haveyoursay
 from horingsradar.eu.sources.eurlex import eurlex_url
 from horingsradar.llm.schema import RELEVANCE_LABELS, RELEVANCE_ORDER
 from horingsradar.quotes import normalize
@@ -94,6 +95,16 @@ class CaseView:
     changes: Changes | None = None
     hys: dict[str, Any] | None = None  # the linked Have Your Say initiative
     hys_publications: list[dict[str, Any]] = field(default_factory=list)
+    edps: list[dict[str, Any]] = field(default_factory=list)  # Council notes on EDPS opinions
+
+    @property
+    def edps_rule(self) -> str | None:
+        """How the EDPS rule changed the level, or None when it did not."""
+        a = self.assessment
+        if not a or a["status"] != "ok" or a["rule"] != rules.EDPS:
+            return None
+        model = RELEVANCE_LABELS.get(a["llm_relevance"], a["llm_relevance"])
+        return f"EDPS-regelen; modellen vurderte: {model}"
 
     @property
     def id(self) -> int:
@@ -296,6 +307,14 @@ def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> CaseView:
                 (row["hys_initiative_id"],),
             )
         ]
+    for note in conn.execute(
+        "SELECT e.*, l.method FROM eu_edps e JOIN eu_edps_link l ON l.work_uri = e.work_uri"
+        " WHERE l.case_id = ? ORDER BY e.date, e.work_uri",
+        (row["id"],),
+    ):
+        item = dict(note)
+        item["url"] = edps.document_url(note["doc"])
+        view.edps.append(item)
     for f in view.findings:
         f["page_href"] = view.page_href(f["page"])
     return view
@@ -317,6 +336,9 @@ def _event(change: sqlite3.Row) -> dict[str, str] | None:
             else f"Åpen for tilbakemelding på Have Your Say til {fmt_date(new)}"
         )
         return {"tag": "Ny frist", "text": text, "date": change["detected_at"]}
+    if change["kind"] == "edps":
+        text = f"EDPS-uttalelse funnet i Rådets dokumenter ({change['new_value']})"
+        return {"tag": "EDPS", "text": text, "date": change["detected_at"]}
     if change["kind"] not in EVENT_TEXTS:
         return None
     tag, template = EVENT_TEXTS[change["kind"]]
@@ -423,15 +445,20 @@ def period_counts(conn: sqlite3.Connection, since: str | None) -> dict[str, int]
     }
 
 
-def hys_counts(conn: sqlite3.Connection, today: date) -> dict[str, int]:
-    """Candidates with a Have Your Say page, and those open for feedback on the report date."""
+def source_counts(conn: sqlite3.Connection, today: date) -> dict[str, int]:
+    """Candidates with a Have Your Say page, those open for feedback on the report date, and
+    those with an EDPS opinion."""
     row = conn.execute(
         "SELECT COUNT(*) AS linked, COALESCE(SUM(EXISTS (SELECT 1 FROM eu_hys_publication p"
         "   WHERE p.initiative_id = c.hys_initiative_id AND p.status = ? AND p.deadline >= ?)),"
         " 0) AS open FROM eu_case c WHERE c.candidate = 1 AND c.hys_initiative_id IS NOT NULL",
         (haveyoursay.OPEN, today.isoformat()),
     ).fetchone()
-    return {"linked": int(row["linked"]), "open": int(row["open"])}
+    edps_cases = conn.execute(
+        "SELECT COUNT(DISTINCT l.case_id) FROM eu_edps_link l JOIN eu_case c ON c.id = l.case_id"
+        " WHERE c.candidate = 1"
+    ).fetchone()[0]
+    return {"linked": int(row["linked"]), "open": int(row["open"]), "edps": int(edps_cases)}
 
 
 def _environment() -> Environment:
@@ -470,7 +497,7 @@ def build_report(settings, conn: sqlite3.Connection, now: datetime | None = None
         "generated_at": now.strftime("%d.%m.%Y kl. %H:%M"),
         "models": models,
         "counts": period_counts(conn, since),
-        "hys_counts": hys_counts(conn, today),
+        "source_counts": source_counts(conn, today),
         "full": full,
         "detailed": detailed,
         "brief": brief,

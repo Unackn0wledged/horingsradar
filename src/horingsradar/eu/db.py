@@ -161,7 +161,27 @@ CREATE TABLE IF NOT EXISTS eu_hys_publication (
     is_current INTEGER NOT NULL DEFAULT 0
 );
 
+-- Council documents that pass an EDPS opinion on to the delegations (eu/sources/edps.py).
+CREATE TABLE IF NOT EXISTS eu_edps (
+    work_uri TEXT PRIMARY KEY,
+    doc TEXT,  -- ST 12655 2026 INIT
+    date TEXT,
+    title TEXT NOT NULL,
+    procedures TEXT,  -- JSON: {"procedures": ["2026/0165/COD"], "celexes": ["52026PC0580"]}
+    first_seen TEXT NOT NULL
+);
+
+-- Which cases an EDPS opinion is about; method is procedure or title.
+CREATE TABLE IF NOT EXISTS eu_edps_link (
+    work_uri TEXT NOT NULL REFERENCES eu_edps(work_uri),
+    case_id INTEGER NOT NULL REFERENCES eu_case(id),
+    method TEXT NOT NULL,
+    linked_at TEXT NOT NULL,
+    PRIMARY KEY (work_uri, case_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_eu_case_date ON eu_case (date_document);
+CREATE INDEX IF NOT EXISTS idx_eu_edps_link_case ON eu_edps_link (case_id);
 CREATE INDEX IF NOT EXISTS idx_eu_assessment_case ON eu_assessment (case_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_eu_finding_assessment ON eu_finding (assessment_id);
 CREATE INDEX IF NOT EXISTS idx_eu_case_work ON eu_case (work_uri);
@@ -200,7 +220,8 @@ def record_change(
     conn: sqlite3.Connection, case_id: int, kind: str, old: str | None, new: str | None
 ) -> None:
     """kind: procedure_status | candidate | variant (a corrigendum or extra part) | eea_status |
-    hys_feedback (a feedback period opened, or its deadline moved; old and new deadline)."""
+    hys_feedback (a feedback period opened, or its deadline moved; old and new deadline) |
+    edps (the first EDPS opinion found for the case; new value is the Council document)."""
     conn.execute(
         "INSERT INTO eu_case_change (case_id, detected_at, kind, old_value, new_value)"
         " VALUES (?, ?, ?, ?, ?)",

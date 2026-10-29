@@ -18,7 +18,7 @@ Arbeidsform:
 | Relevansskala | Samme fire nivåer som Høringsradar, satt av LLM-en |
 | Tekst til LLM-en | Begrunnelsen («explanatory memorandum») fra den engelske PDF-en |
 | Sitater | Ordrett sitat med sidetall fra begrunnelsen, verifisert i kode (endret i milepæl 3) |
-| EDPS | Flagg, og minst middels (deterministisk regel, vises som regel) |
+| EDPS | Flagg, og minst middels (deterministisk regel, vises som regel). Kilde: Rådets dokumenter i Cellar (edps.europa.eu svarer 403), koblet på prosedyre, ellers helt lik forslagstittel. Ingen manuell liste (valgt 29.10.2026) |
 | Sektorer | Egen liste med 15 sektorer (`eu/schema.py`) |
 | Første vurdering på lab | Gradvis: `run --no-assess`, `assess` på noen få, så `run` |
 | Rapport | Saker eldre enn 8 uker som én linje; samme regler for gjentak som Høringsradar |
@@ -34,10 +34,10 @@ Arbeidsform:
 | 0 | Oppsett og regler: `horingsradar-eu`, `RADAR=eu`-vern, `.env.eu.example`, `deploy/eu/`, regler i CLAUDE.md og SPEC, installasjonsguide | Ferdig |
 | 1 | EUR-Lex SPARQL: ekte svar som fixtures, egen datamodell, henting med EuroVoc-filter | Ferdig |
 | 2 | EEA-Lex: EØS-status fra listen og faktaark for vedtatte rettsakter | Ferdig |
-| 3 | LLM-vurdering av begrunnelsen: egen prompt, eget skjema, sektorliste, sitatsjekk | Ferdig (EDPS-regelen kommer med EDPS-data i milepæl 6) |
+| 3 | LLM-vurdering av begrunnelsen: egen prompt, eget skjema, sektorliste, sitatsjekk | Ferdig |
 | 4 | Egen PDF-rapport | Ferdig |
 | 5 | Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater | Ferdig |
-| 6 | EDPS som relevanssignal | Ikke startet |
+| 6 | EDPS som relevanssignal, fra Rådets dokumenter i Cellar | Ferdig |
 | 7 | OEIL-status (valgfritt) | Ikke startet |
 | 8 | Panel og statistikk | Ikke startet |
 | 9 | Backtest med recall-sett | Ikke startet |
@@ -114,3 +114,18 @@ Funn underveis:
 - Dokumentene for call for evidence er ofte DOCX, og nedlastingsruten for vedlegg er ikke verifisert.
 - Noen titler har U+FFFD i selve kilden. Rapporten bruker EUR-Lex-tittelen.
 - Initiativ-JSON-en navngir saksbehandlerne. Bare fasefeltene lagres.
+
+## Milepæl 6: EDPS
+
+- `eu/sources/edps.py`: SPARQL mot Cellar etter Rådets dokumenter som oversender EDPS-uttalelser, med prosedyre og forslagenes CELEX-nummer. Bruker EUR-Lex-klienten og pilotens `Fetcher` uendret.
+- Nytt steg i `run` rett etter henting av forslag: dokumentene lagres i `eu_edps`, og koblingene i `eu_edps_link` (prosedyre, ellers helt lik tittel). Alle lagrede dokumenter prøves på nytt hver kjøring, så forslag som kommer senere også kobles.
+- `eu/rules.py`: EDPS-regelen. Brukes når en vurdering lagres (`assess.py`), og som en ny vurderingsrad uten LLM-kall når uttalelsen kommer etter vurderingen. Bare hever, aldri senker; `llm_relevance` beholder modellens nivå.
+- Et forslag med uttalelse blir kandidat (grunn «edps»), og endringen `edps` logges.
+- Rapporten viser merket «EDPS», lenke til Rådets dokument, regelen når den har hevet nivået, antall kandidater med uttalelse og at listen ikke er fullstendig. `status` viser antallet.
+- Testdata i `tests/fixtures/edps/`: ekte SPARQL-svar for 24 måneder (31 dokumenter), og de tre forslagene fra juni 2026 som tre av dem gjelder (Cloud and AI, Eurojust, Europol) med prosedyrer. I det falske endepunktet er EDPS av som standard, så eksisterende tester ikke endres.
+
+Funn underveis:
+- edps.europa.eu svarer 403 på alle kall fra radaren, også robots.txt. Sammendragene i EU-tidende og EDPS-hendelsene i Cellar stopper i 2023. Rådets dokumenter er eneste maskinlesbare kilde etter det, og de er ikke fullstendige.
+- 14 av 31 dokumenter mangler prosedyre. Tittelen gjentar forslagets tittel ordrett og gir sikre treff (Eurojust, Europol, European Investigation Order).
+- `procedure_ref` finnes bare for kandidater. Koblingen bruker derfor forslagenes CELEX-nummer fra samme prosedyre, hentet i samme spørring, så også forslag som ikke er kandidater kan kobles.
+- European Investigation Order (omarbeiding, COM(2026) 313) slapp ikke gjennom forfilteret, men blir kandidat gjennom EDPS-uttalelsen. Vurder å se på nøkkelordlisten for strafferettslig samarbeid.

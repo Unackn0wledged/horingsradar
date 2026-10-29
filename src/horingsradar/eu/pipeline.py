@@ -14,11 +14,12 @@ from typing import Any
 
 from horingsradar import db
 from horingsradar.eu import db as eu_db
+from horingsradar.eu import rules
 from horingsradar.eu.assess import assess_case, pending_assessments
 from horingsradar.eu.config import EUSettings
 from horingsradar.eu.documents import update_documents
 from horingsradar.eu.prefilter import Prefilter, load_keywords
-from horingsradar.eu.sources import eealex, eurlex, haveyoursay
+from horingsradar.eu.sources import edps, eealex, eurlex, haveyoursay
 from horingsradar.eu.sources.eurlex import WITHDRAWN, EurLexClient, Proposal
 from horingsradar.http import Fetcher
 from horingsradar.jobs import JobHandle
@@ -261,6 +262,90 @@ def update_eea(conn: sqlite3.Connection, client: eealex.EEALexClient) -> dict[st
     return result
 
 
+def _link_edps(
+    conn: sqlite3.Connection, note: edps.CouncilNote, case: sqlite3.Row, method: str
+) -> bool:
+    """Link one note to one case. A first opinion is logged, makes the case a candidate (recall
+    first) and raises an assessment below the floor. Returns whether the link is new."""
+    case = conn.execute("SELECT * FROM eu_case WHERE id = ?", (case["id"],)).fetchone()
+    first = not rules.has_edps(conn, case["id"])
+    added = conn.execute(
+        "INSERT OR IGNORE INTO eu_edps_link (work_uri, case_id, method, linked_at)"
+        " VALUES (?, ?, ?, ?)",
+        (note.work_uri, case["id"], method, db.now_iso()),
+    ).rowcount
+    if not added:
+        return False
+    log.info("%s: EDPS opinion %s (%s)", case["com_ref"] or case["celex"], note.doc, method)
+    if first:
+        eu_db.record_change(conn, case["id"], "edps", None, note.doc or note.work_uri)
+    if not case["candidate"]:
+        reasons = db.loads(case["prefilter"], {}) or {}
+        reasons["edps"] = [note.doc or note.work_uri]
+        conn.execute(
+            "UPDATE eu_case SET candidate = 1, needs_assessment = 1, prefilter = ? WHERE id = ?",
+            (db.dumps(reasons), case["id"]),
+        )
+        eu_db.record_change(conn, case["id"], "candidate", "0", "1")
+    else:
+        rules.apply_to_assessed(conn, case["id"])
+    return True
+
+
+def update_edps(
+    conn: sqlite3.Connection, client: EurLexClient, since: date, today: date
+) -> dict[str, Any]:
+    """EDPS opinions from the Council's documents in Cellar (eu/sources/edps.py).
+
+    A note is linked to the cases whose proposals are in the same procedure; a note without a
+    procedure only to the one case whose title is the same as the proposal title in the note.
+    All stored notes are tried again, so a proposal fetched later is still linked.
+    """
+    found = 0
+    for note in edps.notes_since(client, since, today):
+        found += 1
+        conn.execute(
+            "INSERT INTO eu_edps (work_uri, doc, date, title, procedures, first_seen)"
+            " VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (work_uri) DO UPDATE SET doc = excluded.doc,"
+            " date = excluded.date, title = excluded.title, procedures = excluded.procedures",
+            (
+                note.work_uri,
+                note.doc,
+                note.date,
+                note.title,
+                db.dumps({"procedures": note.procedures, "celexes": note.celexes}),
+                db.now_iso(),
+            ),
+        )
+    titles: dict[str, list[sqlite3.Row]] = {}
+    for case in conn.execute("SELECT * FROM eu_case"):
+        titles.setdefault(edps.normalize_title(case["title"]), []).append(case)
+    linked = 0
+    for row in conn.execute("SELECT * FROM eu_edps ORDER BY date, work_uri").fetchall():
+        stored = db.loads(row["procedures"], {}) or {}
+        note = edps.CouncilNote(
+            work_uri=row["work_uri"],
+            date=row["date"],
+            title=row["title"],
+            doc=row["doc"],
+            procedures=stored.get("procedures", []),
+            celexes=stored.get("celexes", []),
+        )
+        if note.celexes:
+            cases = conn.execute(
+                f"SELECT * FROM eu_case WHERE celex IN ({', '.join('?' * len(note.celexes))})",
+                [eurlex.base_celex(c) for c in note.celexes],
+            ).fetchall()
+            linked += sum(_link_edps(conn, note, c, "procedure") for c in cases)
+        elif not note.procedures and note.proposal_title:
+            matches = titles.get(note.proposal_title, [])
+            if len(matches) == 1:
+                linked += int(_link_edps(conn, note, matches[0], "title"))
+            elif len(matches) > 1:
+                log.warning("EDPS %s: title matches %s cases; not linked", note.doc, len(matches))
+    return {"edps_notes": found, "edps_new_links": linked}
+
+
 def _hys_lookup_due(case: sqlite3.Row, today: date) -> bool:
     """A proposal's Have Your Say page comes a couple of weeks after adoption. One without a
     page is looked up again until it is HYS_RETRY old; an older one is looked up once."""
@@ -483,21 +568,25 @@ def run(
         )
         job.save_summary()
 
-        job.progress(phase="enrich", done=0, total=5)
+        job.progress(phase="edps", done=0, total=6)
+        summary.update(update_edps(conn, eurlex_client, since, today))
+        job.save_summary()
+
+        job.progress(phase="enrich", done=1, total=6)
         summary["eurovoc_labels"] = update_labels(conn, eurlex_client)
         summary["status_changes"] = update_procedures(conn, eurlex_client)
         job.save_summary()
 
-        job.progress(phase="eea", done=2, total=5)
+        job.progress(phase="eea", done=2, total=6)
         eea_fetcher = eea_fetcher or eealex.make_fetcher(settings)
         summary.update(update_eea(conn, eealex.EEALexClient(eea_fetcher)))
         job.save_summary()
 
-        job.progress(phase="have_your_say", done=3, total=5)
+        job.progress(phase="have_your_say", done=3, total=6)
         summary.update(update_hys(conn, haveyoursay.HaveYourSayClient(fetcher), today))
         job.save_summary()
 
-        job.progress(phase="documents", done=4, total=5)
+        job.progress(phase="documents", done=4, total=6)
         summary.update(update_documents(settings, conn, eurlex_client, fetcher))
         summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
         job.save_summary()
@@ -505,7 +594,7 @@ def run(
         if assess:
             summary.update(assess_pending(settings, conn, job, client))
         summary.update(counts(conn))
-        job.progress(phase="done", done=5, total=5)
+        job.progress(phase="done", done=6, total=6)
         return summary
     finally:
         if own_fetcher:
@@ -541,6 +630,12 @@ def counts(conn: sqlite3.Connection) -> dict[str, int]:
         " FROM eu_case c WHERE c.candidate = 1 AND c.hys_initiative_id IS NOT NULL"
     ).fetchone()
     result["hys_linked"], result["hys_open"] = int(hys["linked"]), int(hys["open"])
+    result["edps_cases"] = int(
+        conn.execute(
+            "SELECT COUNT(DISTINCT l.case_id) FROM eu_edps_link l"
+            " JOIN eu_case c ON c.id = l.case_id WHERE c.candidate = 1"
+        ).fetchone()[0]
+    )
     result["waiting"] = int(
         conn.execute(
             "SELECT COUNT(*) FROM eu_case WHERE candidate = 1 AND needs_assessment = 1"

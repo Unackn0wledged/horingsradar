@@ -92,7 +92,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 | EUR-Lex / Cellar | COM-forslag, vedtatte rettsakter, EuroVoc-indeksering, EØS-merking | SPARQL-endepunkt `publications.europa.eu/webapi/rdf/sparql` (åpent, tillatt i robots.txt). EUR-Lex' egne nettsider er bak bot-beskyttelse og hentes ikke; lenkene er for mennesker | Primærkilde for forslag |
 | Have Your Say (Kommisjonen) | Initiativer med faser og tilbakemeldingsperioder | JSON-endepunktene som nettsiden selv bruker (ikke offisielt dokumentert; tillatt i robots.txt, innhold under CC BY 4.0). Se Have Your Say | Berikelse: tilbakemeldingsfrist og lenke for EUR-Lex-kandidater |
 | EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Listen sortert etter forslagsdato, og faktaark per CELEX for vedtatte rettsakter (skraping, 5 sekunder mellom kall). Se EØS-status | Berikelse: EØS-status |
-| EDPS | Uttalelser om lovforslag som berører personvern | RSS / nettside | Sterkt relevanssignal |
+| EDPS | Uttalelser om lovforslag som berører personvern | Rådets dokumenter i Cellar som oversender uttalelsen (SPARQL, som EUR-Lex). edps.europa.eu svarer 403 og brukes ikke. Se EDPS | Sterkt relevanssignal (EDPS-regelen) |
 | Legislative Observatory (OEIL) | Prosedyrestatus i Europaparlamentet | RSS / prosedyresider | Valgfri berikelse: status |
 
 **Må verifiseres før implementering** (hent ekte svar og lagre som fixtures, som for regjeringen.no):
@@ -121,7 +121,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 
 **Have Your Say:** ingen egen forfiltrering. Bare EUR-Lex-kandidater slås opp (se Have Your Say). Høringer som ennå ikke har et COM-forslag, hentes ikke (se Ikke i scope).
 
-**EDPS:** alle nye uttalelser om lovforslag regnes automatisk som kandidater.
+**EDPS:** et forslag med en EDPS-uttalelse blir kandidat, også når filteret ikke slapp det gjennom (grunn «edps»).
 
 **Nøkkelordliste** (konfigurerbar i EU-instansens `.env` eller en egen fil, engelsk). Høringsradar har ingen nøkkelordmekanisme i dag, så denne er ny:
 `personal data, data protection, privacy, GDPR, ePrivacy, surveillance, monitoring, tracking, biometric, facial recognition, profiling, identity, eID, digital identity wallet, age verification, data sharing, data access, data space, data retention, metadata, logging, encryption, end-to-end, lawful access, cybersecurity, NIS, incident reporting, connected devices, IoT, cloud, AI, algorithm, automated decision, interoperability, health data, location data, vehicle data, smart meter, child sexual abuse detection`
@@ -131,7 +131,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 - Nøkler: CELEX-nummer og COM-nummer (f.eks. `COM(2023) 905`). Have Your Say kobles bare på COM-nummer, aldri på tittel (se Have Your Say).
 - Én sak = én post i databasen, med lenker til alle kilder den er funnet i.
 - Rettelser (`52025PC0828R(01)`) og tilleggsdeler (`52025PC0101(01)`) har eget CELEX-nummer, men hører til samme sak som forslaget (grunn-CELEX uten tillegg). De lagres som kilder til saken, en ny variant logges som endring, og EuroVoc-emnene slås sammen. Forslagets egne felt (tittel, dato) går foran variantens.
-- Et treff i EDPS vises i rapporten og gir minst `middels` (se EDPS-regel under Regler).
+- Et treff i EDPS vises i rapporten og gir minst `middels` (se EDPS-regel under Regler). EDPS kobles på prosedyren, ellers på helt lik forslagstittel (se EDPS).
 
 ## LLM-vurdering
 
@@ -146,7 +146,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 - **Funn** bruker Høringsradars personvernkategorier.
 - Relevans vurderes mot personvern. Prompten sier eksplisitt at tekniske forslag er relevante når de påvirker behandling av personopplysninger, for eksempel krav til eller svekkelse av kryptering, logging og lagring av metadata, sikkerhetskrav til systemer som behandler personopplysninger, avviks- og hendelsesrapportering som omfatter personopplysninger, digital identitet, sporing, tilkoblede enheter og datadeling.
 - Bare saker som er ren informasjonssikkerhet uten kobling til personopplysninger, vurderes som `ingen`. Ved tvil velges det høyeste nivået.
-- **EDPS:** en EDPS-uttalelse vises som et eget flagg og gir minst `middels` (se EDPS-regel under Regler). Både LLM-ens nivå og det endelige nivået lagres, så det er sporbart hva regelen har endret.
+- **EDPS:** en EDPS-uttalelse vises som et eget flagg og gir minst `middels` (se EDPS-regel under Regler). Både LLM-ens nivå og det endelige nivået lagres, så det er sporbart hva regelen har endret. Regelen ligger i `eu/rules.py` og brukes når en vurdering lagres. Kommer uttalelsen etter vurderingen, lagres en ny vurderingsrad uten LLM-kall: samme tekst og funn, hevet nivå, `rule = 'edps'`, null tokens og en merknad.
 - Egen prompt `prompts/assess_eu_v1.md`, versjonert som før (lastes som versjon `eu_v1`). Versjonen velges med `EU_PROMPT_VERSION`. Prompten nevner ingen virksomhet.
 - Ugyldig svar gir ett nytt forsøk, deretter lagres vurderingen som feilet. Etter to feilede forsøk venter saken til teksten endres. Avvisningen av modellens egne anbefalinger er den samme som i Høringsradar.
 - Liten, billig modell via `LLM_MODEL` i EU-instansens `.env`. Forventet volum er noen titalls kandidater i uka.
@@ -179,6 +179,25 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 | `NOT_REGISTERED` | Ikke registrert i EEA-Lex |
 
 EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som relevant. EEA-Lex er fasiten. Status for forslag utover «registrert» krever tilgang til faktaarkene for forslag; det kan legges til hvis EFTA gir slik tilgang.
+
+## EDPS (uten LLM)
+
+**Hva som er tilgjengelig for en automatisk klient** (sjekket 29.10.2026):
+- **edps.europa.eu** (nettside og RSS) svarer 403 Forbidden på alle kall fra radaren, også på robots.txt. Det forsøkes ikke omgått.
+- **Sammendrag i EU-tidende** («Summary of the Opinion of the European Data Protection Supervisor …») og **EDPS-hendelser i prosedyrene** i Cellar finnes til og med 2023, ikke etter.
+- **Rådets dokumenter i Cellar**: Rådet oversender mange EDPS-uttalelser til delegasjonene («Proposal for a … - Opinion of the European Data Protection Supervisor»). De ligger i Cellar med Rådet som forfatter, ofte med lenke til prosedyren. 31 slike dokumenter fra 29.10.2024 til 29.10.2026; 17 med prosedyre, 14 bare med forslagets tittel.
+- OEIL nevner ikke EDPS på prosedyresidene. EDPB har bare de felles EDPB/EDPS-uttalelsene og er ikke tatt i bruk.
+
+**Dekningen er ufullstendig.** Rådet registrerer ikke alle uttalelser offentlig. En sak uten EDPS-merke kan likevel ha en uttalelse, og rapporten sier det.
+
+**Slik brukes dokumentene** (`eu/sources/edps.py`):
+1. SPARQL i vinduer på et halvt år: Rådets dokumenter med engelsk tittel som inneholder «opinion» og «Data Protection Supervisor» eller «EDPS», med dato, dokumentnummer (ST/WK …), prosedyre og CELEX-nummeret til forslagene i samme prosedyre. Første kjøring 24 måneder tilbake, senere fra forrige kjøring minus 60 dager.
+2. **Kobling på prosedyren:** sakene med CELEX-nummer i samme prosedyre. Gjelder alle saker, ikke bare kandidater.
+3. **Uten prosedyre:** forslagets tittel tas ut av dokumentets tittel og sammenlignes med sakens tittel, normalisert for store og små bokstaver, mellomrom og typografiske tegn. Den må være helt lik; ingen likhetsmål. Passer den flere saker, kobles ingen, og det logges.
+4. En sak som får sin første uttalelse, får endringen `edps`, blir kandidat og får EDPS-regelen.
+5. Lenken går til Rådets dokumentregister (`data.consilium.europa.eu/doc/document/ST-12655-2026-INIT/en/pdf`, mønsteret sjekket for ST- og WK-dokumenter).
+
+Ekte funn i testdataene: European Investigation Order (omarbeiding, COM(2026) 313) slapp ikke gjennom forfilteret, men har en EDPS-uttalelse og blir kandidat.
 
 ## Have Your Say (uten LLM)
 
@@ -221,6 +240,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 - **Kandidater eldre enn 8 uker** som ikke har vært rapportert, vises bare som én linje under «Tidligere forslag» (valgt 29.10.2026, så første rapport ikke blir på 60 sider).
 - **Regler for gjentak, som i Høringsradar:** høy og middels vises på nytt med merker når en ny vurdering endrer relevans eller funn; statusendringer (prosedyre, EØS-status, rettelse) gir én linje; lav og ingen vises ikke på nytt; en ny vurdering med samme resultat er ikke en endring. I tillegg: en sak som sto under «Ikke vurdert», vises igjen når den har fått sin første vurdering, uansett nivå.
 - Sidetall i funn lenker til den engelske PDF-en (`#page=N`). Referansen lenker til EUR-Lex, og EØS-statusen til EEA-Lex.
+- **EDPS (milepæl 6):** merket «EDPS» ved saken, og i analysen lenke til Rådets dokument med dato (og «koblet på forslagets tittel» når det gjelder). Når regelen har hevet nivået: «Relevans: Middels (EDPS-regelen; modellen vurderte: Lav)». Toppfeltet viser hvor mange kandidater som har en uttalelse, og merknaden sier at listen ikke er fullstendig. En ny uttalelse på en tidligere rapportert sak gir én linje under endringer, eller full visning når regelen endrer nivået.
 - **Have Your Say (milepæl 5):** tilbakemeldingsfristen står i oversikten og i analysen («Tilbakemelding på forslaget åpen til 03.12.2026», «lukket …», «planlagt 4. kvartal 2027»), med lenke til initiativet. Toppfeltet viser hvor mange kandidater som har en side, og hvor mange som er åpne for tilbakemelding. En periode som åpner eller en flyttet frist på en høy eller middels sak som er rapportert før, gir én linje under endringer.
 - Grunnlaget for neste rapport lagres i `eu_report` og `eu_report_item` (vurdering, prosedyrestatus og EØS-status per sak).
 - Stilen er kopiert fra Høringsradar-rapporten; pilotens mal er ikke endret.
@@ -246,7 +266,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 3. LLM-vurdering av begrunnelsen med egen prompt, eget skjema og egen sektorliste.
 4. Egen PDF-rapport (`horingsradar-eu report`).
 5. Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater, koblet på COM-nummer.
-6. EDPS som relevanssignal.
+6. EDPS som relevanssignal, fra Rådets dokumenter i Cellar.
 7. OEIL-status, valgfritt.
 8. Panel og statistikk.
 9. Backtest med recall-sett.

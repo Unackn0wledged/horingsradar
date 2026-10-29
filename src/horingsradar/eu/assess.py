@@ -19,6 +19,7 @@ from pathlib import Path
 from pydantic import ValidationError
 
 from horingsradar import db
+from horingsradar.eu import rules
 from horingsradar.eu.config import EUSettings
 from horingsradar.eu.schema import EUAssessmentOutput, eu_output_json_schema
 from horingsradar.eu.text import Memorandum, memorandum
@@ -198,14 +199,16 @@ def store_assessment(
         log.error("Assessment of %s failed: %s", plan.case["com_ref"], error)
         return int(cur.lastrowid)
 
+    relevance, rule = rules.final_relevance(output.relevance, rules.has_edps(conn, plan.case_id))
     cur = conn.execute(
-        f"INSERT INTO eu_assessment ({columns}, status, llm_relevance, relevance,"
+        f"INSERT INTO eu_assessment ({columns}, status, llm_relevance, relevance, rule,"
         " relevance_reason, sectors, summary)"
-        f" VALUES ({marks}, 'ok', ?, ?, ?, ?, ?)",
+        f" VALUES ({marks}, 'ok', ?, ?, ?, ?, ?, ?)",
         (
             *common,
             output.relevance,
-            output.relevance,
+            relevance,
+            rule,
             output.relevance_reason,
             db.dumps(output.sectors),
             output.summary,
@@ -246,9 +249,10 @@ def store_assessment(
         )
     conn.execute("UPDATE eu_case SET needs_assessment = 0 WHERE id = ?", (plan.case_id,))
     log.info(
-        "%s assessed: %s, %s findings (%s verified quotes)",
+        "%s assessed: %s%s, %s findings (%s verified quotes)",
         plan.case["com_ref"],
         output.relevance,
+        f" (EDPS rule: {relevance})" if rule else "",
         len(output.findings),
         verified,
     )

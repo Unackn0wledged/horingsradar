@@ -18,6 +18,13 @@ def load(name: str) -> dict:
     return json.loads((EURLEX / name).read_text(encoding="utf-8"))
 
 
+EDPS = Path(__file__).parent / "fixtures" / "edps"
+
+
+def load_edps(name: str) -> dict:
+    return json.loads((EDPS / name).read_text(encoding="utf-8"))
+
+
 def _response(bindings: list[dict]) -> httpx.Response:
     return httpx.Response(
         200,
@@ -93,9 +100,19 @@ class EUSite:
     english_pdfs: list[dict] = field(
         default_factory=lambda: load("english_pdfs.json")["results"]["bindings"]
     )
+    edps_notes: list[dict] = field(default_factory=list)  # none unless a test adds them
     queries: list[str] = field(default_factory=list)
     downloads: list[str] = field(default_factory=list)
     hys: HYSSite = field(default_factory=HYSSite)
+
+    def add_edps(self, proposals: bool = True) -> None:
+        """The real Council notes on EDPS opinions (24 months to 29.10.2026) and, optionally,
+        the real proposals three of them are about (Cloud and AI, Eurojust and Europol, June
+        2026) with their procedures."""
+        self.edps_notes = load_edps("council_notes.json")["results"]["bindings"]
+        if proposals:
+            self.proposals += load_edps("proposals.json")["results"]["bindings"]
+            self.dossiers += load_edps("dossiers.json")["results"]["bindings"]
 
     def pdf_for(self, url: str) -> bytes | None:
         """The fixture PDF behind an item URL from english_pdfs.json (by the work's CELEX)."""
@@ -125,6 +142,9 @@ class EUSite:
         query = parse_qs(url.query)["query"][0]
         assert parse_qs(url.query)["format"] == ["application/sparql-results+json"]
         self.queries.append(query)
+        if "Data Protection Supervisor" in query:
+            start, end = re.findall(r'"(\d{4}-\d{2}-\d{2})"\^\^xsd:date', query)
+            return _response([b for b in self.edps_notes if start <= b["date"]["value"] < end])
         if "VALUES ?celex" in query:
             wanted = set(re.findall(r'"(\w+)"\^\^xsd:string', query))
             return _response([b for b in self.recall if b["celex"]["value"] in wanted])

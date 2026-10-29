@@ -87,6 +87,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 </head>
 <body>
 {% macro badge(v) %}<span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span>{% endmacro %}
+{% macro edps_tag(v) %}{% if v.edps and not (v.changes and "EDPS" in v.changes.tags) %}<span class="tag">EDPS</span>{% endif %}{% endmacro %}
 {% macro hys_deadline(v) %}<a href="{{ v.hys_url }}">Tilbakemelding til {{ v.open_deadline|date }}</a>{% endmacro %}
 {% macro eea(v) %}{% if v.eea_url %}<a href="{{ v.eea_url }}">{{ v.eea_label }}</a>{% else %}{{ v.eea_label }}{% endif %}{% if v.eea_derived %}<span class="derived"> (utledet)</span>{% endif %}{% endmacro %}
 
@@ -99,12 +100,14 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   <span><strong>Generert:</strong> {{ generated_at }}</span>
   <span><strong>Saker:</strong> {{ full|length + older|length + events_only|length }}</span><br>
   <span><strong>Hentet i perioden:</strong> {{ counts.fetched }} forslag, {{ counts.candidates }} kandidater, {{ counts.filtered_out }} filtrert bort uten LLM</span><br>
-  <span><strong>Kandidater på Have Your Say:</strong> {{ hys_counts.linked }} (åpne for tilbakemelding nå: {{ hys_counts.open }})</span><br>
+  <span><strong>Kandidater på Have Your Say:</strong> {{ source_counts.linked }} (åpne for tilbakemelding nå: {{ source_counts.open }})</span>
+  <span><strong>Med EDPS-uttalelse:</strong> {{ source_counts.edps }}</span><br>
   <span><strong>Modell og prompt:</strong> {{ models|join(", ") if models else "–" }}</span>
 </div>
 <div class="notice">
   <strong>Merk:</strong> Relevansnivå, sammendrag og funn er KI-generert sortering av begrunnelsen i forslaget («explanatory memorandum») og må verifiseres mot kilden.
   Verktøyet tar ikke stilling til forslagene og skriver ikke innspill. Tittel, referanser, datoer og prosedyrestatus er hentet fra EUR-Lex, og EØS-status fra EEA-Lex. Frister for tilbakemelding er hentet fra Kommisjonens Have Your Say, koblet til forslaget på COM-nummeret.
+  EDPS-uttalelser er hentet fra Rådets offentlige dokumenter i EUR-Lex og er ikke fullstendige: en sak uten EDPS-merke kan likevel ha en uttalelse. En EDPS-uttalelse gir minst middels relevans. Det er en fast regel, ikke modellens vurdering, og det står ved saken når regelen har hevet nivået.
   «Registrert i EEA-Lex» er utledet av at forslaget står i EEA-Lex; full EØS-status finnes først for vedtatte rettsakter.
   Forslag uten treff i forfilteret (EuroVoc-emner og nøkkelord) er ikke vurdert av LLM-en. Sitater er kontrollert maskinelt mot teksten; sitater som ikke kunne bekreftes er tydelig merket.
 </div>
@@ -120,7 +123,8 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <tr>
       <td><a class="badge-link" href="#c{{ v.id }}">{{ badge(v) }}</a></td>
       <td>
-        <a href="#c{{ v.id }}">{{ v.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
+        <a href="#c{{ v.id }}">{{ v.title }}</a>{{ edps_tag(v) }}{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
+        {% if v.edps_rule %}<span class="refs">Relevans: {{ v.relevance_label }} ({{ v.edps_rule }})</span><br>{% endif %}
         <span class="refs">{{ v.reference }}</span> <a class="jump" href="#c{{ v.id }}">Gå til analyse ↓</a>{% if v.open_deadline %}<br><span class="refs">{{ hys_deadline(v) }}</span>{% endif %}
       </td>
       <td>{{ v.doc_type }}</td>
@@ -152,11 +156,12 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 {% if not detailed %}<p class="empty">Ingen saker med høy eller middels relevans i perioden.</p>{% endif %}
 {% for v in detailed %}
 <section class="hearing" id="c{{ v.id }}">
-  <h3>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}</h3>
+  <h3>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>{{ edps_tag(v) }}{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}</h3>
   <dl class="facts">
     <div><dt>Referanse</dt><dd>{{ v.reference }} · CELEX {{ v.row.celex }} · <a href="{{ v.eurlex_url }}">EUR-Lex</a></dd></div>
     <div><dt>Type / dato</dt><dd>{{ v.doc_type }} / {{ v.row.date_document|date }}</dd></div>
     <div><dt>Prosedyre</dt><dd>{{ v.procedure }}</dd></div>
+    {% if v.edps %}<div><dt>EDPS</dt><dd>{% for n in v.edps %}Uttalelse oversendt i {% if n.url %}<a href="{{ n.url }}">Rådets dokument {{ n.doc }}</a>{% else %}Rådets dokument{% endif %} ({{ n.date|date }}){% if n.method == "title" %}, koblet på forslagets tittel{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}{% if v.edps_rule %}<br>Relevans: {{ v.relevance_label }} ({{ v.edps_rule }}){% endif %}</dd></div>{% endif %}
     {% if v.hys %}<div><dt>Have Your Say</dt><dd>{{ v.feedback|join("<br>"|safe) }} · <a href="{{ v.hys_url }}">Have Your Say</a></dd></div>{% endif %}
     <div><dt>EØS-status</dt><dd>{{ eea(v) }}{% if v.eea_areas %}<br><span class="muted">{{ v.eea_areas|join(" · ") }}</span>{% endif %}{% if v.row.eea_jcd %}<br><span class="muted">EØS-komitébeslutning {{ v.row.eea_jcd }}</span>{% endif %}</dd></div>
     <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>
@@ -207,7 +212,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 {% if brief %}
 <ul class="brief">
 {% for v in brief %}
-  <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
+  <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>{{ edps_tag(v) }}
     <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.eea_label }}{% if v.open_deadline %} · {{ hys_deadline(v) }}{% endif %}</span><br>
     {{ v.assessment.relevance_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}
@@ -233,7 +238,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 <p class="muted">Kandidater fra før {{ recent_since|date }} som ikke har vært i en rapport før, én linje hver. Full analyse finnes i databasen og kan hentes med <code>horingsradar-eu assess</code>.</p>
 <ul class="brief">
 {% for v in older %}
-  <li>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
+  <li>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>{{ edps_tag(v) }}
     <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.procedure }} · {{ v.eea_label }}{% if v.open_deadline %} · {{ hys_deadline(v) }}{% endif %}</span><br>
     {% if v.assessment and v.assessment.status == "ok" %}{{ v.assessment.relevance_reason }}{% else %}{{ v.not_assessed_reason }}{% endif %}</li>
 {% endfor %}
