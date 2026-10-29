@@ -1,0 +1,144 @@
+{
+ "reference": "COM(2026)681",
+ "unit": "SECRETARIAT-GENERAL",
+ "dossierSummary": null,
+ "shortTitle": "Child Safety Online",
+ "publications": [
+  {
+   "id": 26173,
+   "createdDate": "2026/10/01 14:55:29",
+   "modifiedDate": "2026/10/23 02:12:39",
+   "publishedDate": "2026/10/01 14:55:29",
+   "translationEndDate": "2026/10/06 15:55:29",
+   "decideSendDate": "2026/09/28 13:05:26",
+   "adoptionDate": "2026/09/17 00:00:00",
+   "reference": "COM(2026)681",
+   "referenceNumber": "PE/2026/6687",
+   "type": "PROP_REG",
+   "stage": "ADOPTION_WORKFLOW",
+   "title": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL EU KIDS ACT - 'EU Keeping Internet Digital Spaces Accountable and Trustworthy'",
+   "attachments": [
+    {
+     "category": "ACT",
+     "createdDate": "2026-10-07T08:16:07.558",
+     "date": "2026-09-16T22:00:00",
+     "documentId": "090166e53397082e",
+     "ersFileName": "PART-2026-920191V1.pdf",
+     "filename": "PART-2026-920191V1.pdf",
+     "id": 69511492,
+     "index": "0-0005-0001",
+     "isOriginal": true,
+     "language": "EN",
+     "modifiedDate": "2026-10-07T08:16:07.558",
+     "pages": 99,
+     "published": true,
+     "reference": "COM(2026)681",
+     "registrationNumber": "Ares(2026)8816968",
+     "size": 1550898,
+     "takeTheOriginal": null,
+     "title": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL EU KIDS ACT - 'EU Keeping Internet Digital Spaces Accountable and Trustworthy'",
+     "type": "MAIN",
+     "workGroup": "COM(2026)681/5050103",
+     "workType": "PROP_REG"
+    },
+    {
+     "category": "DOCUMENT",
+     "createdDate": "2026-10-07T08:16:07.558",
+     "date": "2026-09-16T22:00:00",
+     "documentId": "090166e53396efd3",
+     "ersFileName": "PART-2026-920196V1.pdf",
+     "filename": "PART-2026-920196V1.pdf",
+     "id": 69511493,
+     "index": "02-0005-0001",
+     "isOriginal": true,
+     "language": "EN",
+     "modifiedDate": "2026-10-07T08:16:07.558",
+     "pages": 83,
+     "published": true,
+     "reference": "SWD(2026)681",
+     "registrationNumber": "Ares(2026)8816968",
+     "size": 1963681,
+     "takeTheOriginal": null,
+     "title": "COMMISSION STAFF WORKING DOCUMENT Analysis of impacts Accompanying the document Proposal for a Regulation of the European Parliament and of the Council EU KIDS ACT - 'EU Keeping Internet Digital Spaces Accountable and Trustworthy'",
+     "type": "ANNEX",
+     "workGroup": "SWD(2026)681/5051843",
+     "workType": "SWD"
+    }
+   ],
+   "initiativeStatus": "ACTIVE",
+   "endDate": "2026/12/03 23:59:59",
+   "feedbackPeriod": 9,
+   "totalFeedback": 2656,
+   "receivingFeedbackStatus": "OPEN",
+   "targetGroups": null,
+   "consultationObjective": null,
+   "publicationTranslations": [],
+   "plannedStartDate": null,
+   "plannedEndDate": null,
+   "plannedPeriod": "",
+   "groupId": 19418,
+   "isCurrent": true,
+   "usefulLinks": [],
+   "frontEndStage": "ADOPTION_WORKFLOW",
+   "isComplete": true
+  }
+ ],
+ "publishedDate": "2026/10/01 14:55:29",
+ "orderDate": "2026/10/01 14:55:29",
+ "initiativeStatus": "ACTIVE",
+ "isMajor": null,
+ "isEvaluation": null,
+ "stage": "ADOPTION_WORKFLOW",
+ "initiativeCategory": [],
+ "foreseenActType": "PROP_REG",
+ "receivingFeedbackStatus": "OPEN",
+ "createdDate": "2026/10/01 14:55:29",
+ "betterRegulationRequirement": [],
+ "initiativeTranslations": [
+  {
+   "field": "SHORT_TITLE",
+   "language": "EN",
+   "value": "Child online safety – keeping digital spaces accountable and trustworthy (EU Kids Act)"
+  }
+ ],
+ "committee": null,
+ "expertGroup": null,
+ "legalBasis": [
+  {
+   "id": 69111108,
+   "documentLegal": "http://data.europa.eu/eli/tfeu_2010/oj",
+   "article": "294",
+   "paragraph": null,
+   "alinea": null,
+   "point": null,
+   "phrase": null
+  },
+  {
+   "id": 69111109,
+   "documentLegal": "http://data.europa.eu/eli/tfeu_2010/oj",
+   "article": "114",
+   "paragraph": null,
+   "alinea": null,
+   "point": null,
+   "phrase": null
+  }
+ ],
+ "policyAreas": [
+  {
+   "id": 42257,
+   "code": "CNECT",
+   "label": "Digital Economy and Society"
+  }
+ ],
+ "dg": "CNECT",
+ "modifiedDate": "2026/10/01 14:55:29",
+ "id": 19418,
+ "isGroupedCfe": null,
+ "topics": [
+  {
+   "code": "DIGITAL",
+   "label": "Digital economy and society",
+   "id": 6387398
+  }
+ ]
+}

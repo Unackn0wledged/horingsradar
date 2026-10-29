@@ -18,7 +18,7 @@ from horingsradar.eu.assess import assess_case, pending_assessments
 from horingsradar.eu.config import EUSettings
 from horingsradar.eu.documents import update_documents
 from horingsradar.eu.prefilter import Prefilter, load_keywords
-from horingsradar.eu.sources import eealex, eurlex
+from horingsradar.eu.sources import eealex, eurlex, haveyoursay
 from horingsradar.eu.sources.eurlex import WITHDRAWN, EurLexClient, Proposal
 from horingsradar.http import Fetcher
 from horingsradar.jobs import JobHandle
@@ -34,6 +34,8 @@ EEA_FINAL = ("IN_FORCE", "NO_LONGER_IN_FORCE")
 # Upper bound on EEA-Lex list pages per run (60 rows each, 5 seconds apart).
 MAX_EEA_LIST_PAGES = 40
 YEAR_RE = re.compile(r"\((\d{4})\)")
+# Proposals without a Have Your Say page are looked up again until they are this old.
+HYS_RETRY = timedelta(weeks=12)
 
 
 def discovery_since(settings: EUSettings, conn: sqlite3.Connection, today: date) -> date:
@@ -259,6 +261,163 @@ def update_eea(conn: sqlite3.Connection, client: eealex.EEALexClient) -> dict[st
     return result
 
 
+def _hys_lookup_due(case: sqlite3.Row, today: date) -> bool:
+    """A proposal's Have Your Say page comes a couple of weeks after adoption. One without a
+    page is looked up again until it is HYS_RETRY old; an older one is looked up once."""
+    if case["hys_status"] is None:
+        return True
+    if case["hys_status"] == "found":
+        return False
+    d = case["date_document"]
+    return bool(d) and date.fromisoformat(d) >= today - HYS_RETRY
+
+
+def _feedback_events(
+    before: dict[int, sqlite3.Row], publications: list[haveyoursay.Publication]
+) -> list[tuple[str | None, str]]:
+    """(old deadline, new deadline) for each feedback period that opened or moved."""
+    events: list[tuple[str | None, str]] = []
+    for p in publications:
+        if p.status != haveyoursay.OPEN or not p.deadline:
+            continue
+        old = before.get(p.id)
+        if old is None or old["status"] != haveyoursay.OPEN:
+            events.append((None, p.deadline))
+        elif old["deadline"] != p.deadline:
+            events.append((old["deadline"], p.deadline))
+    return events
+
+
+def _save_initiative(
+    conn: sqlite3.Connection, init: haveyoursay.Initiative, new_case_id: int | None = None
+) -> int:
+    """Store the initiative and its stages, and log the feedback periods that opened or moved
+    for each case linked to it (all of them are new for a case linked just now)."""
+    now = db.now_iso()
+    before = {
+        r["id"]: r
+        for r in conn.execute(
+            "SELECT * FROM eu_hys_publication WHERE initiative_id = ?", (init.id,)
+        )
+    }
+    conn.execute(
+        "INSERT INTO eu_hys_initiative (id, path, reference, short_title, first_seen, checked_at)"
+        " VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (id) DO UPDATE SET path = excluded.path,"
+        " reference = excluded.reference, short_title = excluded.short_title,"
+        " checked_at = excluded.checked_at",
+        (init.id, init.path, init.reference, init.short_title, now, now),
+    )
+    conn.execute("DELETE FROM eu_hys_publication WHERE initiative_id = ?", (init.id,))
+    conn.executemany(
+        "INSERT OR REPLACE INTO eu_hys_publication (id, initiative_id, type, stage, reference,"
+        " published, deadline, status, planned_period, is_current)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        [
+            (
+                p.id,
+                init.id,
+                p.type,
+                p.stage,
+                p.reference,
+                p.published,
+                p.deadline,
+                p.status,
+                p.planned_period,
+                int(p.is_current),
+            )
+            for p in init.publications
+        ],
+    )
+    changes = 0
+    linked = conn.execute("SELECT id FROM eu_case WHERE hys_initiative_id = ?", (init.id,))
+    for (case_id,) in linked.fetchall():
+        for old, new in _feedback_events(
+            {} if case_id == new_case_id else before, init.publications
+        ):
+            eu_db.record_change(conn, case_id, "hys_feedback", old, new)
+            changes += 1
+    return changes
+
+
+def update_hys(
+    conn: sqlite3.Connection, client: haveyoursay.HaveYourSayClient, today: date
+) -> dict[str, Any]:
+    """Have Your Say feedback periods for candidates, found by their COM number.
+
+    - Candidates not linked yet are looked up (see _hys_lookup_due). The initiative found must
+      have a stage with the same COM number, or it is not linked.
+    - Linked initiatives are fetched again while a stage is open or still to come.
+    The portal never changes which cases are candidates or their relevance.
+    """
+    looked_up = linked = refreshed = changes = 0
+    fetched: set[int] = set()
+    result: dict[str, Any] = {}
+    try:
+        cases = conn.execute(
+            "SELECT * FROM eu_case WHERE candidate = 1 AND com_ref IS NOT NULL ORDER BY id"
+        ).fetchall()
+        for case in cases:
+            if not _hys_lookup_due(case, today):
+                continue
+            path = client.find(case["com_ref"])
+            looked_up += 1
+            init = client.initiative(path) if path else None
+            if init is None or not init.has_com_ref(case["com_ref"]):
+                if init is not None:
+                    log.warning(
+                        "%s: Have Your Say %s has no stage with that COM number; not linked",
+                        case["com_ref"],
+                        init.id,
+                    )
+                conn.execute(
+                    "UPDATE eu_case SET hys_status = ?, hys_checked_at = ? WHERE id = ?",
+                    ("mismatch" if init else "not_found", db.now_iso(), case["id"]),
+                )
+                continue
+            conn.execute(
+                "UPDATE eu_case SET hys_initiative_id = ?, hys_status = 'found',"
+                " hys_checked_at = ? WHERE id = ?",
+                (init.id, db.now_iso(), case["id"]),
+            )
+            conn.execute(
+                "INSERT OR IGNORE INTO eu_case_source (case_id, source, source_id, url, first_seen)"
+                " VALUES (?, 'hys', ?, ?, ?)",
+                (
+                    case["id"],
+                    f"{init.id}/{haveyoursay.api_ref(case['com_ref'])}",
+                    init.url,
+                    db.now_iso(),
+                ),
+            )
+            changes += _save_initiative(conn, init, new_case_id=case["id"])
+            fetched.add(init.id)
+            linked += 1
+            log.info("%s: Have Your Say %s", case["com_ref"], init.path)
+        still_open = conn.execute(
+            "SELECT i.* FROM eu_hys_initiative i WHERE i.id IN"
+            " (SELECT hys_initiative_id FROM eu_case WHERE candidate = 1)"
+            " AND EXISTS (SELECT 1 FROM eu_hys_publication p WHERE p.initiative_id = i.id"
+            "   AND p.status IN (?, ?)) ORDER BY i.id",
+            (haveyoursay.OPEN, haveyoursay.UPCOMING),
+        ).fetchall()
+        for row in still_open:
+            if row["id"] in fetched:
+                continue
+            changes += _save_initiative(conn, client.initiative(row["path"]))
+            fetched.add(row["id"])
+            refreshed += 1
+    except haveyoursay.HaveYourSayUnavailable as exc:
+        log.warning("Have Your Say stopped: %s", exc)
+        result["have_your_say"] = "ufullstendig (se loggen)"
+    result.update(
+        hys_looked_up=looked_up,
+        hys_new_links=linked,
+        hys_refreshed=refreshed,
+        hys_feedback_changes=changes,
+    )
+    return result
+
+
 def assess_pending(
     settings: EUSettings, conn: sqlite3.Connection, job: JobHandle, client: LLMClient | None
 ) -> dict[str, Any]:
@@ -324,17 +483,21 @@ def run(
         )
         job.save_summary()
 
-        job.progress(phase="enrich", done=0, total=4)
+        job.progress(phase="enrich", done=0, total=5)
         summary["eurovoc_labels"] = update_labels(conn, eurlex_client)
         summary["status_changes"] = update_procedures(conn, eurlex_client)
         job.save_summary()
 
-        job.progress(phase="eea", done=2, total=4)
+        job.progress(phase="eea", done=2, total=5)
         eea_fetcher = eea_fetcher or eealex.make_fetcher(settings)
         summary.update(update_eea(conn, eealex.EEALexClient(eea_fetcher)))
         job.save_summary()
 
-        job.progress(phase="documents", done=3, total=4)
+        job.progress(phase="have_your_say", done=3, total=5)
+        summary.update(update_hys(conn, haveyoursay.HaveYourSayClient(fetcher), today))
+        job.save_summary()
+
+        job.progress(phase="documents", done=4, total=5)
         summary.update(update_documents(settings, conn, eurlex_client, fetcher))
         summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
         job.save_summary()
@@ -342,7 +505,7 @@ def run(
         if assess:
             summary.update(assess_pending(settings, conn, job, client))
         summary.update(counts(conn))
-        job.progress(phase="done", done=4, total=4)
+        job.progress(phase="done", done=5, total=5)
         return summary
     finally:
         if own_fetcher:
@@ -372,6 +535,12 @@ def counts(conn: sqlite3.Connection) -> dict[str, int]:
     result["cases_assessed"] = len(latest)
     for level in ("hoy", "middels", "lav", "ingen"):
         result[level] = sum(1 for r in latest if r["relevance"] == level)
+    hys = conn.execute(
+        "SELECT COUNT(*) AS linked, COALESCE(SUM(EXISTS (SELECT 1 FROM eu_hys_publication p"
+        "   WHERE p.initiative_id = c.hys_initiative_id AND p.status = 'OPEN')), 0) AS open"
+        " FROM eu_case c WHERE c.candidate = 1 AND c.hys_initiative_id IS NOT NULL"
+    ).fetchone()
+    result["hys_linked"], result["hys_open"] = int(hys["linked"]), int(hys["open"])
     result["waiting"] = int(
         conn.execute(
             "SELECT COUNT(*) FROM eu_case WHERE candidate = 1 AND needs_assessment = 1"

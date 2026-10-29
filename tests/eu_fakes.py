@@ -1,4 +1,5 @@
-"""A fake Cellar SPARQL endpoint that answers from the captured responses in fixtures/eurlex."""
+"""Fake EU sources that answer from captured responses: the Cellar SPARQL endpoint
+(fixtures/eurlex), Have Your Say (fixtures/haveyoursay) and EEA-Lex (fixtures/eealex)."""
 
 from __future__ import annotations
 
@@ -25,6 +26,55 @@ def _response(bindings: list[dict]) -> httpx.Response:
     )
 
 
+HYS = Path(__file__).parent / "fixtures" / "haveyoursay"
+
+
+def hys_group(initiative_id: int) -> dict:
+    return json.loads((HYS / f"group_{initiative_id}.json").read_text(encoding="utf-8"))
+
+
+@dataclass
+class HYSSite:
+    """Fake Have Your Say API: the captured lookups and initiatives, with knobs for tests."""
+
+    lookups: dict[str, str] = field(
+        default_factory=lambda: {
+            ref: text
+            for ref, text in json.loads((HYS / "lookups.json").read_text("utf-8")).items()
+            if not text.startswith("{")
+        }
+    )
+    groups: dict[int, dict] = field(
+        default_factory=lambda: {i: hys_group(i) for i in (19418, 14628, 15792)}
+    )
+    status: int = 200  # anything else: every API call answers with it
+    requests: list[str] = field(default_factory=list)
+
+    def handler(self, request: httpx.Request) -> httpx.Response:
+        url = urlparse(str(request.url))
+        if url.path == "/robots.txt":
+            return httpx.Response(200, text=(HYS / "robots.txt").read_text(encoding="utf-8"))
+        self.requests.append(str(request.url))
+        if self.status != 200:
+            return httpx.Response(self.status, json={"code": "error"})
+        api = "/info/law/better-regulation/brpapi/"
+        assert url.path.startswith(api), url.path
+        endpoint = url.path.removeprefix(api)
+        if endpoint == "findInitiativePathByReference":
+            ref = parse_qs(url.query)["reference"][0]
+            if " " in ref:
+                return httpx.Response(400, json={"code": "bad_request"})
+            if ref not in self.lookups:
+                return httpx.Response(404, json={"code": "not_found"})
+            return httpx.Response(
+                200, text=self.lookups[ref], headers={"content-type": "application/json"}
+            )
+        initiative_id = int(endpoint.removeprefix("groupInitiatives/"))
+        if initiative_id not in self.groups:
+            return httpx.Response(404, json={"code": "not_found"})
+        return httpx.Response(200, json=self.groups[initiative_id])
+
+
 @dataclass
 class EUSite:
     proposals: list[dict] = field(
@@ -45,6 +95,7 @@ class EUSite:
     )
     queries: list[str] = field(default_factory=list)
     downloads: list[str] = field(default_factory=list)
+    hys: HYSSite = field(default_factory=HYSSite)
 
     def pdf_for(self, url: str) -> bytes | None:
         """The fixture PDF behind an item URL from english_pdfs.json (by the work's CELEX)."""
@@ -61,6 +112,8 @@ class EUSite:
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         url = urlparse(str(request.url))
+        if url.hostname == "ec.europa.eu":
+            return self.hys.handler(request)
         if url.path == "/robots.txt":
             return httpx.Response(200, text="User-agent: *\nAllow: /\n")
         if url.path.startswith("/resource/cellar/"):

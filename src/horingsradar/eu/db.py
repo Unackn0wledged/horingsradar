@@ -136,12 +136,38 @@ CREATE TABLE IF NOT EXISTS eu_report_item (
     PRIMARY KEY (report_id, case_id)
 );
 
+-- Have Your Say initiatives found by a candidate's COM number (eu_case.hys_initiative_id).
+-- Only these fields are kept; the portal's JSON also names the officials responsible.
+CREATE TABLE IF NOT EXISTS eu_hys_initiative (
+    id INTEGER PRIMARY KEY,  -- the portal's initiative ID
+    path TEXT NOT NULL,  -- 14628-Cloud-and-AI-Development-Act, for the page URL
+    reference TEXT,
+    short_title TEXT,
+    first_seen TEXT NOT NULL,
+    checked_at TEXT NOT NULL
+);
+
+-- One per stage of an initiative, each with its own feedback period.
+CREATE TABLE IF NOT EXISTS eu_hys_publication (
+    id INTEGER PRIMARY KEY,  -- the portal's publication ID
+    initiative_id INTEGER NOT NULL REFERENCES eu_hys_initiative(id),
+    type TEXT,
+    stage TEXT,
+    reference TEXT,
+    published TEXT,
+    deadline TEXT,
+    status TEXT,
+    planned_period TEXT,
+    is_current INTEGER NOT NULL DEFAULT 0
+);
+
 CREATE INDEX IF NOT EXISTS idx_eu_case_date ON eu_case (date_document);
 CREATE INDEX IF NOT EXISTS idx_eu_assessment_case ON eu_assessment (case_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_eu_finding_assessment ON eu_finding (assessment_id);
 CREATE INDEX IF NOT EXISTS idx_eu_case_work ON eu_case (work_uri);
 CREATE INDEX IF NOT EXISTS idx_eu_case_source_case ON eu_case_source (case_id);
 CREATE INDEX IF NOT EXISTS idx_eu_case_change_case ON eu_case_change (case_id, detected_at);
+CREATE INDEX IF NOT EXISTS idx_eu_hys_publication_initiative ON eu_hys_publication (initiative_id);
 """
 
 
@@ -154,6 +180,9 @@ EU_CASE_COLUMNS = {
     "eea_jcd": "TEXT",
     "eea_checked_at": "TEXT",
     "reported_in": "INTEGER",  # the last EU report that showed the case
+    "hys_initiative_id": "INTEGER",  # eu_hys_initiative, found by the COM number
+    "hys_status": "TEXT",  # found | not_found | mismatch
+    "hys_checked_at": "TEXT",
 }
 
 
@@ -170,7 +199,8 @@ def connect(db_path: Path) -> sqlite3.Connection:
 def record_change(
     conn: sqlite3.Connection, case_id: int, kind: str, old: str | None, new: str | None
 ) -> None:
-    """kind: procedure_status | candidate | variant (a corrigendum or extra part) | eea_status."""
+    """kind: procedure_status | candidate | variant (a corrigendum or extra part) | eea_status |
+    hys_feedback (a feedback period opened, or its deadline moved; old and new deadline)."""
     conn.execute(
         "INSERT INTO eu_case_change (case_id, detected_at, kind, old_value, new_value)"
         " VALUES (?, ?, ?, ?, ?)",

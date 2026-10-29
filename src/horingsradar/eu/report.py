@@ -5,8 +5,8 @@ What a report shows (docs/EU-SPEC.md, Rapport):
   line under "Tidligere forslag";
 - high/medium cases shown before whose new assessment changed relevance or findings, again in
   full and marked; a case first shown without an assessment is shown again once it has one;
-- high/medium cases shown before where only the procedure or EEA status changed, or a
-  corrigendum appeared: one line each;
+- high/medium cases shown before where only the procedure or EEA status changed, a
+  corrigendum appeared, or a Have Your Say feedback period opened or moved: one line each;
 - low/none cases are not shown again; a new assessment with the same result is not a change.
 """
 
@@ -24,7 +24,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from horingsradar import db
 from horingsradar.eu.assess import DOC_TYPE_LABELS
 from horingsradar.eu.schema import EU_SECTOR_LABELS
-from horingsradar.eu.sources import eealex
+from horingsradar.eu.sources import eealex, haveyoursay
 from horingsradar.eu.sources.eurlex import eurlex_url
 from horingsradar.llm.schema import RELEVANCE_LABELS, RELEVANCE_ORDER
 from horingsradar.quotes import normalize
@@ -92,6 +92,8 @@ class CaseView:
     eurovoc: list[str]
     today: date
     changes: Changes | None = None
+    hys: dict[str, Any] | None = None  # the linked Have Your Say initiative
+    hys_publications: list[dict[str, Any]] = field(default_factory=list)
 
     @property
     def id(self) -> int:
@@ -111,10 +113,56 @@ class CaseView:
 
     @property
     def sort_key(self) -> tuple:
-        """Highest relevance first, then the newest proposal."""
+        """Highest relevance first, then open Have Your Say deadlines (nearest first), then the
+        newest proposal."""
         d = self.row["date_document"]
         newest = -date.fromisoformat(d).toordinal() if d else 0
-        return (-RELEVANCE_ORDER.get(self.relevance, -1), newest)
+        deadline = self.open_deadline
+        return (
+            -RELEVANCE_ORDER.get(self.relevance, -1),
+            0 if deadline else 1,
+            date.fromisoformat(deadline).toordinal() if deadline else 0,
+            newest,
+        )
+
+    def _is_open(self, p: dict[str, Any]) -> bool:
+        return (
+            p["status"] == haveyoursay.OPEN
+            and bool(p["deadline"])
+            and date.fromisoformat(p["deadline"]) >= self.today
+        )
+
+    @property
+    def open_deadline(self) -> str | None:
+        """The nearest deadline of a feedback period that is open on the report date."""
+        deadlines = [p["deadline"] for p in self.hys_publications if self._is_open(p)]
+        return min(deadlines) if deadlines else None
+
+    @property
+    def hys_url(self) -> str | None:
+        return haveyoursay.PAGE_URL.format(path=self.hys["path"]) if self.hys else None
+
+    @property
+    def feedback(self) -> list[str]:
+        """Feedback periods on Have Your Say: the open ones, and the proposal's own period."""
+        lines = []
+        for p in self.hys_publications:
+            label = _stage_label(p)
+            if p["status"] == haveyoursay.OPEN and p["deadline"]:
+                state = "åpen til" if self._is_open(p) else "lukket"
+                lines.append(f"Tilbakemelding på {label} {state} {fmt_date(p['deadline'])}")
+            elif p["stage"] == haveyoursay.ADOPTION and p["status"] == "CLOSED":
+                lines.append(f"Tilbakemelding på {label} lukket {fmt_date(p['deadline'])}")
+            elif p["stage"] == haveyoursay.ADOPTION and p["status"] == haveyoursay.UPCOMING:
+                planned = haveyoursay.planned_label(p["planned_period"])
+                lines.append(
+                    f"Tilbakemelding på {label} planlagt {planned}"
+                    if planned
+                    else f"Tilbakemelding på {label} kommer"
+                )
+        if self.hys and not lines:
+            lines.append("Ingen åpen tilbakemelding")
+        return lines
 
     @property
     def recent(self) -> bool:
@@ -190,6 +238,19 @@ class CaseView:
         return db.loads(self.assessment["notes"], []) if self.assessment else []
 
 
+def _stage_label(p: dict[str, Any]) -> str:
+    """What the feedback is on, after "Tilbakemelding på"."""
+    if p["stage"] == haveyoursay.ADOPTION:
+        return "forslaget"
+    if p["stage"] == "OPC_LAUNCHED" or p["type"] == "OPC_LAUNCHED":
+        return "den offentlige konsultasjonen"
+    if (p["type"] or "").startswith("CFE_"):
+        return "innspillsfasen (call for evidence)"
+    if p["stage"] == "ISC_WORKFLOW":
+        return "utkastet"
+    return "initiativet"
+
+
 def _latest_assessment(conn: sqlite3.Connection, case_id: int) -> dict[str, Any] | None:
     row = conn.execute(
         "SELECT * FROM eu_assessment WHERE case_id = ? ORDER BY id DESC LIMIT 1", (case_id,)
@@ -223,6 +284,18 @@ def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> CaseView:
         [labels[i] for i in ids if labels.get(i)],
         today,
     )
+    if row["hys_initiative_id"]:
+        hys = conn.execute(
+            "SELECT * FROM eu_hys_initiative WHERE id = ?", (row["hys_initiative_id"],)
+        ).fetchone()
+        view.hys = dict(hys) if hys else None
+        view.hys_publications = [
+            dict(p)
+            for p in conn.execute(
+                "SELECT * FROM eu_hys_publication WHERE initiative_id = ? ORDER BY id",
+                (row["hys_initiative_id"],),
+            )
+        ]
     for f in view.findings:
         f["page_href"] = view.page_href(f["page"])
     return view
@@ -236,6 +309,14 @@ EVENT_TEXTS = {
 
 
 def _event(change: sqlite3.Row) -> dict[str, str] | None:
+    if change["kind"] == "hys_feedback":
+        old, new = change["old_value"], change["new_value"]
+        text = (
+            f"Frist for tilbakemelding på Have Your Say: {fmt_date(old)} → {fmt_date(new)}"
+            if old
+            else f"Åpen for tilbakemelding på Have Your Say til {fmt_date(new)}"
+        )
+        return {"tag": "Ny frist", "text": text, "date": change["detected_at"]}
     if change["kind"] not in EVENT_TEXTS:
         return None
     tag, template = EVENT_TEXTS[change["kind"]]
@@ -342,6 +423,17 @@ def period_counts(conn: sqlite3.Connection, since: str | None) -> dict[str, int]
     }
 
 
+def hys_counts(conn: sqlite3.Connection, today: date) -> dict[str, int]:
+    """Candidates with a Have Your Say page, and those open for feedback on the report date."""
+    row = conn.execute(
+        "SELECT COUNT(*) AS linked, COALESCE(SUM(EXISTS (SELECT 1 FROM eu_hys_publication p"
+        "   WHERE p.initiative_id = c.hys_initiative_id AND p.status = ? AND p.deadline >= ?)),"
+        " 0) AS open FROM eu_case c WHERE c.candidate = 1 AND c.hys_initiative_id IS NOT NULL",
+        (haveyoursay.OPEN, today.isoformat()),
+    ).fetchone()
+    return {"linked": int(row["linked"]), "open": int(row["open"])}
+
+
 def _environment() -> Environment:
     env = Environment(
         loader=FileSystemLoader(HERE / "templates"),
@@ -378,6 +470,7 @@ def build_report(settings, conn: sqlite3.Connection, now: datetime | None = None
         "generated_at": now.strftime("%d.%m.%Y kl. %H:%M"),
         "models": models,
         "counts": period_counts(conn, since),
+        "hys_counts": hys_counts(conn, today),
         "full": full,
         "detailed": detailed,
         "brief": brief,

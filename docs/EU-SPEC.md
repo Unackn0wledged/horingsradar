@@ -73,7 +73,7 @@ Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksem
 ## Kjøring
 
 - **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` og `backtest` startes manuelt.
-- **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`) og alle høringer på Have Your Say som er åpne.
+- **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`). Kandidatene slås opp på Have Your Say (rundt 10–15 minutter med 5 sekunder mellom kall).
 - Senere kjøringer går tilbake til forrige kjøring minus 60 dager (`EU_DISCOVERY_OVERLAP_DAYS`), fordi EuroVoc-indekseringen kommer dager eller uker etter at et forslag er publisert.
 - Forslag hentes i vinduer på 30 dager. Én spørring over flere måneder tar minutter på et kaldt endepunkt, over tidsgrensen, mens et vindu på 30 dager svarer på rundt ett sekund. Første kjøring tar rundt 2 minutter.
 
@@ -82,7 +82,7 @@ Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksem
 LLM brukes bare til relevansvurdering av et forfiltrert utvalg. Henting, filtrering, kobling mellom kilder og oppslag av EØS-status gjøres deterministisk uten LLM.
 
 ```
-hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-status → rapport
+hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Your Say-frister → LLM-vurdering → rapport
 ```
 
 ## Kilder
@@ -90,17 +90,17 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 | Kilde | Innhold | Tilgang | Rolle |
 |---|---|---|---|
 | EUR-Lex / Cellar | COM-forslag, vedtatte rettsakter, EuroVoc-indeksering, EØS-merking | SPARQL-endepunkt `publications.europa.eu/webapi/rdf/sparql` (åpent, tillatt i robots.txt). EUR-Lex' egne nettsider er bak bot-beskyttelse og hentes ikke; lenkene er for mennesker | Primærkilde for forslag |
-| Have Your Say (Kommisjonen) | Initiativer, «call for evidence», offentlige konsultasjoner, tilbakemeldingsperioder | JSON-endepunkter bak nettsiden (ikke offisielt dokumentert) | Primærkilde for høringer |
+| Have Your Say (Kommisjonen) | Initiativer med faser og tilbakemeldingsperioder | JSON-endepunktene som nettsiden selv bruker (ikke offisielt dokumentert; tillatt i robots.txt, innhold under CC BY 4.0). Se Have Your Say | Berikelse: tilbakemeldingsfrist og lenke for EUR-Lex-kandidater |
 | EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Listen sortert etter forslagsdato, og faktaark per CELEX for vedtatte rettsakter (skraping, 5 sekunder mellom kall). Se EØS-status | Berikelse: EØS-status |
 | EDPS | Uttalelser om lovforslag som berører personvern | RSS / nettside | Sterkt relevanssignal |
 | Legislative Observatory (OEIL) | Prosedyrestatus i Europaparlamentet | RSS / prosedyresider | Valgfri berikelse: status |
 
 **Må verifiseres før implementering** (hent ekte svar og lagre som fixtures, som for regjeringen.no):
-- Have Your Say: faktiske JSON-endepunkter, paginering og felter (tema, type, tilbakemeldingsperiode).
+- ~~Have Your Say~~: verifisert 29.10.2026, se Have Your Say.
 - ~~EEA-Lex~~: verifisert 29.10.2026, se EØS-status.
 - ~~EUR-Lex SPARQL~~: verifisert 29.10.2026, se Forfiltrering og [`EU-PLAN.md`](EU-PLAN.md).
 - OEIL: om fagområdekodene for personvern og cybersikkerhet kan brukes som filter i RSS.
-- Robots.txt og bruksvilkår for skraping, særlig EEA-Lex og Have Your Say.
+- Robots.txt og bruksvilkår for nye kilder (EEA-Lex og Have Your Say er sjekket).
 
 ## Forfiltrering (uten LLM)
 
@@ -119,11 +119,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 - Forslag som ennå ikke har fått EuroVoc-emner, vurderes på tittelen og ses på nytt i senere kjøringer (overlappen på 60 dager).
 - Når et forslag først er kandidat, forblir det kandidat, selv om emnene endres senere.
 
-**Have Your Say:** filtrer på tema
-- «Justice and fundamental rights»
-- «Digital economy and society»
-
-Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligatorisk for Have Your Say, ikke et supplement.
+**Have Your Say:** ingen egen forfiltrering. Bare EUR-Lex-kandidater slås opp (se Have Your Say). Høringer som ennå ikke har et COM-forslag, hentes ikke (se Ikke i scope).
 
 **EDPS:** alle nye uttalelser om lovforslag regnes automatisk som kandidater.
 
@@ -132,7 +128,7 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 
 ## Kobling og deduplisering
 
-- Nøkler: CELEX-nummer og COM-nummer (f.eks. `COM(2023) 905`). Have Your Say-initiativer kan mangle begge. Koble i så fall på tittel eller referanse når forslaget senere publiseres i EUR-Lex.
+- Nøkler: CELEX-nummer og COM-nummer (f.eks. `COM(2023) 905`). Have Your Say kobles bare på COM-nummer, aldri på tittel (se Have Your Say).
 - Én sak = én post i databasen, med lenker til alle kilder den er funnet i.
 - Rettelser (`52025PC0828R(01)`) og tilleggsdeler (`52025PC0101(01)`) har eget CELEX-nummer, men hører til samme sak som forslaget (grunn-CELEX uten tillegg). De lagres som kilder til saken, en ny variant logges som endring, og EuroVoc-emnene slås sammen. Forslagets egne felt (tittel, dato) går foran variantens.
 - Et treff i EDPS vises i rapporten og gir minst `middels` (se EDPS-regel under Regler).
@@ -184,6 +180,28 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 
 EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som relevant. EEA-Lex er fasiten. Status for forslag utover «registrert» krever tilgang til faktaarkene for forslag; det kan legges til hvis EFTA gir slik tilgang.
 
+## Have Your Say (uten LLM)
+
+Have Your Say er Kommisjonens høringsportal. Hvert initiativ har faser med egne tilbakemeldingsfrister: call for evidence, offentlig konsultasjon, det vedtatte forslaget (med COM-nummer, rundt 8 uker) og planlagte faser. Radaren bruker portalen bare til å vise **tilbakemeldingsfrist og lenke for EUR-Lex-kandidater** (valgt 29.10.2026).
+
+**Hva portalen gir en automatisk klient** (sjekket 29.10.2026):
+- robots.txt for ec.europa.eu sperrer ikke `/info/law/better-regulation/`. Innhold eid av EU er CC BY 4.0. Ingen bot-sjekk.
+- JSON-endepunktene er de nettsiden selv bruker (funnet i dens JavaScript), under `https://ec.europa.eu/info/law/better-regulation/brpapi/`:
+  - `findInitiativePathByReference?reference=COM(2026)502` gir initiativets ID og sti (`14628-Cloud-and-AI-Development-Act`), eller 404. Uten mellomrom i referansen; med mellomrom gir den 400. Virker uavhengig av tema (Data Act, CSAM og EU KIDS Act er funnet slik).
+  - `groupInitiatives/{id}` gir initiativet med én publikasjon per fase: type, fase, referanse, publisert, frist (`endDate`), status (`OPEN`, `CLOSED`, `UPCOMING`, `DISABLED`) og planlagt periode («Q-2027-4»).
+  - Søkelisten (`searchInitiatives`, filtre `topic`, `feedbackStatus`, `feedbackOpenDateFrom`, høyst 100 per side) brukes ikke. Den er usortert, og sidene kan overlappe (4 155 rader, 4 146 unike).
+- Initiativets egen referanse er ofte Ares-nummeret fra første fase, også etter at forslaget er vedtatt. COM-nummeret står i forslagsfasen.
+- JSON-en navngir saksbehandlerne i Kommisjonen (navn, e-post, telefon). Feltene lagres ikke, og de er fjernet fra testdataene.
+
+**Slik settes fristen for kandidater:**
+1. En kandidat med COM-nummer slås opp. Treff gir initiativet, som bare kobles hvis en av fasene har samme COM-nummer.
+2. Siden for et forslag kommer gjerne et par uker etter vedtak. Uten treff slås forslaget opp igjen hver kjøring til det er 12 uker gammelt; eldre forslag slås opp én gang.
+3. Koblede initiativer hentes på nytt så lenge en fase er åpen eller kommende.
+4. En periode som åpner, eller en frist som flyttes, logges som endring.
+5. Feil eller uventet svar stopper Have Your Say-steget for kjøringen. Resten fullføres, og ingenting gjettes.
+
+Have Your Say endrer aldri hvem som er kandidat eller relevansnivået.
+
 ## Rapport
 
 **Egen PDF**, ikke en seksjon i Høringsradars rapport. Skrives til EU-instansens rapportmappe. Samme visuelle stil og fonter. Per sak:
@@ -194,7 +212,7 @@ EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som 
 - EØS-status fra EEA-Lex
 - flagg hvis EDPS har avgitt uttalelse
 
-Sortering: relevans og deretter nyeste dato (EUR-Lex-forslag har ingen frist; frister fra Have Your Say kommer i milepæl 5). Lav og ingen relevans som én linje med begrunnelse.
+Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmeste først), og deretter nyeste dato. Lav og ingen relevans som én linje med begrunnelse.
 
 **Bygget i milepæl 4** (`horingsradar-eu report`, `eu/report.py`, `eu/templates/eu_report.html.j2`):
 - Toppfelt med periode, modell og prompt, og hvor mange forslag som ble hentet, ble kandidater og ble **filtrert bort uten LLM** i perioden.
@@ -203,6 +221,7 @@ Sortering: relevans og deretter nyeste dato (EUR-Lex-forslag har ingen frist; fr
 - **Kandidater eldre enn 8 uker** som ikke har vært rapportert, vises bare som én linje under «Tidligere forslag» (valgt 29.10.2026, så første rapport ikke blir på 60 sider).
 - **Regler for gjentak, som i Høringsradar:** høy og middels vises på nytt med merker når en ny vurdering endrer relevans eller funn; statusendringer (prosedyre, EØS-status, rettelse) gir én linje; lav og ingen vises ikke på nytt; en ny vurdering med samme resultat er ikke en endring. I tillegg: en sak som sto under «Ikke vurdert», vises igjen når den har fått sin første vurdering, uansett nivå.
 - Sidetall i funn lenker til den engelske PDF-en (`#page=N`). Referansen lenker til EUR-Lex, og EØS-statusen til EEA-Lex.
+- **Have Your Say (milepæl 5):** tilbakemeldingsfristen står i oversikten og i analysen («Tilbakemelding på forslaget åpen til 03.12.2026», «lukket …», «planlagt 4. kvartal 2027»), med lenke til initiativet. Toppfeltet viser hvor mange kandidater som har en side, og hvor mange som er åpne for tilbakemelding. En periode som åpner eller en flyttet frist på en høy eller middels sak som er rapportert før, gir én linje under endringer.
 - Grunnlaget for neste rapport lagres i `eu_report` og `eu_report_item` (vurdering, prosedyrestatus og EØS-status per sak).
 - Stilen er kopiert fra Høringsradar-rapporten; pilotens mal er ikke endret.
 
@@ -226,7 +245,7 @@ Sortering: relevans og deretter nyeste dato (EUR-Lex-forslag har ingen frist; fr
 2. EEA-Lex: liste over registrerte forslag, og faktaark for vedtatte rettsakter.
 3. LLM-vurdering av begrunnelsen med egen prompt, eget skjema og egen sektorliste.
 4. Egen PDF-rapport (`horingsradar-eu report`).
-5. Have Your Say-henting og kobling mot EUR-Lex-saker.
+5. Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater, koblet på COM-nummer.
 6. EDPS som relevanssignal.
 7. OEIL-status, valgfritt.
 8. Panel og statistikk.
@@ -239,4 +258,5 @@ Sortering: relevans og deretter nyeste dato (EUR-Lex-forslag har ingen frist; fr
 - E-post og fristvarsler
 - Ren informasjonssikkerhet uten personvernaspekt, i rapporten. Slike saker skal fortsatt slippe gjennom forfilteret og vurderes av LLM-en.
 - Andre EU-kilder (Rådets register, komitologiregisteret) – vurderes etter piloten
+- Høringer på Have Your Say som ennå ikke har et COM-forslag (call for evidence, offentlige konsultasjoner, utkast til gjennomførings- og delegerte rettsakter). Kan legges til senere med temafilter og nøkkelord. Målt 29.10.2026: temaene «Justice and fundamental rights» og «Digital economy and society» gir 135 initiativer på 24 måneder, med «Home affairs» og «Public health» 222 (CSAM ligger under «Home affairs», EHDS under «Public health»). Nøkkelord i kort tittel alene fanger lite, så sammendraget må med, og det krever ett kall per initiativ.
 - Kobling mot Høringsradar – vurderes senere (se arkitekturvalget)

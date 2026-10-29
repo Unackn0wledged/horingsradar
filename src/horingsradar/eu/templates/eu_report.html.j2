@@ -87,6 +87,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 </head>
 <body>
 {% macro badge(v) %}<span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span>{% endmacro %}
+{% macro hys_deadline(v) %}<a href="{{ v.hys_url }}">Tilbakemelding til {{ v.open_deadline|date }}</a>{% endmacro %}
 {% macro eea(v) %}{% if v.eea_url %}<a href="{{ v.eea_url }}">{{ v.eea_label }}</a>{% else %}{{ v.eea_label }}{% endif %}{% if v.eea_derived %}<span class="derived"> (utledet)</span>{% endif %}{% endmacro %}
 
 <div class="masthead">
@@ -98,11 +99,12 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   <span><strong>Generert:</strong> {{ generated_at }}</span>
   <span><strong>Saker:</strong> {{ full|length + older|length + events_only|length }}</span><br>
   <span><strong>Hentet i perioden:</strong> {{ counts.fetched }} forslag, {{ counts.candidates }} kandidater, {{ counts.filtered_out }} filtrert bort uten LLM</span><br>
+  <span><strong>Kandidater på Have Your Say:</strong> {{ hys_counts.linked }} (åpne for tilbakemelding nå: {{ hys_counts.open }})</span><br>
   <span><strong>Modell og prompt:</strong> {{ models|join(", ") if models else "–" }}</span>
 </div>
 <div class="notice">
   <strong>Merk:</strong> Relevansnivå, sammendrag og funn er KI-generert sortering av begrunnelsen i forslaget («explanatory memorandum») og må verifiseres mot kilden.
-  Verktøyet tar ikke stilling til forslagene og skriver ikke innspill. Tittel, referanser, datoer og prosedyrestatus er hentet fra EUR-Lex, og EØS-status fra EEA-Lex.
+  Verktøyet tar ikke stilling til forslagene og skriver ikke innspill. Tittel, referanser, datoer og prosedyrestatus er hentet fra EUR-Lex, og EØS-status fra EEA-Lex. Frister for tilbakemelding er hentet fra Kommisjonens Have Your Say, koblet til forslaget på COM-nummeret.
   «Registrert i EEA-Lex» er utledet av at forslaget står i EEA-Lex; full EØS-status finnes først for vedtatte rettsakter.
   Forslag uten treff i forfilteret (EuroVoc-emner og nøkkelord) er ikke vurdert av LLM-en. Sitater er kontrollert maskinelt mot teksten; sitater som ikke kunne bekreftes er tydelig merket.
 </div>
@@ -119,7 +121,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
       <td><a class="badge-link" href="#c{{ v.id }}">{{ badge(v) }}</a></td>
       <td>
         <a href="#c{{ v.id }}">{{ v.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
-        <span class="refs">{{ v.reference }}</span> <a class="jump" href="#c{{ v.id }}">Gå til analyse ↓</a>
+        <span class="refs">{{ v.reference }}</span> <a class="jump" href="#c{{ v.id }}">Gå til analyse ↓</a>{% if v.open_deadline %}<br><span class="refs">{{ hys_deadline(v) }}</span>{% endif %}
       </td>
       <td>{{ v.doc_type }}</td>
       <td class="date">{{ v.row.date_document|date }}</td>
@@ -130,7 +132,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   {% endfor %}
   </tbody>
 </table>
-<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">Forslag fra de siste 8 ukene (fra {{ recent_since|date }}) og tidligere rapporterte saker med ny vurdering. Sortert etter relevans og deretter nyeste dato.</p>
+<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">Forslag fra de siste 8 ukene (fra {{ recent_since|date }}) og tidligere rapporterte saker med ny vurdering. Sortert etter relevans, så åpne frister for tilbakemelding (nærmeste først), og deretter nyeste dato.</p>
 {% else %}
 <p class="empty">Ingen nye forslag fra de siste 8 ukene siden forrige rapport.</p>
 {% endif %}
@@ -155,6 +157,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <div><dt>Referanse</dt><dd>{{ v.reference }} · CELEX {{ v.row.celex }} · <a href="{{ v.eurlex_url }}">EUR-Lex</a></dd></div>
     <div><dt>Type / dato</dt><dd>{{ v.doc_type }} / {{ v.row.date_document|date }}</dd></div>
     <div><dt>Prosedyre</dt><dd>{{ v.procedure }}</dd></div>
+    {% if v.hys %}<div><dt>Have Your Say</dt><dd>{{ v.feedback|join("<br>"|safe) }} · <a href="{{ v.hys_url }}">Have Your Say</a></dd></div>{% endif %}
     <div><dt>EØS-status</dt><dd>{{ eea(v) }}{% if v.eea_areas %}<br><span class="muted">{{ v.eea_areas|join(" · ") }}</span>{% endif %}{% if v.row.eea_jcd %}<br><span class="muted">EØS-komitébeslutning {{ v.row.eea_jcd }}</span>{% endif %}</dd></div>
     <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>
     <div><dt>EuroVoc</dt><dd>{{ v.eurovoc|join(", ") if v.eurovoc else "–" }}</dd></div>
@@ -205,7 +208,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 <ul class="brief">
 {% for v in brief %}
   <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
-    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.eea_label }}</span><br>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.eea_label }}{% if v.open_deadline %} · {{ hys_deadline(v) }}{% endif %}</span><br>
     {{ v.assessment.relevance_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}
 </ul>
@@ -219,7 +222,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 <ul class="brief">
 {% for v in not_assessed %}
   <li id="c{{ v.id }}">{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
-    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }}</span><br>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }}{% if v.open_deadline %} · {{ hys_deadline(v) }}{% endif %}</span><br>
     {{ v.not_assessed_reason }} <a class="back-inline" href="#oversikt">↑ Til oversikten</a></li>
 {% endfor %}
 </ul>
@@ -231,7 +234,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 <ul class="brief">
 {% for v in older %}
   <li>{{ badge(v) }} <a href="{{ v.eurlex_url }}">{{ v.title }}</a>
-    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.procedure }} · {{ v.eea_label }}</span><br>
+    <span class="refs"> · {{ v.reference }} · {{ v.row.date_document|date }} · {{ v.procedure }} · {{ v.eea_label }}{% if v.open_deadline %} · {{ hys_deadline(v) }}{% endif %}</span><br>
     {% if v.assessment and v.assessment.status == "ok" %}{{ v.assessment.relevance_reason }}{% else %}{{ v.not_assessed_reason }}{% endif %}</li>
 {% endfor %}
 </ul>

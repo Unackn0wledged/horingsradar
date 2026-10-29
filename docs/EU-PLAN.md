@@ -14,7 +14,7 @@ Arbeidsform:
 | Målgruppe og rapport | Egen målgruppe (internasjonale saker), egen PDF |
 | Instans | Egen instans på samme LXC: egen checkout, `DATA_DIR`, database, `.env`, tjenester og panel |
 | Kjøring | Ukentlig, mandag kl. 07:15 |
-| Første kjøring | COM-forslag fra de siste 24 månedene, og alle åpne høringer på Have Your Say |
+| Første kjøring | COM-forslag fra de siste 24 månedene |
 | Relevansskala | Samme fire nivåer som Høringsradar, satt av LLM-en |
 | Tekst til LLM-en | Begrunnelsen («explanatory memorandum») fra den engelske PDF-en |
 | Sitater | Ordrett sitat med sidetall fra begrunnelsen, verifisert i kode (endret i milepæl 3) |
@@ -25,6 +25,7 @@ Arbeidsform:
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
+| Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
 
 ## Milepæler
 
@@ -35,7 +36,7 @@ Arbeidsform:
 | 2 | EEA-Lex: EØS-status fra listen og faktaark for vedtatte rettsakter | Ferdig |
 | 3 | LLM-vurdering av begrunnelsen: egen prompt, eget skjema, sektorliste, sitatsjekk | Ferdig (EDPS-regelen kommer med EDPS-data i milepæl 6) |
 | 4 | Egen PDF-rapport | Ferdig |
-| 5 | Have Your Say og kobling mot EUR-Lex | Ikke startet |
+| 5 | Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater | Ferdig |
 | 6 | EDPS som relevanssignal | Ikke startet |
 | 7 | OEIL-status (valgfritt) | Ikke startet |
 | 8 | Panel og statistikk | Ikke startet |
@@ -97,3 +98,19 @@ Funn underveis:
 
 Funn underveis:
 - Høringsradar (piloten) ser ut til å ha samme hull som EU-rapporten nå tetter: en høring som sto under «Ikke vurdert» og senere får en vurdering, vises ikke igjen, fordi grunnlaget ikke har noen vurdering å sammenligne med. Ikke rettet i piloten før presentasjonen.
+
+## Milepæl 5: Have Your Say
+
+- `eu/sources/haveyoursay.py`: oppslag på COM-nummer (`findInitiativePathByReference`) og initiativet med faser og frister (`groupInitiatives/{id}`). Bruker pilotens `Fetcher` uendret, med 5 sekunder mellom kall.
+- Nytt steg i `run` etter EEA-Lex: kandidater uten kobling slås opp, og initiativet kobles bare hvis en fase har samme COM-nummer. Uten treff slås forslaget opp igjen til det er 12 uker gammelt. Koblede initiativer hentes på nytt så lenge en fase er åpen eller kommende. Feil stopper bare dette steget.
+- Nye tabeller `eu_hys_initiative` og `eu_hys_publication`, nye kolonner i `eu_case` (`hys_initiative_id`, `hys_status`, `hys_checked_at`) og kilden `hys` i `eu_case_source`. En periode som åpner eller en flyttet frist logges som `hys_feedback`.
+- Rapporten viser fristen i oversikten og analysen, sorterer åpne frister først innen samme relevans, og gir én linje når fristen endres på en tidligere rapportert høy eller middels sak. `status` viser hvor mange kandidater som har en side og hvor mange som er åpne.
+- Testdata i `tests/fixtures/haveyoursay/`: oppslag, robots.txt og tre initiativer (EU KIDS Act, Cloud and AI Development Act, Brussel Ia med planlagt fase), uten saksbehandlerfelt og bare med engelske vedlegg. Falskt endepunkt i `tests/eu_fakes.py`.
+
+Funn underveis:
+- Brukerne skal plukke opp EØS-relevante forslag. Høringer uten COM-forslag (call for evidence, konsultasjoner, gjennomføringsrettsakter) ble derfor valgt bort i denne omgang. Se «Ikke i scope» i EU-SPEC for tallene om de skal tas inn senere.
+- Oppslaget på COM-nummer virker uansett tema. Temafilteret fra det opprinnelige utkastet ville mistet CSAM (Home affairs) og EHDS (Public health).
+- Søkelisten er usortert og overlapper mellom sidene; den brukes ikke.
+- Dokumentene for call for evidence er ofte DOCX, og nedlastingsruten for vedlegg er ikke verifisert.
+- Noen titler har U+FFFD i selve kilden. Rapporten bruker EUR-Lex-tittelen.
+- Initiativ-JSON-en navngir saksbehandlerne. Bare fasefeltene lagres.

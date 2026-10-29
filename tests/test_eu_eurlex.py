@@ -171,11 +171,14 @@ def test_first_run_stores_every_proposal_and_marks_candidates(eu_settings, conn,
 
 def test_second_run_is_idempotent_and_overlaps(eu_settings, conn, site):
     do_run(eu_settings, conn, site)
+    # The first run logs the open Have Your Say period of EU KIDS Act; nothing else changes.
+    first = conn.execute("SELECT kind FROM eu_case_change").fetchall()
+    assert [r["kind"] for r in first] == ["hys_feedback"]
     site.queries.clear()
     summary = do_run(eu_settings, conn, site, today=date(2026, 11, 5))
     assert summary["since"] == "2026-08-30"  # previous run (29.10) minus 60 days
     assert summary["new"] == 0 and summary["new_candidates"] == 0 and summary["cases"] == 67
-    assert conn.execute("SELECT COUNT(*) FROM eu_case_change").fetchone()[0] == 0
+    assert conn.execute("SELECT COUNT(*) FROM eu_case_change").fetchone()[0] == len(first)
 
 
 def test_late_eurovoc_indexing_makes_a_candidate_and_it_stays(eu_settings, conn, site):
@@ -191,7 +194,7 @@ def test_late_eurovoc_indexing_makes_a_candidate_and_it_stays(eu_settings, conn,
     do_run(eu_settings, conn, site, today=date(2026, 11, 5))
     row = conn.execute("SELECT * FROM eu_case WHERE com_ref = 'COM(2026) 569'").fetchone()
     assert row["indexed"] == 1 and row["candidate"] == 1 and row["needs_assessment"] == 1
-    change = conn.execute("SELECT * FROM eu_case_change").fetchone()
+    change = conn.execute("SELECT * FROM eu_case_change WHERE kind != 'hys_feedback'").fetchone()
     assert (change["kind"], change["old_value"], change["new_value"]) == ("candidate", "0", "1")
 
     binding["eurovoc"]["value"] = indexed  # index changed again: still a candidate

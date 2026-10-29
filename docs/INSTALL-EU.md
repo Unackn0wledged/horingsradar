@@ -78,7 +78,7 @@ Endre minst disse:
 
 ## 5. Første kjøring, gradvis
 
-Kjør først **uten LLM**. Da hentes forslag, EØS-status og tekst, men ingenting sendes til modellen, så det koster ingenting. Med 5 sekunder mellom kall tar første kjøring 15–20 minutter:
+Kjør først **uten LLM**. Da hentes forslag, EØS-status, frister fra Have Your Say og tekst, men ingenting sendes til modellen, så det koster ingenting. Med 5 sekunder mellom kall tar første kjøring 25–35 minutter:
 
 ```bash
 cd /opt/horingsradar-eu
@@ -86,7 +86,7 @@ sudo -u horingsradar -H .venv/bin/horingsradar-eu run --no-assess
 sudo -u horingsradar -H .venv/bin/horingsradar-eu status
 ```
 
-`status` skal vise `Data: /var/lib/horingsradar-eu`, antall saker og kandidater, og at kandidatene venter på vurdering.
+`status` skal vise `Data: /var/lib/horingsradar-eu`, antall saker og kandidater, hvor mange kandidater som har en side på Have Your Say, og at kandidatene venter på vurdering.
 
 Vurder deretter noen få saker for hånd, for å sjekke nøkkel, modell, pris og prompt. Bytt ut `<COM-nummer>` med et nummer fra en kandidat, for eksempel `"COM(2026) 681"` (med anførselstegn):
 
