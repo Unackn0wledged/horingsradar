@@ -10,6 +10,8 @@ import os
 from functools import lru_cache
 from pathlib import Path
 
+from pydantic import field_validator
+
 from horingsradar.config import Settings, find_env_file, parse_env_file
 
 RADAR = "eu"
@@ -19,7 +21,17 @@ class EUSettings(Settings):
     radar: str = ""
     # First run looks this far back for proposals; consultations that are open are always taken.
     eu_initial_lookback_days: int = 730
+    # Later runs go back to the previous run minus this. EuroVoc indexing arrives days or weeks
+    # after a proposal is published, so recent proposals are looked at again.
+    eu_discovery_overlap_days: int = 60
+    # One keyword per line; empty means the built-in list (eu/prefilter.py).
+    eu_keywords_file: Path | None = None
     eu_prompt_version: str = "v1"
+
+    @field_validator("eu_keywords_file", mode="before")
+    @classmethod
+    def _empty_path(cls, v: object) -> object:
+        return None if v in ("", None) else v
 
 
 def load_eu_settings(env_file: Path | None = None, **overrides: object) -> EUSettings:

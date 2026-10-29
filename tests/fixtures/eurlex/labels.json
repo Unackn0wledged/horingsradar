@@ -1,0 +1,3631 @@
+{
+ "head": {
+  "vars": [
+   "concept",
+   "label"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1019"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Finland"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1074"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "vocational training"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1092"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fraud"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1136"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "GATT"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1234"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tax harmonisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1252"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "approval"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1264"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "olive oil"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1274"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "hydrocarbon"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/133"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "conservation of fish stocks"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1375"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "pulp and paper industry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1377"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "processing industry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1414"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "oil industry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1425"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "consumer information"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1459"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "financial instrument"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1474"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "agreement (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1488"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "investment"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1519"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Italy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/161"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tariff quota"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1631"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "free movement of goods"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1633"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "free movement of persons"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1634"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "free movement of workers"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1646"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "dismissal"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1696"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "software"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1139"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "gas"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1159"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishery management"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1338"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "India"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1372"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishing industry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1379"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "framework agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1439"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "innovation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1690"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "housing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1567"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "trade agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1317"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "local tax"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1036"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "inland waterway fleet"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1086"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "French overseas department and region"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1195"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "ADR agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1687"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "property leasing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1012"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "budget financing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1275"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "hydrogen"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/170"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "taxpayer"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1457"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "judicial investigation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1708"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fight against crime"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1879"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Mediterranean Sea"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/189"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "financial control"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/20"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "award of contract"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/206"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "administrative cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2077"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2081"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "marketing standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/217"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "judicial cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2173"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "common organisation of markets"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/226"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cross-border cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2275"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "free-trade agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2278"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cultural heritage"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2282"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "ship's flag"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2300"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "third country"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2308"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "sea fishing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2331"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Peru"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2359"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "small and medium-sized enterprises"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2437"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "sea fish"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2454"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU employment policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1730"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Madeira"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1774"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Malta"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1841"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Mauritius"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1907"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "honey"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1946"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "labour mobility"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/210"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2112"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Pacific Ocean"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2189"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "international organisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2292"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "supply"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1796"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "supplies contract"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1798"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "works contract"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1874"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Andorra"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2141"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "International Maritime Organisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1994"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "engine"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2136"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "olive"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/22"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "specialised committee"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2040"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "inland waterway shipping"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/214"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "institutional cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/1922"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "occupational migration"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2208"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "skilled worker"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2111"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Indian Ocean"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2457"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "common transport policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2563"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Portugal"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2602"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "provision of services"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2739"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "chemical product"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2771"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "originating product"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2817"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "intellectual property"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2828"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "protection of privacy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2836"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "consumer protection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/284"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "job creation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2850"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "protocol to an agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2879"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "catch quota"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2901"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "ratification of an agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2932"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "recognition of diplomas"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3173"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "designation of origin"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3191"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "import (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3259"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Member States' contribution"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3299"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "single market"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2556"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishing agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2615"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "budget estimate"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2718"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishery product"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2840"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "heritage protection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2868"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "professional qualifications"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3011"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cross-frontier data flow"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3057"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "civil defence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3074"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "humanitarian aid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3076"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "aid to disaster victims"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3156"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "customs regulations"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2520"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "common tariff policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3030"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "artificial intelligence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3370"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "patient's rights"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/2455"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "common fisheries policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3159"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "motor vehicle pollution"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3027"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "computer crime"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3193"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "goods and services"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3359"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "social security legislation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3028"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "data-processing law"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3024"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "information storage"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3090"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "large vehicle"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3018"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "video conference"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/31724"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "housing crisis"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3453"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European security"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3489"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cooperation policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3636"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "new technology"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3646"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3648"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "harmonisation of standards"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3681"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "transport of dangerous goods"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/372"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "job access"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3774"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "United Kingdom"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3885"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "public health"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3974"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "rights of the defence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4003"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "foreign national"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4004"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "residence permit"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4005"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "admission of aliens"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4033"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "transport safety"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4047"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "road safety"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4055"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Development Fund"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/339"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "deforestation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3468"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "international convention"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/365"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tax relief"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3916"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "children's rights"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3919"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "child protection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4028"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "social-security harmonisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4048"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "association agreement (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3516"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "reintegration into working life"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3463"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "multilateral agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3645"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "technical specification"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3466"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "signature of an agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3638"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "clean technology"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3743"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "coal industry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3700"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "ADN agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3951"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tax offence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4061"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "history of Europe"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3464"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "secondary residence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3971"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "judicial inquiry"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4054"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EURES"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3814"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "San Marino"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3839"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "seizure of goods"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3980"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "preliminary ruling procedure"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3966"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "legal hearing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/3816"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Saint Martin"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4080"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "CCT duties"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4219"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tendering"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4347"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "market supervision"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4359"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "information system"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4385"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tariff preference"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4452"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "terrorism"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4488"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "data processing"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4491"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "financial transaction"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4502"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "data transmission"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4505"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "air transport"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4580"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Türkiye"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4585"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "VAT"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4690"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Western Balkans"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4763"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "central bank"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4790"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishing area"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4827"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "vessel"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4838"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Investment Bank"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5070"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "administrative formalities"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5158"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "general budget (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5181"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "data protection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4097"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cultural pluralism"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4128"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "peripheral region"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4519"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "international transport"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4600"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "customs union"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4654"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "motor vehicle"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4727"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "sexual violence"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4828"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "commodity agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4886"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "energy market"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5076"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Azores"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5156"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "capital market"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4083"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "preserved product"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4172"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Canary Islands"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4788"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "catch area"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4361"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "communications systems"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5178"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "recognition of studies"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4700"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "integration into employment"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4400"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "import tax"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4113"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "employment service"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/435164"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "energy cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/4850"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "housing need"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5234"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "safety standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5235"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "technical standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5237"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "research and development"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5256"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "catch by species"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5262"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "motor fuel"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5283"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU Member State"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5334"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "disclosure of information"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5344"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EAEC"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5403"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "trade agreement (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5404"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cooperation agreement (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5413"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU action"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/544"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishing rights"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5451"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "market approval"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5509"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "joint committee (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5540"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "border control"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5573"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "product designation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5581"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "derogation from EU law"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5595"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "personal data"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5618"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Economic Area"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5630"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Europol"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5640"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "operation of the Institutions"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5649"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "external border of the EU"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5650"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "greenhouse gas"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5229"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "fishing controls"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5312"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European symbol"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5454"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Azerbaijan"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5545"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "customs cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5550"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "judicial cooperation in criminal matters in the EU"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5683"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "bad weather"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5407"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "interim agreement (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/561"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tax law"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5333"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "impact of information technology"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5548"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "interinstitutional cooperation (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5613"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "computer equipment"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5684"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "systems interconnection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5433"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "town and country planning"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5367"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "certificate of origin"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5551"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "police cooperation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5504"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EEA Joint Committee"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5230"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "capital city"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5725"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "services contract"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5754"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "environmental standard"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5765"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "World Trade Organisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5796"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU visa policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5809"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "proof"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5826"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "promotion of the European idea"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5833"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "renewal of an agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5861"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "energy grid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5889"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "maritime safety"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5956"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "traveller"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/598"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU waters"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6030"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "data collection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/605"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "international waters"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6088"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Internet"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6099"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "recognition of vocational training qualifications"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6128"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Union Intellectual Property Office"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/616"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "exchange of information"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6400"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "reduction of gas emissions"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6562"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European cultural event"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5726"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EC conformity marking"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5811"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "mutual recognition principle"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5812"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "principle of subsidiarity"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6191"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "digitisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6563"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "cultural promotion"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5870"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "revision of an agreement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6133"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "principle of proportionality"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5736"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Black Sea"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6125"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "globalisation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5763"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "joint body (EU)"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5921"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "health care system"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6353"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "labour shortage"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6132"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "paedophilia"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6553"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "child pornography"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6370"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "electronic signature"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6559"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European identity"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6723"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Eurojust"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6365"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "service concession"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6091"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European standardisation body"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/5688"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Interpol"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6251"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Southern Finland"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/7186"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Central Commission for Navigation on the Rhine"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/712"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "economic support"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/7219"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "digital technology"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/758"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "child"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/8439"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Frontex"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/8549"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Globalisation Adjustment Fund"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/863"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Spain"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/888"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "United States"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/893"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "labelling"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/922"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "financial aid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/754"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "renewable energy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/763"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "commitment of expenditure"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/881"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "emergency aid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/723"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "employment aid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/8468"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "principle of legal certainty"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/935"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tax exemption"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/7410"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "biometrics"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/848"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "vehicle parts"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/932"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "tariff exemption"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6767"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "electronic document"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6894"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "electronic government"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/8386"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "UN regional commission"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/854"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "equivalence of diplomas"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_04ae3ba8"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "information security"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_4c7717f3"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "public procurement"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/860"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European judicial area"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_31da5694"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "e-Health"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_406ad4cc"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "risk management"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_8702d5f7"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "sustainable fisheries"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/841"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Ecuador"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_6f7bbe63"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "digital single market"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/6848"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "navigation aid"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_4e75f061"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "information warfare"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_96124aaf"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Securities and Markets Authority"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_57f3c49f"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "critical infrastructure security"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_8a6f744c"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "withdrawal from the EU"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_8f89faac"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "financial supervision"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_4e3beee2"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Maritime and Fisheries Fund"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_71b063b1"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "national competent authority"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_86d7db98"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "energy transition"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_d8d35f08"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "EU energy policy"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_e5d85c14"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "chemicals legislation"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_f5d6dbf6"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "international protection"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_f7430876"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "search and rescue"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_e548b67f"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Union Solidarity Fund"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_ea7ea83c"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Labour Authority"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_d6e5f3ab"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "digital content"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_adf49204"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "European Public Prosecutor's Office"
+    }
+   },
+   {
+    "concept": {
+     "type": "uri",
+     "value": "http://eurovoc.europa.eu/c_d3334ae3"
+    },
+    "label": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Energy Community"
+    }
+   }
+  ]
+ }
+}

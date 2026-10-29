@@ -1,0 +1,422 @@
+{
+ "head": {
+  "vars": [
+   "work",
+   "procedure",
+   "status",
+   "withdrawn"
+  ]
+ },
+ "results": {
+  "bindings": [
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/6b932707-e4db-11ed-a05c-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2023/0133/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5d635bc9-b192-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0274/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/ab6aadcb-b340-11f1-81de-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0283/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/8141ea89-b11b-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0271/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/dbfd8974-cb79-11ec-b6f4-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2022/0140/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cc088e23-bb4b-11f1-81de-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0288/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/53c21e3b-acfd-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0279/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/be0b5038-3fa8-11eb-b27b-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2020/0359/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/e0649735-a372-11eb-9585-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2021/0106/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/2b8aa73e-bd7b-11f1-9aae-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0301/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/63fdf2ae-b33d-11f1-81de-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0285/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5d88943a-c458-11eb-a925-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2021/0136/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/13e33abf-d209-11ec-a95f-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2022/0155/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/807fbd87-acfb-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0280/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cbfad875-ad27-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0262/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/83654625-c943-11f1-97f3-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0320/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/caa441d7-c943-11f1-97f3-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0322/NLE"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/864f472b-34e9-11ed-9c68-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2022/0272/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/2c5d30ae-961f-11ec-b4e4-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2022/0047/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_ADOPTED"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/981bd4af-b11b-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0272/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/a9ea9e22-b271-11f1-b9e5-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0286/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/246dd26c-bd7b-11f1-9aae-01aa75ed71a1"
+    },
+    "procedure": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "2026/0308/COD"
+    },
+    "status": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/file-status/PROP_PENDING"
+    },
+    "withdrawn": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    }
+   }
+  ]
+ }
+}

@@ -74,7 +74,8 @@ Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksem
 
 - **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` og `backtest` startes manuelt.
 - **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`) og alle høringer på Have Your Say som er åpne.
-- Senere kjøringer henter det som er nytt eller endret siden forrige kjøring, med overlapp.
+- Senere kjøringer går tilbake til forrige kjøring minus 60 dager (`EU_DISCOVERY_OVERLAP_DAYS`), fordi EuroVoc-indekseringen kommer dager eller uker etter at et forslag er publisert.
+- Forslag hentes i vinduer på 30 dager. Én spørring over flere måneder tar minutter på et kaldt endepunkt, over tidsgrensen, mens et vindu på 30 dager svarer på rundt ett sekund. Første kjøring tar rundt 2 minutter.
 
 ## Designprinsipp: billig først, LLM sist
 
@@ -88,7 +89,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 
 | Kilde | Innhold | Tilgang | Rolle |
 |---|---|---|---|
-| EUR-Lex / Cellar | COM-forslag, vedtatte rettsakter, EuroVoc-indeksering, EØS-merking | SPARQL-endepunkt (åpent). Web service med gratis registrering | Primærkilde for forslag |
+| EUR-Lex / Cellar | COM-forslag, vedtatte rettsakter, EuroVoc-indeksering, EØS-merking | SPARQL-endepunkt `publications.europa.eu/webapi/rdf/sparql` (åpent, tillatt i robots.txt). EUR-Lex' egne nettsider er bak bot-beskyttelse og hentes ikke; lenkene er for mennesker | Primærkilde for forslag |
 | Have Your Say (Kommisjonen) | Initiativer, «call for evidence», offentlige konsultasjoner, tilbakemeldingsperioder | JSON-endepunkter bak nettsiden (ikke offisielt dokumentert) | Primærkilde for høringer |
 | EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Faktaark per CELEX: `https://www.efta.int/eea-lex/<celex>` (skraping) | Berikelse: EØS-status |
 | EDPS | Uttalelser om lovforslag som berører personvern | RSS / nettside | Sterkt relevanssignal |
@@ -97,7 +98,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 **Må verifiseres før implementering** (hent ekte svar og lagre som fixtures, som for regjeringen.no):
 - Have Your Say: faktiske JSON-endepunkter, paginering og felter (tema, type, tilbakemeldingsperiode).
 - EEA-Lex: at URL-mønsteret per CELEX er stabilt, og hvordan forslag uten CELEX identifiseres. Faktaark for forslag kan ha egne node-ID-er.
-- EUR-Lex SPARQL: riktige predikater for EuroVoc-deskriptorer, dokumenttype og EØS-relevans-merking.
+- ~~EUR-Lex SPARQL~~: verifisert 29.10.2026, se Forfiltrering og [`EU-PLAN.md`](EU-PLAN.md).
 - OEIL: om fagområdekodene for personvern og cybersikkerhet kan brukes som filter i RSS.
 - Robots.txt og bruksvilkår for skraping, særlig EEA-Lex og Have Your Say.
 
@@ -105,10 +106,18 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 
 **Prinsipp: forfiltreringen prioriterer recall, ikke presisjon.** Saker som filtreres bort her, når aldri LLM-en og blir aldri synlige. Filteret skal derfor også slippe gjennom tekniske og sikkerhetsrelaterte saker. LLM-vurderingen avgjør om saken har personvernrelevans. Ekstra kandidater koster lite. Tapte saker koster mye.
 
-**EUR-Lex:** filtrer i spørringen på
-- dokumenttype: COM-forslag (lovgivningsforslag)
-- EuroVoc-deskriptorer, minst: `data protection`, `protection of privacy`, `personal data`, `data security`, `computer security`, `electronic identification`, `information technology`
-- valgfritt: merking «Text with EEA relevance»
+**EUR-Lex:** alle COM-forslag (forordning, direktiv, beslutning) hentes og lagres. Et forslag er kandidat hvis det har ett av EuroVoc-emnene under (filter B), eller et nøkkelord i tittelen.
+
+| Gruppe | EuroVoc-emner (ID) |
+|---|---|
+| Personvern og sikkerhet | data protection (5181), personal data (5595), protection of privacy (2828), information security (c_04ae3ba8), computer crime (3027), electronic signature (6370), data processing (4488), data-processing law (3028), artificial intelligence (3030), biometrics (7410) |
+| Bredere digitalt | digital technology (7219), Internet (6088), cross-frontier data flow (3011), data transmission (4502), information storage (3024), data collection (6030), disclosure of information (5334), exchange of information (616), e-Health (c_31da5694), digital single market (c_6f7bbe63) |
+
+- Emnene i det opprinnelige utkastet («data security», «computer security», «electronic identification», «information technology») finnes ikke slik i EuroVoc. Listen over er sjekket mot hvilke emner recall-settet faktisk har. Cyber Resilience Act fanges for eksempel bare av information security, computer crime og digital technology.
+- Hele recall-settet fanges av filteret. Over 24 måneder (29.10.2026) gir det 112 kandidater av 578 forslag. Emnet exchange of information (616) alene gir mange svake kandidater; vurder å justere etter milepæl 3.
+- **EØS-merkingen («Text with EEA relevance») lagres, men brukes ikke som filter.** NIS2, eIDAS2, AI Act og CSAM har den ikke. EEA-Lex er fasiten.
+- Forslag som ennå ikke har fått EuroVoc-emner, vurderes på tittelen og ses på nytt i senere kjøringer (overlappen på 60 dager).
+- Når et forslag først er kandidat, forblir det kandidat, selv om emnene endres senere.
 
 **Have Your Say:** filtrer på tema
 - «Justice and fundamental rights»
@@ -125,11 +134,13 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 
 - Nøkler: CELEX-nummer og COM-nummer (f.eks. `COM(2023) 905`). Have Your Say-initiativer kan mangle begge. Koble i så fall på tittel eller referanse når forslaget senere publiseres i EUR-Lex.
 - Én sak = én post i databasen, med lenker til alle kilder den er funnet i.
+- Rettelser (`52025PC0828R(01)`) og tilleggsdeler (`52025PC0101(01)`) har eget CELEX-nummer, men hører til samme sak som forslaget (grunn-CELEX uten tillegg). De lagres som kilder til saken, en ny variant logges som endring, og EuroVoc-emnene slås sammen. Forslagets egne felt (tittel, dato) går foran variantens.
 - Et treff i EDPS vises i rapporten og gir minst `middels` (se EDPS-regel under Regler).
 
 ## LLM-vurdering
 
 - Input: tittel, sammendrag/abstract og kildemetadata. Ikke fulltekst.
+- **Avklares i milepæl 3:** Cellar har ingen sammendrag for COM-forslag, bare tittel. LLM-en trenger mer tekst, for eksempel begrunnelsen («explanatory memorandum») i forslaget. Sitatregelen gjelder den teksten som brukes.
 - Fulltekst hentes bare for saker som allerede er vurdert som relevante, og bare hvis det trengs for et kort sammendrag.
 - **Skala: samme fire nivåer som Høringsradar** (`hoy`, `middels`, `lav`, `ingen`), satt av LLM-en. Ingen numerisk score.
 - Output (JSON, validert med Pydantic): relevansnivå, kort begrunnelse, sektor og funn (se Sitater under Regler).

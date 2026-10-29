@@ -9,6 +9,7 @@ import sys
 
 from horingsradar import db
 from horingsradar.cli import EXIT_CANCELLED, EXIT_SKIPPED
+from horingsradar.eu import db as eu_db
 from horingsradar.eu.config import EUSettings, get_eu_settings, require_eu_instance
 from horingsradar.jobs import TRIGGERS, JobSkipped, job_context
 
@@ -38,15 +39,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 def _connect(settings: EUSettings) -> sqlite3.Connection:
     settings.ensure_dirs()
-    return db.connect(settings.db_path)
+    return eu_db.connect(settings.db_path)
 
 
 def _run(settings: EUSettings, triggered_by: str) -> int:
     conn = _connect(settings)
     try:
         with job_context(settings, conn, "run", triggered_by) as job:
-            log.info("EU/EØS-radaren har ingen kilder ennå (milepæl 0).")
-            job.summary.update(sources=0)
+            from horingsradar.eu.pipeline import run
+
+            run(settings, conn, job)
     except JobSkipped as exc:
         message = {
             "paused": "Planlagt kjøring er pauset.",
@@ -78,6 +80,13 @@ def _status(settings: EUSettings) -> int:
     try:
         print(f"Data: {settings.data_dir}")
         print(f"Planlagt kjøring: {'pauset' if db.runs_paused(conn) else 'aktiv'}")
+        from horingsradar.eu.pipeline import counts
+
+        c = counts(conn)
+        print(
+            f"Saker: {c['cases']}, kandidater: {c['candidates']},"
+            f" filtrert bort: {c['filtered_out']}, uten EuroVoc ennå: {c['not_indexed']}"
+        )
         print("\nSiste jobber:")
         for row in conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 10"):
             print(
