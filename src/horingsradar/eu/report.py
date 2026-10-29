@@ -6,7 +6,8 @@ What a report shows (docs/EU-SPEC.md, Rapport):
 - high/medium cases shown before whose new assessment changed relevance or findings, again in
   full and marked; a case first shown without an assessment is shown again once it has one;
 - high/medium cases shown before where only the procedure or EEA status changed, a
-  corrigendum appeared, or a Have Your Say feedback period opened or moved: one line each;
+  corrigendum appeared, a Have Your Say feedback period opened or moved, or the status in
+  Parliament (OEIL) changed: one line each;
 - low/none cases are not shown again; a new assessment with the same result is not a change.
 """
 
@@ -25,7 +26,7 @@ from horingsradar import db
 from horingsradar.eu import rules
 from horingsradar.eu.assess import DOC_TYPE_LABELS
 from horingsradar.eu.schema import EU_SECTOR_LABELS
-from horingsradar.eu.sources import edps, eealex, haveyoursay
+from horingsradar.eu.sources import edps, eealex, haveyoursay, oeil
 from horingsradar.eu.sources.eurlex import eurlex_url
 from horingsradar.llm.schema import RELEVANCE_LABELS, RELEVANCE_ORDER
 from horingsradar.quotes import normalize
@@ -96,6 +97,7 @@ class CaseView:
     hys: dict[str, Any] | None = None  # the linked Have Your Say initiative
     hys_publications: list[dict[str, Any]] = field(default_factory=list)
     edps: list[dict[str, Any]] = field(default_factory=list)  # Council notes on EDPS opinions
+    oeil_last_event: dict[str, Any] | None = None
 
     @property
     def edps_rule(self) -> str | None:
@@ -248,6 +250,22 @@ class CaseView:
     def notes(self) -> list[str]:
         return db.loads(self.assessment["notes"], []) if self.assessment else []
 
+    @property
+    def oeil_url(self) -> str | None:
+        ref = self.row.get("oeil_ref")
+        return oeil.page_url(ref) if ref else None
+
+    @property
+    def parliament(self) -> str | None:
+        """Status in the European Parliament from OEIL, with the committee responsible."""
+        if not self.row.get("oeil_ref"):
+            return "Ikke i OEIL ennå" if self.row.get("oeil_checked_at") else None
+        committees = db.loads(self.row.get("oeil_committees"), []) or []
+        parts = [oeil.status_label(self.row.get("oeil_status"))]
+        if committees:
+            parts.append("Komité: " + ", ".join(committees))
+        return " · ".join(parts)
+
 
 def _stage_label(p: dict[str, Any]) -> str:
     """What the feedback is on, after "Tilbakemelding på"."""
@@ -315,6 +333,11 @@ def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> CaseView:
         item = dict(note)
         item["url"] = edps.document_url(note["doc"])
         view.edps.append(item)
+    last = conn.execute(
+        "SELECT * FROM eu_oeil_event WHERE case_id = ? ORDER BY date DESC, id DESC LIMIT 1",
+        (row["id"],),
+    ).fetchone()
+    view.oeil_last_event = dict(last) if last else None
     for f in view.findings:
         f["page_href"] = view.page_href(f["page"])
     return view
@@ -324,6 +347,7 @@ EVENT_TEXTS = {
     "procedure_status": ("Ny status", "Prosedyren: {old} → {new}"),
     "eea_status": ("Ny EØS-status", "EØS-status: {old} → {new}"),
     "variant": ("Rettelse", "Ny rettelse eller tilleggsdel publisert ({new})"),
+    "oeil_status": ("Ny status i Parlamentet", "Europaparlamentet: {old} → {new}"),
 }
 
 
@@ -342,7 +366,10 @@ def _event(change: sqlite3.Row) -> dict[str, str] | None:
     if change["kind"] not in EVENT_TEXTS:
         return None
     tag, template = EVENT_TEXTS[change["kind"]]
-    labels = PROCEDURE_LABELS if change["kind"] == "procedure_status" else EEA_LABELS
+    labels = {
+        "procedure_status": PROCEDURE_LABELS,
+        "oeil_status": oeil.STATUS_LABELS,
+    }.get(change["kind"], EEA_LABELS)
     return {
         "tag": tag,
         "text": template.format(

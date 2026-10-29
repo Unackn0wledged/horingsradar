@@ -19,7 +19,7 @@ from horingsradar.eu.assess import assess_case, pending_assessments
 from horingsradar.eu.config import EUSettings
 from horingsradar.eu.documents import update_documents
 from horingsradar.eu.prefilter import Prefilter, load_keywords
-from horingsradar.eu.sources import edps, eealex, eurlex, haveyoursay
+from horingsradar.eu.sources import edps, eealex, eurlex, haveyoursay, oeil
 from horingsradar.eu.sources.eurlex import WITHDRAWN, EurLexClient, Proposal
 from horingsradar.http import Fetcher
 from horingsradar.jobs import JobHandle
@@ -346,6 +346,68 @@ def update_edps(
     return {"edps_notes": found, "edps_new_links": linked}
 
 
+def oeil_cases(conn: sqlite3.Connection) -> list[sqlite3.Row]:
+    """Candidates to look up in OEIL: with a procedure, not finished there, and whose latest
+    valid assessment is high or medium, or that have none yet (chosen 29.10.2026)."""
+    placeholders = ", ".join("?" * len(oeil.FINAL))
+    rows = conn.execute(
+        "SELECT c.*, (SELECT a.relevance FROM eu_assessment a WHERE a.case_id = c.id"
+        "   AND a.status = 'ok' ORDER BY a.id DESC LIMIT 1) AS latest_relevance"
+        " FROM eu_case c WHERE c.candidate = 1 AND c.procedure_ref IS NOT NULL"
+        f" AND (c.oeil_status IS NULL OR c.oeil_status NOT IN ({placeholders}))"
+        " ORDER BY c.id",
+        oeil.FINAL,
+    ).fetchall()
+    return [r for r in rows if r["latest_relevance"] in (None, "hoy", "middels")]
+
+
+def update_oeil(conn: sqlite3.Connection, client: oeil.OEILClient) -> dict[str, Any]:
+    """Status in the European Parliament from OEIL. A procedure OEIL does not have yet (often a
+    new NLE procedure) is tried again next run; a finished one is not fetched again."""
+    checked = found = changes = 0
+    result: dict[str, Any] = {}
+    try:
+        for case in oeil_cases(conn):
+            page = client.procedure(case["procedure_ref"])
+            checked += 1
+            now = db.now_iso()
+            if page is None:
+                conn.execute(
+                    "UPDATE eu_case SET oeil_checked_at = ? WHERE id = ?", (now, case["id"])
+                )
+                continue
+            found += 1
+            if case["oeil_status"] and page.status and page.status != case["oeil_status"]:
+                eu_db.record_change(
+                    conn, case["id"], "oeil_status", case["oeil_status"], page.status
+                )
+                log.info("%s: OEIL %s -> %s", page.reference, case["oeil_status"], page.status)
+                changes += 1
+            conn.execute(
+                "UPDATE eu_case SET oeil_ref = ?, oeil_title = ?,"
+                " oeil_status = COALESCE(?, oeil_status), oeil_committees = ?,"
+                " oeil_checked_at = ? WHERE id = ?",
+                (
+                    page.reference,
+                    page.title,
+                    page.status,
+                    db.dumps(page.committees),
+                    now,
+                    case["id"],
+                ),
+            )
+            conn.execute("DELETE FROM eu_oeil_event WHERE case_id = ?", (case["id"],))
+            conn.executemany(
+                "INSERT INTO eu_oeil_event (case_id, date, event, reference) VALUES (?, ?, ?, ?)",
+                [(case["id"], e.date, e.event, e.reference) for e in page.events],
+            )
+    except oeil.OEILUnavailable as exc:
+        log.warning("OEIL stopped: %s", exc)
+        result["oeil"] = "ufullstendig (se loggen)"
+    result.update(oeil_checked=checked, oeil_found=found, oeil_status_changes=changes)
+    return result
+
+
 def _hys_lookup_due(case: sqlite3.Row, today: date) -> bool:
     """A proposal's Have Your Say page comes a couple of weeks after adoption. One without a
     page is looked up again until it is HYS_RETRY old; an older one is looked up once."""
@@ -568,33 +630,38 @@ def run(
         )
         job.save_summary()
 
-        job.progress(phase="edps", done=0, total=6)
+        job.progress(phase="edps", done=0, total=7)
         summary.update(update_edps(conn, eurlex_client, since, today))
         job.save_summary()
 
-        job.progress(phase="enrich", done=1, total=6)
+        job.progress(phase="enrich", done=1, total=7)
         summary["eurovoc_labels"] = update_labels(conn, eurlex_client)
         summary["status_changes"] = update_procedures(conn, eurlex_client)
         job.save_summary()
 
-        job.progress(phase="eea", done=2, total=6)
+        job.progress(phase="eea", done=2, total=7)
         eea_fetcher = eea_fetcher or eealex.make_fetcher(settings)
         summary.update(update_eea(conn, eealex.EEALexClient(eea_fetcher)))
         job.save_summary()
 
-        job.progress(phase="have_your_say", done=3, total=6)
+        job.progress(phase="have_your_say", done=3, total=7)
         summary.update(update_hys(conn, haveyoursay.HaveYourSayClient(fetcher), today))
         job.save_summary()
 
-        job.progress(phase="documents", done=4, total=6)
+        job.progress(phase="documents", done=4, total=7)
         summary.update(update_documents(settings, conn, eurlex_client, fetcher))
         summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
         job.save_summary()
 
         if assess:
             summary.update(assess_pending(settings, conn, job, client))
+
+        # After the assessment, so a case just assessed as high or medium is looked up too.
+        job.progress(phase="oeil", done=6, total=7)
+        summary.update(update_oeil(conn, oeil.OEILClient(fetcher)))
+        summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
         summary.update(counts(conn))
-        job.progress(phase="done", done=6, total=6)
+        job.progress(phase="done", done=7, total=7)
         return summary
     finally:
         if own_fetcher:
@@ -630,6 +697,11 @@ def counts(conn: sqlite3.Connection) -> dict[str, int]:
         " FROM eu_case c WHERE c.candidate = 1 AND c.hys_initiative_id IS NOT NULL"
     ).fetchone()
     result["hys_linked"], result["hys_open"] = int(hys["linked"]), int(hys["open"])
+    result["oeil_cases"] = int(
+        conn.execute(
+            "SELECT COUNT(*) FROM eu_case WHERE candidate = 1 AND oeil_ref IS NOT NULL"
+        ).fetchone()[0]
+    )
     result["edps_cases"] = int(
         conn.execute(
             "SELECT COUNT(DISTINCT l.case_id) FROM eu_edps_link l"

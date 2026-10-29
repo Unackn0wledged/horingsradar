@@ -93,13 +93,13 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 | Have Your Say (Kommisjonen) | Initiativer med faser og tilbakemeldingsperioder | JSON-endepunktene som nettsiden selv bruker (ikke offisielt dokumentert; tillatt i robots.txt, innhold under CC BY 4.0). Se Have Your Say | Berikelse: tilbakemeldingsfrist og lenke for EUR-Lex-kandidater |
 | EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Listen sortert etter forslagsdato, og faktaark per CELEX for vedtatte rettsakter (skraping, 5 sekunder mellom kall). Se EØS-status | Berikelse: EØS-status |
 | EDPS | Uttalelser om lovforslag som berører personvern | Rådets dokumenter i Cellar som oversender uttalelsen (SPARQL, som EUR-Lex). edps.europa.eu svarer 403 og brukes ikke. Se EDPS | Sterkt relevanssignal (EDPS-regelen) |
-| Legislative Observatory (OEIL) | Prosedyrestatus i Europaparlamentet | RSS / prosedyresider | Valgfri berikelse: status |
+| Legislative Observatory (OEIL) | Prosedyrestatus i Europaparlamentet | Prosedyresidene (HTML, ingen robots.txt). Parlamentets Open Data API brukes ikke. Se OEIL | Berikelse: status i Parlamentet for høy og middels |
 
 **Må verifiseres før implementering** (hent ekte svar og lagre som fixtures, som for regjeringen.no):
 - ~~Have Your Say~~: verifisert 29.10.2026, se Have Your Say.
 - ~~EEA-Lex~~: verifisert 29.10.2026, se EØS-status.
 - ~~EUR-Lex SPARQL~~: verifisert 29.10.2026, se Forfiltrering og [`EU-PLAN.md`](EU-PLAN.md).
-- OEIL: om fagområdekodene for personvern og cybersikkerhet kan brukes som filter i RSS.
+- ~~OEIL~~: verifisert 29.10.2026, se OEIL. Fagområdekodene finnes på sidene, men OEIL brukes ikke som kilde til kandidater.
 - Robots.txt og bruksvilkår for nye kilder (EEA-Lex og Have Your Say er sjekket).
 
 ## Forfiltrering (uten LLM)
@@ -199,6 +199,20 @@ EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som 
 
 Ekte funn i testdataene: European Investigation Order (omarbeiding, COM(2026) 313) slapp ikke gjennom forfilteret, men har en EDPS-uttalelse og blir kandidat.
 
+## OEIL (uten LLM)
+
+**Hva OEIL gir en automatisk klient** (sjekket 29.10.2026):
+- `oeil.europarl.europa.eu` har ingen robots.txt (404). Prosedyresidene (`/oeil/en/procedure-file?reference=2026/0165(COD)`) svarer raskt og uten bot-sjekk. Parlamentets juridiske merknad svarer 403 til radaren og er lest for hånd av brukeren 29.10.2026.
+- En side har kort navn («New Europol Regulation»), status i Parlamentet («Awaiting committee decision»), ansvarlig komité og hovedhendelser med dato. Den navngir også saksordførere og kommissær; det leses ikke.
+- Nye NLE-prosedyrer (rådsbeslutninger om avtaler) finnes ofte ikke ennå (404).
+- Parlamentets Open Data API (`data.europarl.europa.eu`) har de samme prosedyrene, men svarte 500 på halvparten av kallene (med 13 MB feilmelding) og mangler statusteksten. Det brukes ikke.
+
+**Slik brukes OEIL** (`eu/sources/oeil.py`, valgt 29.10.2026):
+1. Etter vurderingen i `run`: kandidater med prosedyrenummer der siste gyldige vurdering er høy eller middels, eller som ikke er vurdert ennå. Lav og ingen slås ikke opp.
+2. Kort navn, status, ansvarlig komité og hovedhendelser lagres (`eu_case.oeil_*`, `eu_oeil_event`).
+3. 404 prøves igjen neste kjøring. Avsluttede prosedyrer («Procedure completed», «… lapsed or withdrawn», «… rejected») hentes ikke igjen.
+4. En endret status logges (`oeil_status`). En side som ikke kan leses, stopper bare dette steget.
+
 ## Have Your Say (uten LLM)
 
 Have Your Say er Kommisjonens høringsportal. Hvert initiativ har faser med egne tilbakemeldingsfrister: call for evidence, offentlig konsultasjon, det vedtatte forslaget (med COM-nummer, rundt 8 uker) og planlagte faser. Radaren bruker portalen bare til å vise **tilbakemeldingsfrist og lenke for EUR-Lex-kandidater** (valgt 29.10.2026).
@@ -240,6 +254,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 - **Kandidater eldre enn 8 uker** som ikke har vært rapportert, vises bare som én linje under «Tidligere forslag» (valgt 29.10.2026, så første rapport ikke blir på 60 sider).
 - **Regler for gjentak, som i Høringsradar:** høy og middels vises på nytt med merker når en ny vurdering endrer relevans eller funn; statusendringer (prosedyre, EØS-status, rettelse) gir én linje; lav og ingen vises ikke på nytt; en ny vurdering med samme resultat er ikke en endring. I tillegg: en sak som sto under «Ikke vurdert», vises igjen når den har fått sin første vurdering, uansett nivå.
 - Sidetall i funn lenker til den engelske PDF-en (`#page=N`). Referansen lenker til EUR-Lex, og EØS-statusen til EEA-Lex.
+- **OEIL (milepæl 7):** raden «Europaparlamentet» i analysen med kort navn (lenke til OEIL), status (norsk der ordlyden er kjent, ellers OEILs tekst), komité og siste hendelse. Ny status på en tidligere rapportert høy eller middels sak gir én linje under endringer.
 - **EDPS (milepæl 6):** merket «EDPS» ved saken, og i analysen lenke til Rådets dokument med dato (og «koblet på forslagets tittel» når det gjelder). Når regelen har hevet nivået: «Relevans: Middels (EDPS-regelen; modellen vurderte: Lav)». Toppfeltet viser hvor mange kandidater som har en uttalelse, og merknaden sier at listen ikke er fullstendig. En ny uttalelse på en tidligere rapportert sak gir én linje under endringer, eller full visning når regelen endrer nivået.
 - **Have Your Say (milepæl 5):** tilbakemeldingsfristen står i oversikten og i analysen («Tilbakemelding på forslaget åpen til 03.12.2026», «lukket …», «planlagt 4. kvartal 2027»), med lenke til initiativet. Toppfeltet viser hvor mange kandidater som har en side, og hvor mange som er åpne for tilbakemelding. En periode som åpner eller en flyttet frist på en høy eller middels sak som er rapportert før, gir én linje under endringer.
 - Grunnlaget for neste rapport lagres i `eu_report` og `eu_report_item` (vurdering, prosedyrestatus og EØS-status per sak).
@@ -267,7 +282,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 4. Egen PDF-rapport (`horingsradar-eu report`).
 5. Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater, koblet på COM-nummer.
 6. EDPS som relevanssignal, fra Rådets dokumenter i Cellar.
-7. OEIL-status, valgfritt.
+7. OEIL-status for saker med høy og middels relevans.
 8. Panel og statistikk.
 9. Backtest med recall-sett.
 

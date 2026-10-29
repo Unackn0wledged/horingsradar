@@ -180,7 +180,17 @@ CREATE TABLE IF NOT EXISTS eu_edps_link (
     PRIMARY KEY (work_uri, case_id)
 );
 
+-- Key events of the procedure in OEIL (replaced each time the procedure file is read).
+CREATE TABLE IF NOT EXISTS eu_oeil_event (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id INTEGER NOT NULL REFERENCES eu_case(id),
+    date TEXT NOT NULL,
+    event TEXT NOT NULL,
+    reference TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_eu_case_date ON eu_case (date_document);
+CREATE INDEX IF NOT EXISTS idx_eu_oeil_event_case ON eu_oeil_event (case_id, date);
 CREATE INDEX IF NOT EXISTS idx_eu_edps_link_case ON eu_edps_link (case_id);
 CREATE INDEX IF NOT EXISTS idx_eu_assessment_case ON eu_assessment (case_id, created_at);
 CREATE INDEX IF NOT EXISTS idx_eu_finding_assessment ON eu_finding (assessment_id);
@@ -203,6 +213,11 @@ EU_CASE_COLUMNS = {
     "hys_initiative_id": "INTEGER",  # eu_hys_initiative, found by the COM number
     "hys_status": "TEXT",  # found | not_found | mismatch
     "hys_checked_at": "TEXT",
+    "oeil_ref": "TEXT",  # 2026/0165(COD) when OEIL has the procedure
+    "oeil_title": "TEXT",  # OEIL's short title, e.g. New Europol Regulation
+    "oeil_status": "TEXT",  # OEIL's status text in English (eu/sources/oeil.py)
+    "oeil_committees": "TEXT",  # JSON list, e.g. ["LIBE Civil Liberties, ..."]
+    "oeil_checked_at": "TEXT",
 }
 
 
@@ -221,7 +236,8 @@ def record_change(
 ) -> None:
     """kind: procedure_status | candidate | variant (a corrigendum or extra part) | eea_status |
     hys_feedback (a feedback period opened, or its deadline moved; old and new deadline) |
-    edps (the first EDPS opinion found for the case; new value is the Council document)."""
+    edps (the first EDPS opinion found for the case; new value is the Council document) |
+    oeil_status (the status in Parliament changed; OEIL's English status texts)."""
     conn.execute(
         "INSERT INTO eu_case_change (case_id, detected_at, kind, old_value, new_value)"
         " VALUES (?, ?, ?, ?, ?)",

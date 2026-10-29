@@ -25,6 +25,7 @@ Arbeidsform:
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
+| OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
 | Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
 
 ## Milepæler
@@ -38,7 +39,7 @@ Arbeidsform:
 | 4 | Egen PDF-rapport | Ferdig |
 | 5 | Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater | Ferdig |
 | 6 | EDPS som relevanssignal, fra Rådets dokumenter i Cellar | Ferdig |
-| 7 | OEIL-status (valgfritt) | Ikke startet |
+| 7 | OEIL-status for høy og middels | Ferdig |
 | 8 | Panel og statistikk | Ikke startet |
 | 9 | Backtest med recall-sett | Ikke startet |
 
@@ -129,3 +130,17 @@ Funn underveis:
 - 14 av 31 dokumenter mangler prosedyre. Tittelen gjentar forslagets tittel ordrett og gir sikre treff (Eurojust, Europol, European Investigation Order).
 - `procedure_ref` finnes bare for kandidater. Koblingen bruker derfor forslagenes CELEX-nummer fra samme prosedyre, hentet i samme spørring, så også forslag som ikke er kandidater kan kobles.
 - European Investigation Order (omarbeiding, COM(2026) 313) slapp ikke gjennom forfilteret, men blir kandidat gjennom EDPS-uttalelsen. Vurder å se på nøkkelordlisten for strafferettslig samarbeid.
+
+## Milepæl 7: OEIL
+
+- `eu/sources/oeil.py`: henter og tolker prosedyresiden i OEIL (kort navn, status, ansvarlig komité, hovedhendelser). Personnavn leses ikke. Pilotens `Fetcher` uendret, 5 sekunder mellom kall.
+- Nytt steg sist i `run`, etter vurderingen: kandidater med prosedyrenummer som er høy, middels eller ikke vurdert, og som ikke er avsluttet i OEIL. 404 prøves igjen neste kjøring.
+- Nye kolonner `eu_case.oeil_ref`, `oeil_title`, `oeil_status`, `oeil_committees`, `oeil_checked_at`, ny tabell `eu_oeil_event`, og endringen `oeil_status`.
+- Rapporten har raden «Europaparlamentet» og én linje ved ny status. `status` viser hvor mange kandidater som har OEIL-status.
+- Testdata i `tests/fixtures/oeil/`: ekte sider for EU KIDS Act, Europol, AI Act (avsluttet, felles komité), CSAM (mange hendelser) og EUCCS (henvisning ikke avgjort), og en ekte 404-side. Navn på saksordførere, skyggeordførere og kommissær er erstattet med «NAVN Fjernet».
+
+Funn underveis:
+- OEIL har ingen robots.txt. Parlamentets juridiske merknad svarer 403 til radaren og ble lest for hånd av brukeren.
+- Parlamentets Open Data API var ustabilt (500 på halvparten av kallene, 13 MB feilmelding) og mangler statusteksten.
+- Nye NLE-prosedyrer finnes ikke i OEIL før Parlamentet skal gi samtykke; 8 av 22 kandidatprosedyrer i testdataene er NLE.
+- Hovedhendelsene i OEIL tar ikke med trilogmøter. CSAM står fortsatt med «Awaiting Parliament's position in 1st reading».

@@ -19,6 +19,7 @@ def load(name: str) -> dict:
 
 
 EDPS = Path(__file__).parent / "fixtures" / "edps"
+OEIL = Path(__file__).parent / "fixtures" / "oeil"
 
 
 def load_edps(name: str) -> dict:
@@ -101,6 +102,16 @@ class EUSite:
         default_factory=lambda: load("english_pdfs.json")["results"]["bindings"]
     )
     edps_notes: list[dict] = field(default_factory=list)  # none unless a test adds them
+    # OEIL procedure files by reference; anything else is OEIL's real 404 page.
+    oeil_pages: dict[str, str] = field(
+        default_factory=lambda: {
+            p.stem.removeprefix("procedure_").replace("_", "/", 1).replace("_", "(", 1) + ")": (
+                p.read_text(encoding="utf-8")
+            )
+            for p in OEIL.glob("procedure_*.html")
+        }
+    )
+    oeil_requests: list[str] = field(default_factory=list)
     queries: list[str] = field(default_factory=list)
     downloads: list[str] = field(default_factory=list)
     hys: HYSSite = field(default_factory=HYSSite)
@@ -131,6 +142,8 @@ class EUSite:
         url = urlparse(str(request.url))
         if url.hostname == "ec.europa.eu":
             return self.hys.handler(request)
+        if url.hostname == "oeil.europarl.europa.eu":
+            return self.oeil_handler(url)
         if url.path == "/robots.txt":
             return httpx.Response(200, text="User-agent: *\nAllow: /\n")
         if url.path.startswith("/resource/cellar/"):
@@ -165,6 +178,18 @@ class EUSite:
             key=lambda b: (b["date"]["value"], b["celex"]["value"]),
         )
         return _response(rows[offset : offset + limit])
+
+    def oeil_handler(self, url) -> httpx.Response:
+        if url.path == "/robots.txt":  # OEIL has none
+            return httpx.Response(404, text="Not Found")
+        assert url.path == "/oeil/en/procedure-file", url.path
+        ref = parse_qs(url.query)["reference"][0]
+        self.oeil_requests.append(ref)
+        if ref in self.oeil_pages:
+            return httpx.Response(
+                200, text=self.oeil_pages[ref], headers={"content-type": "text/html"}
+            )
+        return httpx.Response(404, text=(OEIL / "not_found.html").read_text(encoding="utf-8"))
 
     def proposal(self, com_number: str) -> dict:
         """The binding for COM(2026) <number>, for tests that change it."""

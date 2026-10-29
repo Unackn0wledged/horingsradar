@@ -108,6 +108,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
   <strong>Merk:</strong> Relevansnivå, sammendrag og funn er KI-generert sortering av begrunnelsen i forslaget («explanatory memorandum») og må verifiseres mot kilden.
   Verktøyet tar ikke stilling til forslagene og skriver ikke innspill. Tittel, referanser, datoer og prosedyrestatus er hentet fra EUR-Lex, og EØS-status fra EEA-Lex. Frister for tilbakemelding er hentet fra Kommisjonens Have Your Say, koblet til forslaget på COM-nummeret.
   EDPS-uttalelser er hentet fra Rådets offentlige dokumenter i EUR-Lex og er ikke fullstendige: en sak uten EDPS-merke kan likevel ha en uttalelse. En EDPS-uttalelse gir minst middels relevans. Det er en fast regel, ikke modellens vurdering, og det står ved saken når regelen har hevet nivået.
+  Status i Europaparlamentet er hentet fra Legislative Observatory (OEIL) for saker med høy eller middels relevans.
   «Registrert i EEA-Lex» er utledet av at forslaget står i EEA-Lex; full EØS-status finnes først for vedtatte rettsakter.
   Forslag uten treff i forfilteret (EuroVoc-emner og nøkkelord) er ikke vurdert av LLM-en. Sitater er kontrollert maskinelt mot teksten; sitater som ikke kunne bekreftes er tydelig merket.
 </div>
@@ -161,6 +162,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <div><dt>Referanse</dt><dd>{{ v.reference }} · CELEX {{ v.row.celex }} · <a href="{{ v.eurlex_url }}">EUR-Lex</a></dd></div>
     <div><dt>Type / dato</dt><dd>{{ v.doc_type }} / {{ v.row.date_document|date }}</dd></div>
     <div><dt>Prosedyre</dt><dd>{{ v.procedure }}</dd></div>
+    {% if v.parliament %}<div><dt>Europaparlamentet</dt><dd>{% if v.oeil_url %}<a href="{{ v.oeil_url }}">{{ v.row.oeil_title or v.row.oeil_ref }}</a>: {% endif %}{{ v.parliament }}{% if v.oeil_last_event %}<br><span class="muted">Siste hendelse {{ v.oeil_last_event.date|date }}: {{ v.oeil_last_event.event }}</span>{% endif %}</dd></div>{% endif %}
     {% if v.edps %}<div><dt>EDPS</dt><dd>{% for n in v.edps %}Uttalelse oversendt i {% if n.url %}<a href="{{ n.url }}">Rådets dokument {{ n.doc }}</a>{% else %}Rådets dokument{% endif %} ({{ n.date|date }}){% if n.method == "title" %}, koblet på forslagets tittel{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}{% if v.edps_rule %}<br>Relevans: {{ v.relevance_label }} ({{ v.edps_rule }}){% endif %}</dd></div>{% endif %}
     {% if v.hys %}<div><dt>Have Your Say</dt><dd>{{ v.feedback|join("<br>"|safe) }} · <a href="{{ v.hys_url }}">Have Your Say</a></dd></div>{% endif %}
     <div><dt>EØS-status</dt><dd>{{ eea(v) }}{% if v.eea_areas %}<br><span class="muted">{{ v.eea_areas|join(" · ") }}</span>{% endif %}{% if v.row.eea_jcd %}<br><span class="muted">EØS-komitébeslutning {{ v.row.eea_jcd }}</span>{% endif %}</dd></div>
