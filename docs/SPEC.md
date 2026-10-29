@@ -2,7 +2,9 @@
 
 ## Formål
 
-Spare juristene tid på å oppdage, sortere og lese høringer fra regjeringen.no som har betydning for personvern. Verktøyet er ikke skrivestøtte og skal ikke produsere høringsinnspill.
+Spare brukerne tid på å oppdage, sortere og lese høringer fra regjeringen.no som har betydning for personvern. Verktøyet er ikke skrivestøtte og skal ikke produsere høringsinnspill.
+
+«Målvirksomheten» er virksomheten verktøyet følger med for: om den står på adresselisten, og om den har svart på høringen.
 
 PoC-en skal dokumentere effekt med tall (se Suksesskriterier), ikke bare se bra ut.
 
@@ -11,13 +13,13 @@ PoC-en skal dokumentere effekt med tall (se Suksesskriterier), ikke bare se bra 
 Med i piloten:
 - Kilde: høringer på regjeringen.no
 - Daglig innhenting og vurdering
-- PDF-rapport som hentes ut manuelt og videresendes til pilotjuristene
+- PDF-rapport som hentes ut manuelt og videresendes til pilotbrukerne
 - Backtest mot historiske høringer
 - Enkelt adminpanel på LAN for administratoren
 
 Utenfor piloten:
 - Andre kilder (direktorater, særorganer, Stortinget, EU)
-- E-post, hastevarsler, web-UI for juristene, tilbakemeldingsknapper
+- E-post, hastevarsler, web-UI for brukerne, tilbakemeldingsknapper
 - Skrivestøtte og utkast til høringsinnspill
 
 ## Datakilde: regjeringen.no
@@ -114,7 +116,7 @@ Dokumenter som er større enn budsjettet deles per kapittel (ut fra overskrifter
 
 ### Relevansskala
 
-- **hoy**: Forslaget etablerer eller endrer behandlingsgrunnlag eller hjemmel for behandling av personopplysninger, registre, deling eller sammenstilling, unntak fra taushetsplikt, overvåking eller kontroll, automatiserte avgjørelser eller profilering, eller behandling av særlige kategorier. Også endringer i personvernregelverket eller i Datatilsynets rolle.
+- **hoy**: Forslaget etablerer eller endrer behandlingsgrunnlag eller hjemmel for behandling av personopplysninger, registre, deling eller sammenstilling, unntak fra taushetsplikt, overvåking eller kontroll, automatiserte avgjørelser eller profilering, eller behandling av særlige kategorier. Også endringer i personvernregelverket eller i tilsynsmyndighetens rolle.
 - **middels**: Forslaget medfører behandling av personopplysninger, men uten ny eller endret hjemmel, eller påvirker personvern indirekte i vesentlig grad.
 - **lav**: Personvern berøres perifert.
 - **ingen**: Personopplysninger berøres ikke.
@@ -127,7 +129,7 @@ Ved tvil velges høyeste nivå.
 
 ### Sektorer
 
-TODO: tilpass til den interne ansvarsfordelingen. Utgangspunkt:
+TODO: tilpass til egen ansvarsfordeling. Utgangspunkt:
 
 `helse_omsorg`, `justis_politi`, `arbeid_velferd`, `utdanning_forskning`, `barn_familie`, `finans_skatt`, `digitalisering_forvaltning`, `samferdsel_kommunikasjon`, `innvandring_integrering`, `forsvar_sikkerhet`, `naering`, `kultur_medier`, `kommune_bolig`, `annet`
 
@@ -153,7 +155,7 @@ Som standard tar rapporten med alle høringer som ikke har vært i en tidligere 
 
 Innhold:
 1. **Topptekst**: periode, tidspunkt for generering, modell og promptversjon, og en merknad om at innholdet er KI-generert sortering som må verifiseres mot kilden.
-2. **Oversiktstabell**, sortert på relevans og deretter frist: relevans, tittel, departement, publisert, frist, dager igjen, sektor, om Datatilsynet står på adresselisten.
+2. **Oversiktstabell**, sortert på relevans og deretter frist: relevans, tittel, departement, publisert, frist, dager igjen, sektor, om målvirksomheten står på adresselisten.
 3. **Frister som nærmer seg**: åpne høringer med høy eller middels relevans fra tidligere rapporter, med frist innen 28 dager.
 4. **Detaljer for høy og middels**: tittel med lenke, metadata, sammendrag, funn (kategori, beskrivelse, dokument, kapittel og side, sitat, verifiseringsstatus), leseguide (for eksempel «s. 22–41 og 88–95 av 140»), og om høringsnotatet har eget personvernkapittel.
 5. **Lav og ingen**: én linje per høring med kort begrunnelse.
@@ -166,7 +168,7 @@ Utforming:
 
 ## Backtest
 
-Backtesten måler om modellen og prompten rangerer høringer riktig, med Datatilsynets faktiske høringssvar som fasit. Den tester verktøyet, ikke Datatilsynet.
+Backtesten måler om modellen og prompten rangerer høringer riktig, med målvirksomhetens faktiske høringssvar som fasit. Den tester verktøyet, ikke målvirksomheten.
 
 ### Når
 
@@ -183,7 +185,7 @@ Backtesten måler om modellen og prompten rangerer høringer riktig, med Datatil
 ### Oppsett
 
 - **Periode**: avsluttede høringer 2024–2025 (ca. 575). Kan overstyres med `--from` og `--to`.
-- **Fasit**: `dt_responded` er sann når Datatilsynet står blant de publiserte høringssvarene på høringssiden. Fasiten er støyete: noen svar sendes utenom skjemaet, og at Datatilsynet ikke svarte kan skyldes kapasitet.
+- **Fasit**: `dt_responded` er sann når målvirksomheten står blant de publiserte høringssvarene på høringssiden. Fasiten er støyete: noen svar sendes utenom skjemaet, og at målvirksomheten ikke svarte kan skyldes kapasitet.
 - **Split**: 2024 er dev-sett og brukes til å justere prompt og skala. 2025 er testsett og kjøres først når prompten er låst. Tallene som rapporteres kommer fra testsettet.
 - **Kjøring**: samme pipeline som i drift. Cache alt. Bruk batch-API hvis leverandøren tilbyr det.
 - **Output**: CSV per høring og et kort sammendrag med:
@@ -192,19 +194,19 @@ Backtesten måler om modellen og prompten rangerer høringer riktig, med Datatil
   - forvirringsmatrise
   - andel verifiserte sitater
   - leseguide: relevante sider delt på totalt sidetall
-  - lister til manuell gjennomgang: høy relevans uten svar, og svar fra Datatilsynet men lav eller ingen relevans
+  - lister til manuell gjennomgang: høy relevans uten svar, og svar fra målvirksomheten men lav eller ingen relevans
 
 ## Suksesskriterier
 
-- Recall ≥ 90 % for høy + middels mot høringer Datatilsynet svarte på (testsettet)
+- Recall ≥ 90 % for høy + middels mot høringer målvirksomheten svarte på (testsettet)
 - Andelen som flagges som høy eller middels er lav nok til at sorteringen sparer tid. Terskel settes etter dev-kjøringen.
 - Alle sitater er verifisert eller synlig markert
 - Leseguiden peker på en klar minoritet av sidene i relevante høringer
-- Tilbakemelding fra pilotjuristene etter 6–8 uker
+- Tilbakemelding fra pilotbrukerne etter 6–8 uker
 
 ## Adminpanel
 
-Enkelt webgrensesnitt for administratoren, nådd via LAN-IP eller Tailscale. Ikke for juristene.
+Enkelt webgrensesnitt for administratoren, nådd via LAN-IP eller Tailscale. Ikke for brukerne.
 
 ### Innhold
 
@@ -226,7 +228,7 @@ Enkelt webgrensesnitt for administratoren, nådd via LAN-IP eller Tailscale. Ikk
   - siste backtest: dato, modell, promptversjon, recall og andel flagget
 - **Logg**: siste linjer fra siste jobb.
 
-Ikke med: redigering av prompts, konfigurasjon eller API-nøkkel, brukerhåndtering, tilgang for juristene.
+Ikke med: redigering av prompts, konfigurasjon eller API-nøkkel, brukerhåndtering, tilgang for brukerne.
 
 ### Teknisk
 

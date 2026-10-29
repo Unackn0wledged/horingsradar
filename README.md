@@ -1,10 +1,12 @@
 # Høringsradar
 
-Pilot og proof of concept for Datatilsynet.
+Pilot og proof of concept.
 
-Hver morgen henter Høringsradar nye og endrede høringer fra regjeringen.no. En LLM vurderer hvor relevante de er for personvern, med verifiserte sitater og sidehenvisninger. Resultatet blir en PDF-rapport som administratoren videresender manuelt til pilotjuristene. Et enkelt adminpanel på LAN og Tailscale lar administratoren styre jobbene og følge med.
+Hver morgen henter Høringsradar nye og endrede høringer fra regjeringen.no. En LLM vurderer hvor relevante de er for personvern, med verifiserte sitater og sidehenvisninger. Resultatet blir en PDF-rapport som administratoren videresender manuelt til pilotbrukerne. Et enkelt adminpanel på LAN og Tailscale lar administratoren styre jobbene og følge med.
 
 Verktøyet beskriver hva som foreslås og hvor det står. Det skriver aldri høringsinnspill og tar ikke stilling til forslagene.
+
+«Målvirksomheten» i dokumentasjonen er virksomheten verktøyet følger med for. Rapporten viser om den står på adresselisten, og backtesten bruker høringssvarene den har publisert som fasit.
 
 - Krav: [`docs/SPEC.md`](docs/SPEC.md)
 - Plan og beslutninger: [`docs/PLAN.md`](docs/PLAN.md)
@@ -67,7 +69,7 @@ Alle jobber tar en felles fil-lås i `DATA_DIR`. Bare én jobb kan kjøre om gan
    - frister som nærmer seg,
    - detaljer for høy og middels relevans,
    - én linje per høring for lav og ingen relevans.
-6. **Backtest.** Startes bare manuelt. Datatilsynets publiserte høringssvar brukes som fasit. Den gir recall, andel flagget, forvirringsmatrise og lister til manuell gjennomgang.
+6. **Backtest.** Startes bare manuelt. Målvirksomhetens publiserte høringssvar brukes som fasit. Den gir recall, andel flagget, forvirringsmatrise og lister til manuell gjennomgang.
 
 Metadata (tittel, datoer, frist, departement, status og adresseliste) kommer alltid fra HTML-en, aldri fra LLM-en. Ingen høring filtreres bort.
 

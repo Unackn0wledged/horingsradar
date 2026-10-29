@@ -231,7 +231,7 @@ Endre minst disse:
 | Variabel | Verdi |
 |---|---|
 | `DATA_DIR` | `/var/lib/horingsradar`. **Må** endres fra standardverdien `./data`, ellers får ikke systemd-tjenestene skrive til databasen. |
-| `USER_AGENT` | `Horingsradar/0.1 (pilot for Datatilsynet; kontakt: <din e-post>)` |
+| `USER_AGENT` | `Horingsradar/0.1 (kontakt: <din e-post>)` |
 | `ANTHROPIC_API_KEY` | API-nøkkelen |
 | `LLM_MODEL` | `claude-sonnet-5-5` (standard) |
 | `PRICE_INPUT_PER_MTOK` / `PRICE_OUTPUT_PER_MTOK` | Gjeldende priser for modellen. Brukes bare til estimater. |
@@ -399,9 +399,9 @@ Dagen før:
 Forslag til forløp i demoen:
 
 1. **Status**: daglig automatikk, siste kjøring, pause og «Kjør nå».
-2. **Høringer**: sortert liste med relevans, frist og om Datatilsynet står på adresselisten.
+2. **Høringer**: sortert liste med relevans, frist og om målvirksomheten står på adresselisten.
 3. Én høring med høy relevans: sammendrag, funn med **verifiserte sitater** og sidetall, leseguide (for eksempel «s. 22–41 av 140») og eget personvernkapittel.
-4. **Rapporter**: last ned PDF-en som juristene får.
+4. **Rapporter**: last ned PDF-en som mottakerne får.
 5. **Statistikk**: andel flagget, verifiserte sitater, API-forbruk og siste backtest (recall).
 
 ## 15. Feilsøking

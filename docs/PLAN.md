@@ -109,9 +109,9 @@ Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er 
 ### Lagt til etter den opprinnelige planen
 
 - **Validering av egne anbefalinger:**
-  - Bare modellens egen stemme avvises («vi anbefaler», «juristene bør»).
+  - Bare modellens egen stemme avvises (for eksempel «vi anbefaler»).
   - «Det anbefales» og «utvalget anbefaler» er tillatt som gjengivelse av kilden.
-  - «Datatilsynet bør/burde» er tillatt når det står i høringsdokumentene. Det sjekkes mot kildeteksten i `assess.check_against_sources`.
+  - Råd rettet til målvirksomheten («… bør/burde») er tillatt når det står i høringsdokumentene. Det sjekkes mot kildeteksten i `assess.check_against_sources`.
 - **Rapporten:**
   - Hver rad i oversikten hopper til analysen («Gå til analyse»), og analysene lenker tilbake.
   - Sidetall i funn, leseguide og personvernkapittel lenker til PDF-en med `#page=N`. Det gjelder også i panelet.
@@ -152,13 +152,13 @@ Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er 
    - endringsmerker og tidslinje også i panelet,
    - kostnadstak per måned,
    - batch-API for daglig `run`,
-   - løpende treffsikkerhet i drift (svar fra Datatilsynet registreres etter fristen),
+   - løpende treffsikkerhet i drift (svar fra målvirksomheten registreres etter fristen),
    - sammenligning av promptversjoner side om side,
    - backtest-resultater i panelet,
    - `report --reset`.
 
 ## Ting som bevisst ikke er med
 
-- OCR, andre kilder, e-post og UI for jurister (jf. SPEC).
+- OCR, andre kilder, e-post og UI for brukerne (jf. SPEC).
 - Word-vedlegg (.docx/.odt) leses ikke. De registreres som dokument med merknaden «ikke lest», og det vises i rapporten.
 - Lenker til andre nettsteder (for eksempel hoering.udir.no) følges ikke.
