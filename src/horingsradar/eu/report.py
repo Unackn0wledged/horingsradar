@@ -287,7 +287,8 @@ def _latest_assessment(conn: sqlite3.Connection, case_id: int) -> dict[str, Any]
     return dict(row) if row else None
 
 
-def _view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> CaseView:
+def case_view(conn: sqlite3.Connection, row: sqlite3.Row, today: date) -> CaseView:
+    """Everything about one case, as the report and the panel show it."""
     a = _latest_assessment(conn, row["id"])
     findings = []
     if a and a["status"] == "ok":
@@ -437,7 +438,7 @@ class Selection:
 def select_for_report(conn: sqlite3.Connection, today: date) -> Selection:
     sel = Selection()
     for row in conn.execute("SELECT * FROM eu_case WHERE candidate = 1"):
-        view = _view(conn, row, today)
+        view = case_view(conn, row, today)
         if row["reported_in"] is None:
             (sel.full if view.recent else sel.older).append(view)
             continue

@@ -1,0 +1,76 @@
+<div id="status" hx-get="/partials/status" hx-trigger="every 4s" hx-swap="outerHTML">
+  {% if current %}
+  {% set p = current.progress_data %}
+  <section class="sheet running" aria-live="polite">
+    <h2>{{ job_kinds.get(current.kind, current.kind) }} pågår</h2>
+    <p class="meta" style="margin-top: 0">
+      <span>Startet {{ current.started_at|ts }}</span>
+      <span>Startet fra {{ triggers.get(current.triggered_by, current.triggered_by)|lower }}</span>
+      {% if current.args_data.case %}<span>Sak {{ current.args_data.case }}</span>{% endif %}
+      {% if current.args_data.no_assess %}<span>Uten vurdering</span>{% endif %}
+    </p>
+    {% if p.phase %}
+    <p class="small" style="margin: 8px 0 0">
+      {{ phases.get(p.phase, p.phase) }}{% if p.total %}: {{ p.done }} av {{ p.total }}{% endif %}
+    </p>
+    {% if p.total %}<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ p.total }}" aria-valuenow="{{ p.done }}"><div style="width: {{ (100 * p.done / p.total)|round|int }}%"></div></div>{% endif %}
+    {% endif %}
+    <div class="actions">
+      <form method="post" action="/actions/cancel/{{ current.id }}" onsubmit="return confirm('Avbryte jobben? Tokens som allerede er brukt, telles med.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn danger small" type="submit">Avbryt jobb</button>
+      </form>
+      <a class="btn quiet small" href="/jobs/{{ current.id }}/log">Følg loggen</a>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="sheet" aria-labelledby="schedule-heading">
+    <div class="page-head" style="margin-bottom: 14px">
+      <h2 id="schedule-heading" style="margin: 0">Planlagt kjøring</h2>
+      {% if paused %}
+      <form method="post" action="/actions/resume">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn quiet small" type="submit">Gjenoppta</button>
+      </form>
+      {% else %}
+      <form method="post" action="/actions/pause">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn quiet small" type="submit">Pause</button>
+      </form>
+      {% endif %}
+    </div>
+    <dl class="facts">
+      <dt>Tilstand</dt>
+      <dd>{% if paused %}<span class="state state-paused">Pauset</span> <span class="muted small">Timeren fyrer, men kjøringen hoppes over. «Kjør nå» virker.</span>{% else %}<span class="state state-active">Aktiv</span>{% endif %}</dd>
+      <dt>Neste planlagte</dt>
+      <dd class="num">{{ next_run }}</dd>
+      <dt>Siste kjøring</dt>
+      <dd>
+        {% if last_run %}
+          {% set s = last_run.summary_data %}
+          <span class="state state-{{ last_run.status }}">{{ job_states.get(last_run.status, last_run.status) }}</span>
+          <span class="num">{{ last_run.started_at|ts }}</span>
+          {% if s.reason %}
+          <div class="small muted">Hoppet over fordi {{ skip_reasons.get(s.reason, s.reason) }}.</div>
+          {% elif s.fetched is defined %}
+          <div class="meta">
+            <span><strong class="num">{{ s.fetched }}</strong> forslag hentet</span>
+            <span><strong class="num">{{ s.new_candidates or 0 }}</strong> nye kandidater</span>
+            <span><strong class="num">{{ s.assessed or 0 }}</strong> vurdert</span>
+            {% if s.edps_new_links %}<span><strong class="num">{{ s.edps_new_links }}</strong> nye EDPS-koblinger</span>{% endif %}
+            {% if s.http_requests is defined %}<span><strong class="num">{{ s.http_requests }}</strong> HTTP-kall</span>{% endif %}
+          </div>
+          {% for key, label in [("eea_lex", "EEA-Lex"), ("have_your_say", "Have Your Say"), ("oeil", "OEIL")] if s[key] %}
+          <div class="alert small">{{ label }}: {{ s[key] }}</div>
+          {% endfor %}
+          {% endif %}
+          {% if s.error %}<div class="alert small">{{ s.error }}</div>{% endif %}
+          {% if s.assessment_skipped %}<div class="alert small">Vurderingen ble hoppet over: {{ s.assessment_skipped }}</div>{% endif %}
+        {% else %}<span class="muted">Ingen kjøringer ennå.</span>{% endif %}
+      </dd>
+      <dt>Venter på vurdering</dt>
+      <dd>{% if pending %}<a href="/cases?relevans=ikke_vurdert"><span class="num">{{ pending }}</span> kandidater</a>{% else %}Ingen{% endif %}</dd>
+    </dl>
+  </section>
+</div>

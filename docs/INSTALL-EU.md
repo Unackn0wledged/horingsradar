@@ -11,7 +11,7 @@ EU/EØS-radaren kjører som en egen instans i **samme LXC** som Høringsradar. D
 | Kode | `/opt/horingsradar` | `/opt/horingsradar-eu` |
 | Data | `/var/lib/horingsradar` | `/var/lib/horingsradar-eu` |
 | Kommando | `horingsradar` | `horingsradar-eu` |
-| Tjenester | `horingsradar-run.timer`, `horingsradar-web` | `horingsradar-eu-run.timer` |
+| Tjenester | `horingsradar-run.timer`, `horingsradar-web` | `horingsradar-eu-run.timer`, `horingsradar-eu-web` |
 | Oppdatering | `/opt/horingsradar/deploy/deploy.sh` | `/opt/horingsradar-eu/deploy/eu/deploy.sh` |
 
 ## 1. Snapshot først
@@ -120,7 +120,33 @@ systemctl list-timers horingsradar-eu-run.timer
 
 Timeren kjører mandag kl. 07:15, etter Høringsradars daglige kjøring.
 
-## 7. Oppdatere
+## 7. Adminpanel
+
+EU-radaren har sitt eget panel på port 8081. Lag et passord og legg hashen i EU-instansens `.env`:
+
+```bash
+cd /opt/horingsradar-eu
+sudo -u horingsradar -H .venv/bin/horingsradar-eu hash-password
+```
+
+Skriv inn passordet to ganger. Kopier linjen som starter med `scrypt$` og lim den inn etter `WEB_PASSWORD_HASH=` i `.env`:
+
+```bash
+sudo -u horingsradar nano /opt/horingsradar-eu/.env
+```
+
+Sett også `WEB_BIND` til LXC-ens LAN-adresse med port 8081 (for eksempel `<LXC-ens IP>:8081`), og gjerne `OTHER_PANEL_URL` til adressen til Høringsradars panel (for eksempel `http://<LXC-ens IP>:8080`). Bytt ut `<LXC-ens IP>` med adressen containeren har på nettet ditt.
+
+Start panelet:
+
+```bash
+systemctl enable --now horingsradar-eu-web.service
+systemctl status horingsradar-eu-web.service --no-pager
+```
+
+Åpne `http://<LXC-ens IP>:8081` i nettleseren og logg inn med brukernavnet i `WEB_USERNAME` (standard `operator`) og passordet. Panelet kan starte kjøring (med eller uten vurdering), rapport og ny vurdering av én sak, pause og gjenoppta den ukentlige kjøringen og avbryte en jobb. Det styrer ikke systemd og endrer ikke `.env`.
+
+## 8. Oppdatere
 
 ```bash
 /opt/horingsradar-eu/deploy/eu/deploy.sh
@@ -128,13 +154,13 @@ Timeren kjører mandag kl. 07:15, etter Høringsradars daglige kjøring.
 
 Skriptet oppdaterer bare `/opt/horingsradar-eu` og EU-tjenestene. Det nekter å kjøre mot Høringsradars mapper. Siste linje viser versjonen.
 
-## 8. Fjerne EU-instansen
+## 9. Fjerne EU-instansen
 
 Høringsradar påvirkes ikke:
 
 ```bash
-systemctl disable --now horingsradar-eu-run.timer
-rm /etc/systemd/system/horingsradar-eu-run.service /etc/systemd/system/horingsradar-eu-run.timer
+systemctl disable --now horingsradar-eu-run.timer horingsradar-eu-web.service
+rm /etc/systemd/system/horingsradar-eu-run.service /etc/systemd/system/horingsradar-eu-run.timer /etc/systemd/system/horingsradar-eu-web.service
 systemctl daemon-reload
 ```
 

@@ -29,6 +29,8 @@ class EUSettings(Settings):
     # One keyword per line; empty means the built-in list (eu/prefilter.py).
     eu_keywords_file: Path | None = None
     eu_prompt_version: str = "v1"
+    # Link from the EU panel to the regjeringen.no radar's panel; empty means no link.
+    other_panel_url: str = ""
 
     @field_validator("request_interval_seconds")
     @classmethod

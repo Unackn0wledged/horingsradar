@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import getpass
 import logging
 import sqlite3
 import sys
@@ -42,6 +43,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("pause", help="pause planlagt kjøring")
     sub.add_parser("resume", help="gjenoppta planlagt kjøring")
     sub.add_parser("status", help="vis status og siste jobber")
+    sub.add_parser("web", help="start EU-panelet")
+    sub.add_parser("hash-password", help="lag passord-hash til WEB_PASSWORD_HASH")
     return parser
 
 
@@ -185,8 +188,29 @@ def _status(settings: EUSettings) -> int:
     return 0
 
 
+def _hash_password() -> int:
+    from horingsradar.web.auth import hash_password
+
+    first = getpass.getpass("Passord: ")
+    second = getpass.getpass("Gjenta passord: ")
+    if not first or first != second:
+        print("Passordene er tomme eller ulike.", file=sys.stderr)
+        return 1
+    print(hash_password(first))
+    return 0
+
+
+def _web(settings: EUSettings) -> int:
+    from horingsradar.eu.web.server import serve
+
+    serve(settings)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "hash-password":  # needs no instance
+        return _hash_password()
     settings = get_eu_settings()
     require_eu_instance(settings)
     if args.command in ("run", "assess", "report"):
@@ -203,6 +227,8 @@ def main(argv: list[str] | None = None) -> int:
         return _set_paused(settings, False)
     if args.command == "status":
         return _status(settings)
+    if args.command == "web":
+        return _web(settings)
     return 2
 
 

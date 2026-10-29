@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Filtrert bort{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Filtrert bort</h1>
+    <p class="lede">Forslag som forfilteret ikke slapp gjennom (ingen av EuroVoc-emnene, ingen nøkkelord i tittelen, ingen EDPS-uttalelse). De er ikke vurdert av LLM-en. {% if query %}Viser {{ items|length }} av {{ total }}.{% else %}{{ total }} forslag, nyeste først.{% endif %}</p>
+  </div>
+</div>
+
+<div class="filters">
+  <form class="search" method="get" action="/filtered" role="search">
+    <div>
+      <label for="q">Søk i tittel, COM-nummer, CELEX eller EuroVoc-emne</label>
+      <input id="q" name="q" type="search" value="{{ query }}" placeholder="for eksempel criminal">
+    </div>
+    <button class="btn quiet" type="submit">Søk</button>
+  </form>
+</div>
+
+{% if items %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Forslag</th><th class="nowrap">Dato</th><th class="opt">EuroVoc</th></tr></thead>
+    <tbody>
+    {% for c in items %}
+      <tr>
+        <td><a href="/cases/{{ c.id }}">{{ c.title }}</a><div class="small muted">{{ c.com_ref or c.celex }} · <a href="{{ eurlex_url(c.celex) }}" target="_blank" rel="noopener">EUR-Lex</a>{% if not c.indexed %} · ikke indeksert i EuroVoc ennå{% endif %}</div></td>
+        <td class="num nowrap">{{ c.date_document|d }}</td>
+        <td class="opt small">{{ c.eurovoc_labels|join(", ") if c.eurovoc_labels else "–" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% elif total %}
+<p class="empty">Ingen forslag passer søket. <a href="/filtered">Vis alle</a>.</p>
+{% else %}
+<p class="empty">Ingen forslag er filtrert bort ennå.</p>
+{% endif %}
+{% endblock %}

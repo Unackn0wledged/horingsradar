@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>{% block title %}Status{% endblock %} – EU/EØS-radar</title>
+<link rel="preload" href="/fonts/SourceSans3-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/htmx.min.js" defer></script>
+{% block head %}{% endblock %}
+</head>
+<body hx-headers='{"X-CSRF-Token": "{{ csrf_token }}"}'>
+{% set path = request.url.path %}
+{% macro nav(href, label, active) %}<a href="{{ href }}"{% if active %} aria-current="page"{% endif %}>{{ label }}</a>{% endmacro %}
+<header class="masthead">
+  <div class="masthead-inner">
+    <a class="wordmark" href="/" aria-label="EU/EØS-radar, til statussiden">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+              <circle cx="16" cy="16" r="16" fill="#13233a"/>
+              <g fill="none" stroke="#2e4a6e" stroke-width="1.1">
+                <circle cx="16" cy="16" r="12.5"/>
+                <circle cx="16" cy="16" r="7.5"/>
+                <path d="M3.5 16 H28.5 M16 3.5 V28.5"/>
+              </g>
+              <path d="M16 16 L16 3.5 A12.5 12.5 0 0 1 25.58 7.97 Z" fill="#f0a36b" fill-opacity="0.3"/>
+              <path d="M16 16 L25.58 7.97" stroke="#f0a36b" stroke-width="1.4" stroke-linecap="round"/>
+              <circle cx="21.6" cy="10.6" r="1.8" fill="#f0a36b"/>
+              <circle cx="11.6" cy="20.6" r="1.3" fill="#f0a36b" fill-opacity="0.7"/>
+              <circle cx="16" cy="16" r="1.1" fill="#f6f4ee"/>
+            </svg>
+      EU/EØS-radar
+    </a>
+    <nav class="sections" aria-label="Hovedmeny">
+      {{ nav("/", "Status", path == "/") }}
+      {{ nav("/cases", "Saker", path.startswith("/cases")) }}
+      {{ nav("/filtered", "Filtrert bort", path.startswith("/filtered")) }}
+      {{ nav("/reports", "Rapporter", path.startswith("/reports")) }}
+      {{ nav("/stats", "Statistikk", path.startswith("/stats")) }}
+      {{ nav("/jobs", "Jobber og logg", path.startswith("/jobs")) }}
+      {% if other_panel_url %}<a href="{{ other_panel_url }}">Høringsradar ↗</a>{% endif %}
+    </nav>
+    <span class="role">Adminpanel, EU/EØS</span>
+  </div>
+</header>
+<main>
+{% if msg %}<div class="flash" role="status">{{ msg }}</div>{% endif %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

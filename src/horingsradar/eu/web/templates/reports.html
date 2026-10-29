@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Rapporter{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Rapporter</h1>
+    <p class="lede">En ny rapport tar med kandidater som ikke har vært i en tidligere rapport, og tidligere rapporterte saker som er vurdert på nytt eller har fått ny status. PDF-ene videresendes manuelt.</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="/actions/report">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn" type="submit">Generer rapport</button>
+    </form>
+  </div>
+</div>
+
+{% if reports %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Generert</th><th>Periode</th><th class="num">Saker</th><th><span class="sr-only">Nedlasting</span></th></tr></thead>
+    <tbody>
+    {% for r in reports %}
+      <tr>
+        <td class="num nowrap">{{ r.created_at|ts }}</td>
+        <td>{{ r.period_label }}</td>
+        <td class="num">{{ r.case_count }}</td>
+        <td class="num"><a class="btn quiet small" href="/reports/{{ r.id }}/download">Last ned PDF</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Ingen rapporter ennå. Generer den første når kandidatene er vurdert.</p>
+{% endif %}
+{% endblock %}

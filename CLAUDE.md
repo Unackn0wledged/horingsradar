@@ -35,7 +35,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - `uv run horingsradar report` – PDF for alle høringer som ikke er rapportert før
 - `uv run horingsradar backtest --split dev|test` – kun manuelt; viser kostnadsestimat og krever bekreftelse
 - `uv run horingsradar web` – start adminpanelet lokalt
-- `uv run horingsradar-eu run [--no-assess]|assess <sak>|status|pause|resume` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`).
+- `uv run horingsradar-eu run [--no-assess]|assess <sak>|report|status|pause|resume|web` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`). `horingsradar-eu hash-password` lager passord-hash til EU-panelet.
 
 <!-- CLI-kommandoene finnes ikke før milepæl 2–6 er bygget. Oppdater lista når de endres. -->
 

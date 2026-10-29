@@ -262,9 +262,12 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 
 ## Panel og statistikk
 
-- Eget panel for EU-instansen på egen port, med samme oppbygning som Høringsradar (status, saker, rapporter, statistikk, backtest, jobber). Lenke til det andre panelet.
-- Ingen bryter for kilden i panelet. Panelet endrer ikke konfigurasjon.
-- Statistikk per kilde: antall hentet, antall etter forfiltrering, antall vurdert, antall relevante, LLM-kall og tokens.
+- Eget panel for EU-instansen på egen port (8081), egen prosess og egen tjeneste (`horingsradar-eu web`, `deploy/eu/systemd/horingsradar-eu-web.service`). Bare for administratoren.
+- **Bygget i milepæl 8** (`src/horingsradar/eu/web/`): Status (pågående jobb med fremdrift per steg, siste og neste kjøring, pause/gjenoppta, kjøring med og uten vurdering, rapport), Saker (filtre for relevans, EØS-status, EDPS, åpen frist og fritekst; sortering på dato, relevans og frist), side per sak med alt fra kildene, vurderingshistorikk og «Vurder på nytt», Filtrert bort (forslagene som ikke ble kandidater, med EuroVoc og søk), Rapporter, Statistikk og Jobber og logg. Backtest kommer i milepæl 9.
+- Jobber startes som egne prosesser (`python -m horingsradar.eu`). Ingen pipeline-kode kjører i panelet, det styrer ikke systemd og endrer ikke konfigurasjon. Ingen bryter for kildene.
+- Innlogging, CSRF, avbryting av jobber, socket-oppsett, stilark og HTMX er Høringsradars, gjenbrukt uendret. Sidene, malene og jobbstarten er egne.
+- Statistikk per kilde: EUR-Lex (hentet, kandidater, filtrert bort, grunn), EEA-Lex (status), Have Your Say (med side, åpne), EDPS (dokumenter, koblinger, hevet av regelen), OEIL (status), LLM (vurderinger, nivåer, tokens og kostnad per måned, modell og prompt) og de siste kjøringene.
+- Lenke fra EU-panelet til Høringsradars panel (`OTHER_PANEL_URL`). Lenken andre veien krever endring i Høringsradar og legges inn etter presentasjonen, ved merge til `main`.
 
 ## Backtest
 

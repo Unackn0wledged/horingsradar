@@ -1,0 +1,29 @@
+[Unit]
+Description=EU/EØS-radar: adminpanel
+Documentation=file:///opt/horingsradar-eu/docs/INSTALL-EU.md
+Wants=network-online.target
+After=network-online.target tailscaled.service
+
+[Service]
+Type=simple
+User=horingsradar
+Group=horingsradar
+WorkingDirectory=/opt/horingsradar-eu
+Environment=ENV_FILE=/opt/horingsradar-eu/.env
+# Hjemmemappen (/var/lib/horingsradar) er skrivebeskyttet her, så cache legges i EU-mappen.
+Environment=XDG_CACHE_HOME=/var/lib/horingsradar-eu/.cache
+ExecStart=/opt/horingsradar-eu/.venv/bin/horingsradar-eu web
+Restart=on-failure
+RestartSec=5
+# Jobber startet fra panelet er egne prosesser og skal overleve en omstart av panelet.
+KillMode=process
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# Bare EU-instansens egen mappe. Høringsradars data i /var/lib/horingsradar er skrivebeskyttet.
+ReadWritePaths=/var/lib/horingsradar-eu
+
+[Install]
+WantedBy=multi-user.target

@@ -25,6 +25,7 @@ Arbeidsform:
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
+| Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel nå, lenken andre veien etter presentasjonen (valgt 29.10.2026) |
 | OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
 | Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
 
@@ -40,7 +41,7 @@ Arbeidsform:
 | 5 | Have Your Say: tilbakemeldingsfrister for EUR-Lex-kandidater | Ferdig |
 | 6 | EDPS som relevanssignal, fra Rådets dokumenter i Cellar | Ferdig |
 | 7 | OEIL-status for høy og middels | Ferdig |
-| 8 | Panel og statistikk | Ikke startet |
+| 8 | Panel og statistikk | Ferdig |
 | 9 | Backtest med recall-sett | Ikke startet |
 
 ## Milepæl 0: Oppsett og regler
@@ -144,3 +145,16 @@ Funn underveis:
 - Parlamentets Open Data API var ustabilt (500 på halvparten av kallene, 13 MB feilmelding) og mangler statusteksten.
 - Nye NLE-prosedyrer finnes ikke i OEIL før Parlamentet skal gi samtykke; 8 av 22 kandidatprosedyrer i testdataene er NLE.
 - Hovedhendelsene i OEIL tar ikke med trilogmøter. CSAM står fortsatt med «Awaiting Parliament's position in 1st reading».
+
+## Milepæl 8: Panel og statistikk
+
+- `src/horingsradar/eu/web/`: FastAPI-app med egne maler (status, saker, sak, filtrert bort, rapporter, statistikk, jobber og logg), egen jobbstart (`python -m horingsradar.eu run|run --no-assess|report|assess <id>`), server og statistikk.
+- Gjenbrukt uendret fra Høringsradar: `web/auth.py`, `AuthMiddleware`, `runner.job_running` og `cancel_job`, `server.bind_socket`, `stats.next_scheduled_run`, `last_job` og `tail`, stilark, HTMX og fonter.
+- `report._view` heter nå `case_view` og brukes av både rapporten og saksiden.
+- Nye kommandoer `horingsradar-eu web` og `horingsradar-eu hash-password` (den siste trenger ikke `RADAR=eu`). Ny innstilling `OTHER_PANEL_URL`.
+- `deploy/eu/systemd/horingsradar-eu-web.service` (bare skrivetilgang til `/var/lib/horingsradar-eu`), INSTALL-EU avsnitt 7.
+- Tester i `tests/test_eu_web.py`: innlogging, alle sider med tom og fylt database, filtre og sortering, saksiden, «Filtrert bort», statistikk, CSRF, jobbstart (mocket), opptatt lås, nedlasting av rapport, at bare EU-jobber kan startes.
+
+Funn underveis:
+- Pilotens maler og jobbstart er bundet til høringene og `horingsradar`-kommandoen, så EU-panelet har egne. Utseendet er det samme.
+- Med EDPS-testdataene blir Cloud and AI Development Act kandidat og får åpen frist på Have Your Say; fristfilteret viser derfor to saker.
