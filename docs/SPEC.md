@@ -1,5 +1,7 @@
 # Høringsradar – spesifikasjon (pilot)
 
+> Gjelder Høringsradar (regjeringen.no). EU/EØS-radaren er spesifisert i [`EU-SPEC.md`](EU-SPEC.md).
+
 ## Formål
 
 Spare brukerne tid på å oppdage, sortere og lese høringer fra regjeringen.no som har betydning for personvern. Verktøyet er ikke skrivestøtte og skal ikke produsere høringsinnspill.
@@ -18,7 +20,7 @@ Med i piloten:
 - Enkelt adminpanel på LAN for administratoren
 
 Utenfor piloten:
-- Andre kilder (direktorater, særorganer, Stortinget, EU)
+- Andre kilder (direktorater, særorganer, Stortinget). EU-kilder dekkes av EU/EØS-radaren.
 - E-post, hastevarsler, web-UI for brukerne, tilbakemeldingsknapper
 - Skrivestøtte og utkast til høringsinnspill
 

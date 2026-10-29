@@ -51,12 +51,14 @@ Det opprinnelige feature-flagget `eu_source_enabled` er tatt ut. Radaren har ege
 | Kode | `/opt/horingsradar` (`main`) | `/opt/horingsradar-eu` (branchen, senere `main`) |
 | Data | `/var/lib/horingsradar` | `/var/lib/horingsradar-eu` |
 | Konfigurasjon | `.env` | egen `.env` (eksempel: `.env.eu.example`) |
+| Kommando | `horingsradar` | `horingsradar-eu` (krever `RADAR=eu`) |
 | Tjenester | `horingsradar-run.timer`, `horingsradar-web` | `horingsradar-eu-run.timer`, `horingsradar-eu-web` |
+| Systemd-filer og deploy | `deploy/systemd/`, `deploy/deploy.sh` | `deploy/eu/systemd/`, `deploy/eu/deploy.sh` |
 | Panel | egen port | egen port, lenke mellom panelene |
 
 - Databasemigreringer for EU/EØS-radaren gjelder bare dens egen database.
 - Endringer i felles kode (`http.py`, `llm/client.py`, `jobs.py`, `lock.py` o.l.) skal være bakoverkompatible og dekkes av Høringsradars tester.
-- `deploy/deploy.sh` og systemd-filene må kunne brukes for begge instansene (mappe og tjenestenavn som parameter), uten å endre hvordan piloten deployes.
+- EU-instansen har egne systemd-filer og eget deploy-skript i `deploy/eu/`. De ligger utenfor `deploy/systemd/`, så pilotens deploy-skript installerer dem aldri. EU-tjenesten kan bare skrive til `/var/lib/horingsradar-eu`.
 
 ### Merge til main
 
@@ -67,6 +69,12 @@ Det opprinnelige feature-flagget `eu_source_enabled` er tatt ut. Radaren har ege
 5. Etter deploy: verifiser at Høringsradar kjører som før (statussiden, en kjøring, en rapport).
 
 Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksempel taggen `pilot-presentasjon`) i `/opt/horingsradar`.
+
+## Kjøring
+
+- **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` og `backtest` startes manuelt.
+- **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`) og alle høringer på Have Your Say som er åpne.
+- Senere kjøringer henter det som er nytt eller endret siden forrige kjøring, med overlapp.
 
 ## Designprinsipp: billig først, LLM sist
 
@@ -125,10 +133,11 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 - Fulltekst hentes bare for saker som allerede er vurdert som relevante, og bare hvis det trengs for et kort sammendrag.
 - **Skala: samme fire nivåer som Høringsradar** (`hoy`, `middels`, `lav`, `ingen`), satt av LLM-en. Ingen numerisk score.
 - Output (JSON, validert med Pydantic): relevansnivå, kort begrunnelse, sektor og funn (se Sitater under Regler).
+- **Sektor** fra en egen sektorliste for EU-saker (ikke Høringsradars norske liste). Listen foreslås og avklares i milepæl 3.
 - Relevans vurderes mot personvern. Prompten sier eksplisitt at tekniske forslag er relevante når de påvirker behandling av personopplysninger, for eksempel krav til eller svekkelse av kryptering, logging og lagring av metadata, sikkerhetskrav til systemer som behandler personopplysninger, avviks- og hendelsesrapportering som omfatter personopplysninger, digital identitet, sporing, tilkoblede enheter og datadeling.
 - Bare saker som er ren informasjonssikkerhet uten kobling til personopplysninger, vurderes som `ingen`. Ved tvil velges det høyeste nivået.
 - **EDPS:** en EDPS-uttalelse vises som et eget flagg og gir minst `middels` (se EDPS-regel under Regler). Både LLM-ens nivå og det endelige nivået lagres, så det er sporbart hva regelen har endret.
-- Egen prompt i `prompts/` (for eksempel `eu_assess_v1.md`), versjonert som før.
+- Egen prompt i `prompts/` (for eksempel `eu_assess_v1.md`), versjonert som før. Versjonen velges med `EU_PROMPT_VERSION`.
 - Liten, billig modell via `LLM_MODEL` i EU-instansens `.env`. Forventet volum er noen titalls kandidater i uka.
 - Cache resultater per sak og input-hash, så ingen sak vurderes to ganger med samme input.
 
@@ -167,7 +176,7 @@ Sortering som i Høringsradar: relevans og deretter frist. Lav og ingen relevans
 
 ## Implementeringsrekkefølge
 
-0. Branch. Nye regler i `CLAUDE.md` og SPEC (flere kilder, forfiltrering, sitatregel, EDPS-regel). `.env.eu.example`, systemd-filer og deploy-skript for EU-instansen.
+0. Branch. Nye regler i `CLAUDE.md` og SPEC (flere kilder, forfiltrering, sitatregel, EDPS-regel). Kommandoen `horingsradar-eu`, `.env.eu.example`, systemd-filer og deploy-skript i `deploy/eu/`. Status føres i [`EU-PLAN.md`](EU-PLAN.md).
 1. EUR-Lex SPARQL-henting med EuroVoc-filter. Egen datamodell i egen database.
 2. EEA-Lex-oppslag per CELEX.
 3. LLM-vurdering med egen prompt og eget skjema.

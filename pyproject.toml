@@ -18,6 +18,7 @@ dependencies = [
 
 [project.scripts]
 horingsradar = "horingsradar.cli:main"
+horingsradar-eu = "horingsradar.eu.cli:main"
 
 [dependency-groups]
 dev = ["pytest", "ruff"]

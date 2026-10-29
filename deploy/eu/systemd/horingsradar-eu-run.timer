@@ -1,0 +1,12 @@
+[Unit]
+Description=Ukentlig kjøring av EU/EØS-radaren
+
+[Timer]
+# Mandag morgen, etter Høringsradars daglige kjøring kl. 06:15. Containerens tidssone.
+OnCalendar=Mon *-*-* 07:15:00
+RandomizedDelaySec=10min
+Persistent=true
+Unit=horingsradar-eu-run.service
+
+[Install]
+WantedBy=timers.target

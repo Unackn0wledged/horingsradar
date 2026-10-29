@@ -1,0 +1,28 @@
+[Unit]
+Description=EU/EØS-radar: hent og vurder nye EU-forslag og høringer
+Documentation=file:///opt/horingsradar-eu/docs/INSTALL-EU.md
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=horingsradar
+Group=horingsradar
+WorkingDirectory=/opt/horingsradar-eu
+Environment=ENV_FILE=/opt/horingsradar-eu/.env
+# Hjemmemappen (/var/lib/horingsradar) er skrivebeskyttet her, så cache legges i EU-mappen.
+Environment=XDG_CACHE_HOME=/var/lib/horingsradar-eu/.cache
+# Bare `run`. report og backtest startes manuelt.
+ExecStart=/opt/horingsradar-eu/.venv/bin/horingsradar-eu run --triggered-by timer
+TimeoutStartSec=6h
+Nice=10
+# SIGINT gjør at jobben registreres som avbrutt i jobbregisteret.
+KillSignal=SIGINT
+TimeoutStopSec=60
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# Bare EU-instansens egen mappe. Høringsradars data i /var/lib/horingsradar er skrivebeskyttet.
+ReadWritePaths=/var/lib/horingsradar-eu

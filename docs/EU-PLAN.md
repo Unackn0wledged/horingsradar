@@ -1,0 +1,46 @@
+# EU/EØS-radar – plan og status
+
+Milepælene for EU/EØS-radaren. Krav i [`EU-SPEC.md`](EU-SPEC.md), arkitektur i [`EU-ARKITEKTUR.md`](EU-ARKITEKTUR.md).
+
+Arbeidsform:
+- Plan per milepæl, godkjent før koding.
+- Alt arbeid på branchen `feature/eu-eos-kilder`. Ingenting til `main` før merge via pull request.
+- Høringsradars kode og drift røres ikke. Endringer i felles kode skal være bakoverkompatible og dekkes av Høringsradars tester.
+
+## Avklaringer
+
+| Tema | Beslutning |
+|---|---|
+| Målgruppe og rapport | Egen målgruppe (internasjonale saker), egen PDF |
+| Instans | Egen instans på samme LXC: egen checkout, `DATA_DIR`, database, `.env`, tjenester og panel |
+| Kjøring | Ukentlig, mandag kl. 07:15 |
+| Første kjøring | COM-forslag fra de siste 24 månedene, og alle åpne høringer på Have Your Say |
+| Relevansskala | Samme fire nivåer som Høringsradar, satt av LLM-en |
+| Sitater | Kort ordrett sitat fra tittel eller sammendrag, verifisert i kode |
+| EDPS | Flagg, og minst middels (deterministisk regel, vises som regel) |
+| Sektorer | Egen liste for EU-saker, foreslås i milepæl 3 |
+| Modell | Liten modell, satt i EU-instansens `.env` |
+
+## Milepæler
+
+| # | Innhold | Status |
+|---|---|---|
+| 0 | Oppsett og regler: `horingsradar-eu`, `RADAR=eu`-vern, `.env.eu.example`, `deploy/eu/`, regler i CLAUDE.md og SPEC, installasjonsguide | Ferdig |
+| 1 | EUR-Lex SPARQL: ekte svar som fixtures, egen datamodell, henting med EuroVoc-filter | Ikke startet |
+| 2 | EEA-Lex: EØS-status per CELEX | Ikke startet |
+| 3 | LLM-vurdering: egen prompt, eget skjema, sektorliste, sitatsjekk, EDPS-regel | Ikke startet |
+| 4 | Egen PDF-rapport | Ikke startet |
+| 5 | Have Your Say og kobling mot EUR-Lex | Ikke startet |
+| 6 | EDPS som relevanssignal | Ikke startet |
+| 7 | OEIL-status (valgfritt) | Ikke startet |
+| 8 | Panel og statistikk | Ikke startet |
+| 9 | Backtest med recall-sett | Ikke startet |
+
+## Milepæl 0: Oppsett og regler
+
+- Ny pakke `src/horingsradar/eu/` med kommandoen `horingsradar-eu` (`run`, `report`, `backtest`, `status`, `pause`, `resume`). `run` er et skall som tar låsen og registrerer jobben. `report` og `backtest` sier fra at de ikke er bygget ennå.
+- `eu/config.py` utvider de felles innstillingene med `RADAR`, `EU_INITIAL_LOOKBACK_DAYS` og `EU_PROMPT_VERSION`. `horingsradar-eu` nekter å starte uten `RADAR=eu`.
+- `.env.eu.example` med egen `DATA_DIR`, port 8081, egen timer og liten modell.
+- `deploy/eu/`: ukentlig `horingsradar-eu-run.service/.timer` som bare kan skrive til `/var/lib/horingsradar-eu`, og `deploy/eu/deploy.sh` som bare oppdaterer EU-instansen.
+- Regler i `CLAUDE.md` og `SPEC.md`, oppdatert `EU-SPEC.md`, ny [`INSTALL-EU.md`](INSTALL-EU.md).
+- Utenfor `eu/` er bare `pyproject.toml` (ny kommando) og dokumentasjon endret. Høringsradars kode er uendret.
