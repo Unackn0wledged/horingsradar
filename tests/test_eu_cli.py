@@ -1,7 +1,7 @@
 """The EU/EEA radar runs as its own instance and never touches the regjeringen.no radar's data."""
 
 import pytest
-from eu_fakes import EUSite, make_eu_fetcher
+from eu_fakes import EEASite, EUSite, make_eea_fetcher, make_eu_fetcher
 
 from horingsradar import db
 from horingsradar.config import REPO_ROOT, load_settings
@@ -15,10 +15,14 @@ def env(tmp_path, monkeypatch):
     monkeypatch.setenv("ENV_FILE", str(tmp_path / "none.env"))
     monkeypatch.setenv("DATA_DIR", str(tmp_path / "data-eu"))
     monkeypatch.setenv("RADAR", "eu")
-    # Never the network: `run` gets the fake SPARQL endpoint.
-    site = EUSite()
+    # Never the network: `run` gets the fake SPARQL endpoint and the fake EEA-Lex.
+    site, eea = EUSite(), EEASite()
     monkeypatch.setattr(
         "horingsradar.eu.pipeline.Fetcher", lambda settings: make_eu_fetcher(settings, site)
+    )
+    monkeypatch.setattr(
+        "horingsradar.eu.sources.eealex.make_fetcher",
+        lambda settings: make_eea_fetcher(settings, eea),
     )
     get_eu_settings.cache_clear()
     yield tmp_path / "data-eu"

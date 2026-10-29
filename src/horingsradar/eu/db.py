@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS eu_case_source (
     UNIQUE (source, source_id)
 );
 
--- What changed after a case was first seen (procedure status, candidate, new variant).
+-- What changed after a case was first seen (procedure status, candidate, new variant, EEA status).
 CREATE TABLE IF NOT EXISTS eu_case_change (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     case_id INTEGER NOT NULL REFERENCES eu_case(id),
@@ -67,16 +67,31 @@ CREATE INDEX IF NOT EXISTS idx_eu_case_change_case ON eu_case_change (case_id, d
 """
 
 
+# Columns added after milestone 1. Added with ALTER TABLE, so existing databases get them too.
+EU_CASE_COLUMNS = {
+    "eea_lex_id": "TEXT",  # numeric key for proposals, CELEX for adopted acts
+    "eea_status": "TEXT",  # eu/sources/eealex.py STATUSES, or NOT_REGISTERED
+    "eea_status_derived": "INTEGER",  # 1 when inferred from the list, not read from a fact sheet
+    "eea_areas": "TEXT",  # JSON list, e.g. ["XI.III Data Protection"]
+    "eea_jcd": "TEXT",
+    "eea_checked_at": "TEXT",
+}
+
+
 def connect(db_path: Path) -> sqlite3.Connection:
     conn = db.connect(db_path)
     conn.executescript(EU_SCHEMA)
+    existing = {r["name"] for r in conn.execute("PRAGMA table_info(eu_case)")}
+    for name, decl in EU_CASE_COLUMNS.items():
+        if name not in existing:
+            conn.execute(f"ALTER TABLE eu_case ADD COLUMN {name} {decl}")
     return conn
 
 
 def record_change(
     conn: sqlite3.Connection, case_id: int, kind: str, old: str | None, new: str | None
 ) -> None:
-    """kind: procedure_status | candidate | variant (a corrigendum or extra part)."""
+    """kind: procedure_status | candidate | variant (a corrigendum or extra part) | eea_status."""
     conn.execute(
         "INSERT INTO eu_case_change (case_id, detected_at, kind, old_value, new_value)"
         " VALUES (?, ?, ?, ?, ?)",

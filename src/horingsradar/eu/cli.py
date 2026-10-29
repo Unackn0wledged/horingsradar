@@ -87,6 +87,10 @@ def _status(settings: EUSettings) -> int:
             f"Saker: {c['cases']}, kandidater: {c['candidates']},"
             f" filtrert bort: {c['filtered_out']}, uten EuroVoc ennå: {c['not_indexed']}"
         )
+        print(
+            f"EEA-Lex (kandidater): registrert {c['eea_registered']},"
+            f" ikke registrert {c['eea_not_registered']}"
+        )
         print("\nSiste jobber:")
         for row in conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 10"):
             print(

@@ -7,6 +7,7 @@ leaves out, so nothing disappears silently and the statistics can show what was 
 from __future__ import annotations
 
 import logging
+import re
 import sqlite3
 from datetime import date, timedelta
 from typing import Any
@@ -15,7 +16,7 @@ from horingsradar import db
 from horingsradar.eu import db as eu_db
 from horingsradar.eu.config import EUSettings
 from horingsradar.eu.prefilter import Prefilter, load_keywords
-from horingsradar.eu.sources import eurlex
+from horingsradar.eu.sources import eealex, eurlex
 from horingsradar.eu.sources.eurlex import WITHDRAWN, EurLexClient, Proposal
 from horingsradar.http import Fetcher
 from horingsradar.jobs import JobHandle
@@ -25,6 +26,11 @@ log = logging.getLogger(__name__)
 LAST_DISCOVERY_KEY = "eu_last_discovery_date"
 # Procedures that are finished; their status is not looked up again.
 FINAL_STATUSES = ("PROP_ADOPTED", "PROP_REJECTED", WITHDRAWN)
+# EEA statuses that will not change any more; not looked up again.
+EEA_FINAL = ("IN_FORCE", "NO_LONGER_IN_FORCE")
+# Upper bound on EEA-Lex list pages per run (60 rows each, 5 seconds apart).
+MAX_EEA_LIST_PAGES = 40
+YEAR_RE = re.compile(r"\((\d{4})\)")
 
 
 def discovery_since(settings: EUSettings, conn: sqlite3.Connection, today: date) -> date:
@@ -168,16 +174,100 @@ def update_procedures(conn: sqlite3.Connection, client: EurLexClient) -> int:
     return changes
 
 
+def scan_eea_list(
+    client: eealex.EEALexClient, stop_year: int
+) -> tuple[dict[str, eealex.ListEntry], bool, int]:
+    """Read the EEA-Lex list (newest proposals first) until every row on a page is older than
+    `stop_year`. Returns (COM reference -> entry, whether the scan finished, pages read)."""
+    by_com: dict[str, eealex.ListEntry] = {}
+    for page in range(MAX_EEA_LIST_PAGES):
+        try:
+            entries = client.list_page(page)
+        except eealex.EEALexUnavailable as exc:
+            log.warning("EEA-Lex stopped: %s", exc)
+            return by_com, False, page
+        for entry in entries:
+            for ref in entry.com_refs:
+                by_com.setdefault(ref, entry)
+        years = [int(m.group(1)) for e in entries for r in e.com_refs if (m := YEAR_RE.search(r))]
+        if not entries or (years and max(years) < stop_year):
+            return by_com, True, page + 1
+    log.warning("EEA-Lex: stopped after %s list pages", MAX_EEA_LIST_PAGES)
+    return by_com, False, MAX_EEA_LIST_PAGES
+
+
+def update_eea(conn: sqlite3.Connection, client: eealex.EEALexClient) -> dict[str, Any]:
+    """EEA status for candidates whose status can still change.
+
+    - In the list with a numeric key: a proposal registered in EEA-Lex, status PROPOSED
+      (derived from the list; proposal fact sheets are not available).
+    - In the list with a CELEX key: an adopted act; status, area and JCD from its fact sheet.
+    - Not in the list: NOT_REGISTERED, but only when the list was read to the end.
+    """
+    placeholders = ", ".join("?" * len(EEA_FINAL))
+    cases = conn.execute(
+        "SELECT * FROM eu_case WHERE candidate = 1 AND com_ref IS NOT NULL"
+        f" AND (eea_status IS NULL OR eea_status NOT IN ({placeholders}))",
+        EEA_FINAL,
+    ).fetchall()
+    if not cases:
+        return {"eea_checked": 0}
+    stop_year = min(int(c["date_document"][:4]) for c in cases if c["date_document"])
+    by_com, complete, pages = scan_eea_list(client, stop_year)
+    checked = changes = 0
+    sheets_ok = True
+    now = db.now_iso()
+    for case in cases:
+        entry = by_com.get(case["com_ref"])
+        if entry is None:
+            if not complete:
+                continue
+            values = (None, eealex.NOT_REGISTERED, 1, None, None)
+        elif not entry.is_act:
+            values = (entry.key, "PROPOSED", 1, None, None)
+        else:
+            if not sheets_ok:
+                continue
+            try:
+                sheet = client.factsheet(entry.key)
+            except eealex.EEALexUnavailable as exc:
+                log.warning("EEA-Lex fact sheets stopped: %s", exc)
+                sheets_ok = False
+                continue
+            if sheet is None or sheet.status is None:
+                values = (entry.key, case["eea_status"], case["eea_status_derived"], None, None)
+            else:
+                values = (entry.key, sheet.status, 0, db.dumps(sheet.areas), sheet.jcd)
+        lex_id, status, derived, areas, jcd = values
+        if case["eea_status"] and status and status != case["eea_status"]:
+            eu_db.record_change(conn, case["id"], "eea_status", case["eea_status"], status)
+            log.info("%s: EEA status %s -> %s", case["com_ref"], case["eea_status"], status)
+            changes += 1
+        conn.execute(
+            "UPDATE eu_case SET eea_lex_id = COALESCE(?, eea_lex_id), eea_status = ?,"
+            " eea_status_derived = ?, eea_areas = COALESCE(?, eea_areas),"
+            " eea_jcd = COALESCE(?, eea_jcd), eea_checked_at = ? WHERE id = ?",
+            (lex_id, status, derived, areas, jcd, now, case["id"]),
+        )
+        checked += 1
+    result = {"eea_checked": checked, "eea_list_pages": pages, "eea_status_changes": changes}
+    if not complete or not sheets_ok:
+        result["eea_lex"] = "ufullstendig (se loggen)"
+    return result
+
+
 def run(
     settings: EUSettings,
     conn: sqlite3.Connection,
     job: JobHandle,
     fetcher: Fetcher | None = None,
     today: date | None = None,
+    eea_fetcher: Fetcher | None = None,
 ) -> dict[str, Any]:
     today = today or date.today()
     own_fetcher = fetcher is None
     fetcher = fetcher or Fetcher(settings)
+    own_eea_fetcher = eea_fetcher is None
     summary = job.summary
     try:
         client = EurLexClient(fetcher)
@@ -199,16 +289,23 @@ def run(
         )
         job.save_summary()
 
-        job.progress(phase="enrich", done=0, total=2)
+        job.progress(phase="enrich", done=0, total=3)
         summary["eurovoc_labels"] = update_labels(conn, client)
         summary["status_changes"] = update_procedures(conn, client)
+        job.save_summary()
+
+        job.progress(phase="eea", done=2, total=3)
+        eea_fetcher = eea_fetcher or eealex.make_fetcher(settings)
+        summary.update(update_eea(conn, eealex.EEALexClient(eea_fetcher)))
         summary.update(counts(conn))
-        summary["http_requests"] = fetcher.request_count
-        job.progress(phase="done", done=2, total=2)
+        summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
+        job.progress(phase="done", done=3, total=3)
         return summary
     finally:
         if own_fetcher:
             fetcher.close()
+        if own_eea_fetcher and eea_fetcher is not None:
+            eea_fetcher.close()
 
 
 def counts(conn: sqlite3.Connection) -> dict[str, int]:
@@ -216,7 +313,11 @@ def counts(conn: sqlite3.Connection) -> dict[str, int]:
     row = conn.execute(
         "SELECT COUNT(*) AS cases, COALESCE(SUM(candidate), 0) AS candidates,"
         " COALESCE(SUM(CASE WHEN indexed = 0 THEN 1 ELSE 0 END), 0) AS not_indexed,"
-        " COALESCE(SUM(CASE WHEN candidate = 0 THEN 1 ELSE 0 END), 0) AS filtered_out"
+        " COALESCE(SUM(CASE WHEN candidate = 0 THEN 1 ELSE 0 END), 0) AS filtered_out,"
+        " COALESCE(SUM(CASE WHEN candidate = 1 AND eea_status IS NOT NULL"
+        "   AND eea_status != 'NOT_REGISTERED' THEN 1 ELSE 0 END), 0) AS eea_registered,"
+        " COALESCE(SUM(CASE WHEN candidate = 1 AND eea_status = 'NOT_REGISTERED'"
+        "   THEN 1 ELSE 0 END), 0) AS eea_not_registered"
         " FROM eu_case"
     ).fetchone()
     return {k: int(v) for k, v in dict(row).items()}

@@ -91,13 +91,13 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → LLM-vurdering → EØS-
 |---|---|---|---|
 | EUR-Lex / Cellar | COM-forslag, vedtatte rettsakter, EuroVoc-indeksering, EØS-merking | SPARQL-endepunkt `publications.europa.eu/webapi/rdf/sparql` (åpent, tillatt i robots.txt). EUR-Lex' egne nettsider er bak bot-beskyttelse og hentes ikke; lenkene er for mennesker | Primærkilde for forslag |
 | Have Your Say (Kommisjonen) | Initiativer, «call for evidence», offentlige konsultasjoner, tilbakemeldingsperioder | JSON-endepunkter bak nettsiden (ikke offisielt dokumentert) | Primærkilde for høringer |
-| EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Faktaark per CELEX: `https://www.efta.int/eea-lex/<celex>` (skraping) | Berikelse: EØS-status |
+| EEA-Lex (EFTA) | EØS-status per rettsakt, inkl. forslag med mulig EØS-relevans | Listen sortert etter forslagsdato, og faktaark per CELEX for vedtatte rettsakter (skraping, 5 sekunder mellom kall). Se EØS-status | Berikelse: EØS-status |
 | EDPS | Uttalelser om lovforslag som berører personvern | RSS / nettside | Sterkt relevanssignal |
 | Legislative Observatory (OEIL) | Prosedyrestatus i Europaparlamentet | RSS / prosedyresider | Valgfri berikelse: status |
 
 **Må verifiseres før implementering** (hent ekte svar og lagre som fixtures, som for regjeringen.no):
 - Have Your Say: faktiske JSON-endepunkter, paginering og felter (tema, type, tilbakemeldingsperiode).
-- EEA-Lex: at URL-mønsteret per CELEX er stabilt, og hvordan forslag uten CELEX identifiseres. Faktaark for forslag kan ha egne node-ID-er.
+- ~~EEA-Lex~~: verifisert 29.10.2026, se EØS-status.
 - ~~EUR-Lex SPARQL~~: verifisert 29.10.2026, se Forfiltrering og [`EU-PLAN.md`](EU-PLAN.md).
 - OEIL: om fagområdekodene for personvern og cybersikkerhet kan brukes som filter i RSS.
 - Robots.txt og bruksvilkår for skraping, særlig EEA-Lex og Have Your Say.
@@ -154,11 +154,31 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 
 ## EØS-status (uten LLM)
 
-For saker med CELEX: slå opp EEA-Lex og hent
-- status, f.eks. «Proposed act with possible EEA relevance», «Act under scrutiny by EEA EFTA», «Draft JCD under consideration» eller «Incorporated»
-- område i EØS-avtalen (vedlegg, f.eks. XI)
+**Hva EEA-Lex gir en automatisk klient** (sjekket 29.10.2026):
+- robots.txt tillater `/eea-lex/`, ber om 5 sekunder mellom kall og sperrer filtrerte lister (`?f[`) og søk (`?keyword=`). EU-instansen holder minst 5 sekunder mellom alle kall.
+- **Listen sortert etter forslagsdato** (60 rader per side) har EEA-Lex-nøkkel, COM-nummer og tittel, men ikke status.
+- **Forslag** har numeriske nøkler (for eksempel `329709` for COM(2026) 569). Faktaarkene deres sender videre til seg selv og hentes ikke. Vi prøver ikke å komme rundt det.
+- **Vedtatte rettsakter** har CELEX som nøkkel. Faktaarkene deres gir status, rettslig status, område i EØS-avtalen og JCD.
 
-Saker uten CELEX får status «ukjent / ikke registrert i EEA-Lex». EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som relevant. EEA-Lex er fasiten.
+**Slik settes status for kandidater:**
+1. Listen leses fra de nyeste forslagene og bakover til alle rader på en side er eldre enn den eldste kandidaten som fortsatt kan endre status (høyst 40 sider). Kobling på COM-nummer.
+2. **I listen med numerisk nøkkel:** «Proposed act with possible EEA relevance». Statusen er utledet av at forslaget står i listen, og merkes som utledet i rapporten.
+3. **I listen med CELEX-nøkkel:** status, område og JCD fra faktaarket.
+4. **Ikke i listen:** «Ikke registrert i EEA-Lex», men bare når listen ble lest helt. Det er ikke det samme som at saken ikke er EØS-relevant.
+5. Statusendringer logges. «I kraft» og «ikke lenger i kraft» slås ikke opp igjen.
+6. Ved 429, omdirigeringsløkke (høyst 2 omdirigeringer) eller annen nektelse stopper EEA-Lex-steget for kjøringen. Resten av kjøringen fullføres, og ingenting gjettes.
+
+| Kode | Status i EEA-Lex |
+|---|---|
+| `PROPOSED` | Proposed act with possible EEA relevance |
+| `SCRUTINY` | Act under scrutiny by EEA EFTA |
+| `DRAFT_JCD` | Draft Joint Committee Decision (JCD) under consideration |
+| `JCD_PENDING` | Entry into force of Joint Committee Decision (JCD) pending |
+| `IN_FORCE` | Incorporated into the EEA Agreement and in force |
+| `NO_LONGER_IN_FORCE` | Incorporated into the EEA Agreement but no longer in force |
+| `NOT_REGISTERED` | Ikke registrert i EEA-Lex |
+
+EUs egen «EEA relevant»-merking betyr ikke at EFTA-statene vurderer saken som relevant. EEA-Lex er fasiten. Status for forslag utover «registrert» krever tilgang til faktaarkene for forslag; det kan legges til hvis EFTA gir slik tilgang.
 
 ## Rapport
 
@@ -189,7 +209,7 @@ Sortering som i Høringsradar: relevans og deretter frist. Lav og ingen relevans
 
 0. Branch. Nye regler i `CLAUDE.md` og SPEC (flere kilder, forfiltrering, sitatregel, EDPS-regel). Kommandoen `horingsradar-eu`, `.env.eu.example`, systemd-filer og deploy-skript i `deploy/eu/`. Status føres i [`EU-PLAN.md`](EU-PLAN.md).
 1. EUR-Lex SPARQL-henting med EuroVoc-filter. Egen datamodell i egen database.
-2. EEA-Lex-oppslag per CELEX.
+2. EEA-Lex: liste over registrerte forslag, og faktaark for vedtatte rettsakter.
 3. LLM-vurdering med egen prompt og eget skjema.
 4. Egen PDF-rapport.
 5. Have Your Say-henting og kobling mot EUR-Lex-saker.

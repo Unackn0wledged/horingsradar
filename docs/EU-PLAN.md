@@ -20,6 +20,7 @@ Arbeidsform:
 | EDPS | Flagg, og minst middels (deterministisk regel, vises som regel) |
 | Sektorer | Egen liste for EU-saker, foreslås i milepæl 3 |
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
+| EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
 
 ## Milepæler
@@ -28,7 +29,7 @@ Arbeidsform:
 |---|---|---|
 | 0 | Oppsett og regler: `horingsradar-eu`, `RADAR=eu`-vern, `.env.eu.example`, `deploy/eu/`, regler i CLAUDE.md og SPEC, installasjonsguide | Ferdig |
 | 1 | EUR-Lex SPARQL: ekte svar som fixtures, egen datamodell, henting med EuroVoc-filter | Ferdig |
-| 2 | EEA-Lex: EØS-status per CELEX | Ikke startet |
+| 2 | EEA-Lex: EØS-status fra listen og faktaark for vedtatte rettsakter | Ferdig |
 | 3 | LLM-vurdering: egen prompt, eget skjema, sektorliste, sitatsjekk, EDPS-regel | Ikke startet |
 | 4 | Egen PDF-rapport | Ikke startet |
 | 5 | Have Your Say og kobling mot EUR-Lex | Ikke startet |
@@ -60,3 +61,15 @@ Funn underveis:
 - EØS-merkingen i EUR-Lex mangler på NIS2, eIDAS2, AI Act og CSAM. Den brukes ikke som filter.
 - Cellar har ingen sammendrag for forslag. Teksten til LLM-en avklares i milepæl 3.
 - Ekte kjøring 29.10.2026 (24 måneder): 610 forslag, 578 saker etter sammenslåing av varianter, 112 kandidater, 42 kall, under 2 minutter.
+
+## Milepæl 2: EEA-Lex
+
+- `eu/sources/eealex.py`: listen sortert etter forslagsdato og faktaark for vedtatte rettsakter. Egen tilkobling med høyst 2 omdirigeringer, pilotens `Fetcher` ellers uendret.
+- EU-instansen har minst 5 sekunder mellom alle kall (`REQUEST_INTERVAL_SECONDS`), slik EEA-Lex ber om i robots.txt. Lavere verdier avvises.
+- Nye felt i `eu_case` (EEA-Lex-nøkkel, status, om den er utledet, område, JCD, sjekket), lagt til med `ALTER TABLE` så eksisterende databaser får dem.
+- Status bare for kandidater. Statusendringer logges. 429, omdirigeringsløkke eller nektelse stopper steget uten å gjette.
+- Testdata i `tests/fixtures/eealex/`: to listesider, faktaark for GDPR (i kraft) og AI Act (under vurdering), robots.txt.
+
+Funn underveis:
+- Faktaark for forslag (numeriske nøkler) sender videre til seg selv, og å følge løkken ga 429. Status for forslag utover «registrert» er derfor ikke tilgjengelig. Valgt: alternativ A.
+- robots.txt sperrer filtrerte lister og søk, og sperrer ClaudeBot (Anthropics søkerobot for trening). EU-radaren har egen User-Agent og er ikke ClaudeBot.

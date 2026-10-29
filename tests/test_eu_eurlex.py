@@ -4,7 +4,7 @@ import copy
 from datetime import date
 
 import pytest
-from eu_fakes import EUSite, load, make_eu_fetcher
+from eu_fakes import EEASite, EUSite, load, make_eea_fetcher, make_eu_fetcher
 
 from horingsradar import db
 from horingsradar.eu import db as eu_db
@@ -47,9 +47,16 @@ def conn(eu_settings):
     c.close()
 
 
-def do_run(settings, conn, site, today=TODAY):
+def do_run(settings, conn, site, today=TODAY, eea=None):
     with job_context(settings, conn, "run") as job:
-        return run(settings, conn, job, fetcher=make_eu_fetcher(settings, site), today=today)
+        return run(
+            settings,
+            conn,
+            job,
+            fetcher=make_eu_fetcher(settings, site),
+            today=today,
+            eea_fetcher=make_eea_fetcher(settings, eea or EEASite()),
+        )
 
 
 # -- parsing ------------------------------------------------------------------

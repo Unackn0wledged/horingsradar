@@ -82,3 +82,76 @@ def make_eu_fetcher(settings, site: EUSite):
     from horingsradar.http import Fetcher
 
     return Fetcher(settings, client=site.client(), sleep=lambda s: None)
+
+
+EEALEX = Path(__file__).parent / "fixtures" / "eealex"
+EMPTY_LIST = "<html><body><main><p>No results</p></main></body></html>"
+
+
+def teaser(key: str, com_ref: str, title: str) -> str:
+    """One row of the EEA-Lex list, in the site's own markup."""
+    return (
+        '<article data-component-id="storyworx:teaser" class="teaser lex-teaser">'
+        f'<div class="teaser-body"><div class="teaser-main-content"><a href="/eea-lex/{key}"'
+        f' class="quicklink"><h4 class="lex-teaser-title">Factsheet - {key.upper()}</h4></a>'
+        f'<h5 class="lex-teaser-subtitle">{com_ref}</h5><div class="lex-teaser-documents-wrapper">'
+        f'<a href="/eea-lex/{key}#anchor-eu"><div class="lex-teaser-document-wrapper">'
+        f'<div class="lex-teaser-description">{title}</div></div></a></div></div></div></article>'
+    )
+
+
+@dataclass
+class EEASite:
+    """Fake efta.int: the real list pages and fact sheets, with knobs for failures."""
+
+    pages: list[str] = field(
+        default_factory=lambda: [
+            (EEALEX / "list_page0.html").read_text(encoding="utf-8"),
+            (EEALEX / "list_page1.html").read_text(encoding="utf-8"),
+        ]
+    )
+    factsheets: dict[str, str] = field(
+        default_factory=lambda: {
+            "32016r0679": (EEALEX / "factsheet_32016r0679.html").read_text(encoding="utf-8"),
+            "32024r1689": (EEALEX / "factsheet_32024r1689.html").read_text(encoding="utf-8"),
+        }
+    )
+    loop: set[str] = field(default_factory=set)  # keys that redirect to themselves
+    list_status: int = 200
+    requests: list[str] = field(default_factory=list)
+
+    def add_rows(self, rows: list[str]) -> None:
+        """Extra rows at the top of the first list page."""
+        self.pages[0] = self.pages[0].replace("<article", "".join(rows) + "<article", 1)
+
+    def handler(self, request: httpx.Request) -> httpx.Response:
+        url = urlparse(str(request.url))
+        self.requests.append(str(request.url))
+        if url.path == "/robots.txt":
+            return httpx.Response(200, text=(EEALEX / "robots.txt").read_text(encoding="utf-8"))
+        if url.path == "/eea-lex":
+            if self.list_status != 200:
+                return httpx.Response(self.list_status, text="slow down")
+            page = int(parse_qs(url.query)["page"][0])
+            html = self.pages[page] if page < len(self.pages) else EMPTY_LIST
+            return httpx.Response(200, text=html, headers={"content-type": "text/html"})
+        key = url.path.removeprefix("/eea-lex/")
+        if key in self.loop:
+            return httpx.Response(301, headers={"location": url.path})
+        if key in self.factsheets:
+            return httpx.Response(
+                200, text=self.factsheets[key], headers={"content-type": "text/html"}
+            )
+        return httpx.Response(404, text="Page not found")
+
+
+def make_eea_fetcher(settings, site: EEASite):
+    from horingsradar.eu.sources.eealex import MAX_REDIRECTS
+    from horingsradar.http import Fetcher
+
+    client = httpx.Client(
+        transport=httpx.MockTransport(site.handler),
+        follow_redirects=True,
+        max_redirects=MAX_REDIRECTS,
+    )
+    return Fetcher(settings, client=client, sleep=lambda s: None)

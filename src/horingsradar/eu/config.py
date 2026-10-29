@@ -19,6 +19,8 @@ RADAR = "eu"
 
 class EUSettings(Settings):
     radar: str = ""
+    # EEA-Lex asks for 5 seconds between requests (robots.txt); the EU instance uses it for all.
+    request_interval_seconds: float = 5.0
     # First run looks this far back for proposals; consultations that are open are always taken.
     eu_initial_lookback_days: int = 730
     # Later runs go back to the previous run minus this. EuroVoc indexing arrives days or weeks
@@ -27,6 +29,15 @@ class EUSettings(Settings):
     # One keyword per line; empty means the built-in list (eu/prefilter.py).
     eu_keywords_file: Path | None = None
     eu_prompt_version: str = "v1"
+
+    @field_validator("request_interval_seconds")
+    @classmethod
+    def _eea_lex_crawl_delay(cls, v: float) -> float:
+        if v < 5.0:
+            raise ValueError(
+                "REQUEST_INTERVAL_SECONDS must be at least 5 for the EU radar (EEA-Lex)"
+            )
+        return v
 
     @field_validator("eu_keywords_file", mode="before")
     @classmethod
