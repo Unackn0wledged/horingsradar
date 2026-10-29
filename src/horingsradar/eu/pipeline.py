@@ -14,12 +14,15 @@ from typing import Any
 
 from horingsradar import db
 from horingsradar.eu import db as eu_db
+from horingsradar.eu.assess import assess_case, pending_assessments
 from horingsradar.eu.config import EUSettings
+from horingsradar.eu.documents import update_documents
 from horingsradar.eu.prefilter import Prefilter, load_keywords
 from horingsradar.eu.sources import eealex, eurlex
 from horingsradar.eu.sources.eurlex import WITHDRAWN, EurLexClient, Proposal
 from horingsradar.http import Fetcher
 from horingsradar.jobs import JobHandle
+from horingsradar.llm.client import LLMClient, get_client
 
 log = logging.getLogger(__name__)
 
@@ -256,6 +259,36 @@ def update_eea(conn: sqlite3.Connection, client: eealex.EEALexClient) -> dict[st
     return result
 
 
+def assess_pending(
+    settings: EUSettings, conn: sqlite3.Connection, job: JobHandle, client: LLMClient | None
+) -> dict[str, Any]:
+    """Assess candidates that wait for an assessment and have their text."""
+    pending = pending_assessments(conn)
+    result: dict[str, Any] = {"pending_assessments": len(pending)}
+    if not pending:
+        return result
+    if client is None:
+        if not settings.anthropic_api_key:
+            message = "ANTHROPIC_API_KEY is not set"
+            log.warning("Skipping assessment of %s cases: %s", len(pending), message)
+            result["assessment_skipped"] = message
+            return result
+        client = get_client(settings)
+    assessed = failed = 0
+    for i, case_id in enumerate(pending, start=1):
+        job.progress(phase="assess", done=i - 1, total=len(pending), case=case_id)
+        assessment_id = assess_case(settings, conn, case_id, client)
+        status = conn.execute(
+            "SELECT status FROM eu_assessment WHERE id = ?", (assessment_id,)
+        ).fetchone()["status"]
+        assessed += int(status == "ok")
+        failed += int(status != "ok")
+        result.update(assessed=assessed, assessment_failed=failed)
+        job.summary.update(result)
+        job.save_summary()
+    return result
+
+
 def run(
     settings: EUSettings,
     conn: sqlite3.Connection,
@@ -263,6 +296,8 @@ def run(
     fetcher: Fetcher | None = None,
     today: date | None = None,
     eea_fetcher: Fetcher | None = None,
+    client: LLMClient | None = None,
+    assess: bool = True,
 ) -> dict[str, Any]:
     today = today or date.today()
     own_fetcher = fetcher is None
@@ -270,13 +305,13 @@ def run(
     own_eea_fetcher = eea_fetcher is None
     summary = job.summary
     try:
-        client = EurLexClient(fetcher)
+        eurlex_client = EurLexClient(fetcher)
         prefilter = Prefilter(load_keywords(settings.eu_keywords_file))
         since = discovery_since(settings, conn, today)
         log.info("Fetching EU proposals dated %s or later", since)
 
         fetched = new = new_candidates = 0
-        for p in client.proposals_since(since, today):
+        for p in eurlex_client.proposals_since(since, today):
             _, is_new, first_time_candidate = upsert_proposal(conn, p, prefilter)
             fetched += 1
             new += int(is_new)
@@ -289,17 +324,25 @@ def run(
         )
         job.save_summary()
 
-        job.progress(phase="enrich", done=0, total=3)
-        summary["eurovoc_labels"] = update_labels(conn, client)
-        summary["status_changes"] = update_procedures(conn, client)
+        job.progress(phase="enrich", done=0, total=4)
+        summary["eurovoc_labels"] = update_labels(conn, eurlex_client)
+        summary["status_changes"] = update_procedures(conn, eurlex_client)
         job.save_summary()
 
-        job.progress(phase="eea", done=2, total=3)
+        job.progress(phase="eea", done=2, total=4)
         eea_fetcher = eea_fetcher or eealex.make_fetcher(settings)
         summary.update(update_eea(conn, eealex.EEALexClient(eea_fetcher)))
-        summary.update(counts(conn))
+        job.save_summary()
+
+        job.progress(phase="documents", done=3, total=4)
+        summary.update(update_documents(settings, conn, eurlex_client, fetcher))
         summary["http_requests"] = fetcher.request_count + eea_fetcher.request_count
-        job.progress(phase="done", done=3, total=3)
+        job.save_summary()
+
+        if assess:
+            summary.update(assess_pending(settings, conn, job, client))
+        summary.update(counts(conn))
+        job.progress(phase="done", done=4, total=4)
         return summary
     finally:
         if own_fetcher:
@@ -320,4 +363,18 @@ def counts(conn: sqlite3.Connection) -> dict[str, int]:
         "   THEN 1 ELSE 0 END), 0) AS eea_not_registered"
         " FROM eu_case"
     ).fetchone()
-    return {k: int(v) for k, v in dict(row).items()}
+    result = {k: int(v) for k, v in dict(row).items()}
+    # Relevance of each candidate's latest successful assessment.
+    latest = conn.execute(
+        "SELECT a.relevance FROM eu_assessment a WHERE a.status = 'ok' AND a.id ="
+        " (SELECT MAX(b.id) FROM eu_assessment b WHERE b.case_id = a.case_id AND b.status = 'ok')"
+    ).fetchall()
+    result["cases_assessed"] = len(latest)
+    for level in ("hoy", "middels", "lav", "ingen"):
+        result[level] = sum(1 for r in latest if r["relevance"] == level)
+    result["waiting"] = int(
+        conn.execute(
+            "SELECT COUNT(*) FROM eu_case WHERE candidate = 1 AND needs_assessment = 1"
+        ).fetchone()[0]
+    )
+    return result

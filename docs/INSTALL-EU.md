@@ -4,7 +4,7 @@ EU/EØS-radaren kjører som en egen instans i **samme LXC** som Høringsradar. D
 
 > Forutsetter at Høringsradar allerede er installert etter [`INSTALL-LXC.md`](INSTALL-LXC.md): tjenestebrukeren `horingsradar`, uv og eventuell deploy key finnes.
 >
-> I dag har EU/EØS-radaren bare et skall for `run` (milepæl 0, se [`EU-PLAN.md`](EU-PLAN.md)). Guiden kan brukes for å teste oppsettet.
+> Status for hver del står i [`EU-PLAN.md`](EU-PLAN.md).
 
 | | Høringsradar | EU/EØS-radar |
 |---|---|---|
@@ -76,15 +76,31 @@ Endre minst disse:
 | `ANTHROPIC_API_KEY` | Gjerne en egen nøkkel, så forbruket holdes adskilt fra Høringsradar |
 | `PRICE_INPUT_PER_MTOK` / `PRICE_OUTPUT_PER_MTOK` | Prisene for modellen i `LLM_MODEL`. Fjern `#` foran linjene. |
 
-## 5. Test for hånd
+## 5. Første kjøring, gradvis
+
+Kjør først **uten LLM**. Da hentes forslag, EØS-status og tekst, men ingenting sendes til modellen, så det koster ingenting. Med 5 sekunder mellom kall tar første kjøring 15–20 minutter:
 
 ```bash
 cd /opt/horingsradar-eu
-sudo -u horingsradar -H .venv/bin/horingsradar-eu run
+sudo -u horingsradar -H .venv/bin/horingsradar-eu run --no-assess
 sudo -u horingsradar -H .venv/bin/horingsradar-eu status
 ```
 
-`status` skal vise `Data: /var/lib/horingsradar-eu` og én jobb med status `ok`. Sjekk at Høringsradar ikke er berørt:
+`status` skal vise `Data: /var/lib/horingsradar-eu`, antall saker og kandidater, og at kandidatene venter på vurdering.
+
+Vurder deretter noen få saker for hånd, for å sjekke nøkkel, modell, pris og prompt. Bytt ut `<COM-nummer>` med et nummer fra en kandidat, for eksempel `"COM(2026) 681"` (med anførselstegn):
+
+```bash
+sudo -u horingsradar -H .venv/bin/horingsradar-eu assess <COM-nummer>
+```
+
+Når det ser bra ut, vurderes resten:
+
+```bash
+sudo -u horingsradar -H .venv/bin/horingsradar-eu run
+```
+
+Sjekk at Høringsradar ikke er berørt:
 
 ```bash
 cd /opt/horingsradar && sudo -u horingsradar -H .venv/bin/horingsradar status

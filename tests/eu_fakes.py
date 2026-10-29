@@ -40,12 +40,35 @@ class EUSite:
         default_factory=lambda: load("dossiers.json")["results"]["bindings"]
     )
     labels: list[dict] = field(default_factory=lambda: load("labels.json")["results"]["bindings"])
+    english_pdfs: list[dict] = field(
+        default_factory=lambda: load("english_pdfs.json")["results"]["bindings"]
+    )
     queries: list[str] = field(default_factory=list)
+    downloads: list[str] = field(default_factory=list)
+
+    def pdf_for(self, url: str) -> bytes | None:
+        """The fixture PDF behind an item URL from english_pdfs.json (by the work's CELEX)."""
+        tail = url.split("//", 1)[1]
+        work = next(
+            (b["work"]["value"] for b in self.english_pdfs if b["item"]["value"].endswith(tail)),
+            None,
+        )
+        celex = next(
+            (b["celex"]["value"] for b in self.proposals if b["work"]["value"] == work), None
+        )
+        path = EURLEX / "pdf" / f"{celex}.pdf"
+        return path.read_bytes() if celex and path.is_file() else None
 
     def handler(self, request: httpx.Request) -> httpx.Response:
         url = urlparse(str(request.url))
         if url.path == "/robots.txt":
             return httpx.Response(200, text="User-agent: *\nAllow: /\n")
+        if url.path.startswith("/resource/cellar/"):
+            self.downloads.append(str(request.url))
+            pdf = self.pdf_for(str(request.url))
+            if pdf is None:
+                return httpx.Response(404, text="not found")
+            return httpx.Response(200, content=pdf, headers={"content-type": "application/pdf"})
         query = parse_qs(url.query)["query"][0]
         assert parse_qs(url.query)["format"] == ["application/sparql-results+json"]
         self.queries.append(query)
@@ -55,6 +78,9 @@ class EUSite:
         if "work_part_of_dossier" in query:
             wanted = set(re.findall(r"<(http[^>]+)>", query.split("VALUES ?work", 1)[1]))
             return _response([b for b in self.dossiers if b["work"]["value"] in wanted])
+        if "manifestation_type" in query:
+            wanted = set(re.findall(r"<(http[^>]+)>", query.split("VALUES ?work", 1)[1]))
+            return _response([b for b in self.english_pdfs if b["work"]["value"] in wanted])
         if "skos:prefLabel" in query:
             wanted = set(re.findall(r"<(http://eurovoc[^>]+)>", query))
             return _response([b for b in self.labels if b["concept"]["value"] in wanted])

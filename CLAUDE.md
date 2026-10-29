@@ -15,7 +15,7 @@ Krav og detaljer står i `docs/SPEC.md` (Høringsradar) og `docs/EU-SPEC.md` (EU
 - Høringsradar: ingen høring filtreres bort. Alle vurderes og vises i rapporten; lav og ingen relevans som én linje med begrunnelse.
 - EU/EØS-radaren: forfiltrering uten LLM er tillatt og skal prioritere recall. Antall som filtreres bort, telles og vises i statistikken. Det som vurderes, vises i rapporten som over.
 - Hvert funn har dokument, kapittel/side og ordrett sitat. Sitatet verifiseres i kode mot kildeteksten. Uverifiserte sitater markeres synlig i rapporten, aldri stille fjernet eller rettet.
-- EU/EØS-radaren: hvert funn har et kort ordrett sitat fra tittel eller sammendrag, verifisert i kode mot den teksten. Ellers som over.
+- EU/EØS-radaren: LLM-en leser begrunnelsen («explanatory memorandum») fra den engelske PDF-en av forslaget. Hvert funn har side og ordrett sitat fra begrunnelsen, verifisert i kode som over.
 - EU/EØS-radaren: en EDPS-uttalelse om forslaget gir minst middels. Regelen er deterministisk, vises i rapporten som regel, og både LLM-ens og endelig nivå lagres. Ingen annen kode endrer nivået LLM-en har satt.
 - Ved tvil mellom to relevansnivåer velges det høyeste.
 - Kun offentlige dokumenter sendes til LLM-en.
@@ -35,7 +35,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - `uv run horingsradar report` – PDF for alle høringer som ikke er rapportert før
 - `uv run horingsradar backtest --split dev|test` – kun manuelt; viser kostnadsestimat og krever bekreftelse
 - `uv run horingsradar web` – start adminpanelet lokalt
-- `uv run horingsradar-eu run|status|pause|resume` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`).
+- `uv run horingsradar-eu run [--no-assess]|assess <sak>|status|pause|resume` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`).
 
 <!-- CLI-kommandoene finnes ikke før milepæl 2–6 er bygget. Oppdater lista når de endres. -->
 
@@ -44,7 +44,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - Kode, identifikatorer, kommentarer og commit-meldinger på engelsk. Prompts og rapporttekst på norsk bokmål (kildedokumentene kan være nynorsk).
 - Konfigurasjon via miljøvariabler i `.env` (gitignored), lastet i `config.py`. Hold `.env.example` og `.env.eu.example` oppdatert. Hemmeligheter skal aldri i kode, logg eller commit.
 - All tilstand ligger i `DATA_DIR` utenfor repoet (default `./data` lokalt, `/var/lib/horingsradar` på lab; EU/EØS-radaren har egen `DATA_DIR`, `/var/lib/horingsradar-eu` på lab): SQLite, HTTP-cache, nedlastede dokumenter, uttrukket tekst, rå LLM-svar og rapporter.
-- Prompts er versjonerte filer i `prompts/` (`assess_v1.md`, `assess_v2.md` osv.). Endre aldri en eksisterende versjon; lag en ny. Modell og promptversjon lagres med hver vurdering.
+- Prompts er versjonerte filer i `prompts/` (`assess_v1.md`, `assess_v2.md` osv.; EU/EØS-radaren `assess_eu_v1.md` osv.). Endre aldri en eksisterende versjon; lag en ny. Modell og promptversjon lagres med hver vurdering.
 - Alle LLM-kall går gjennom `llm/client.py`. Leverandør og modell velges med `LLM_PROVIDER` og `LLM_MODEL`.
 - LLM-svar valideres mot Pydantic-modeller. Ugyldig svar gir ett nytt forsøk; feiler det igjen, logges det og vurderingen markeres som feilet. Ikke fyll inn manglende felter selv.
 - Forespørsler mot regjeringen.no: identifiserende User-Agent fra config, minst 2 sekunder mellom kall, disk-cache, respekter robots.txt.

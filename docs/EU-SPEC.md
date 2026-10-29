@@ -29,7 +29,7 @@ Disse gjelder som i Høringsradar:
 Disse er annerledes, og må skrives inn i `CLAUDE.md` og SPEC på branchen før koding:
 - **Flere kilder enn regjeringen.no.** Kildespesifikk kode ligger i egne moduler.
 - **Forfiltrering er tillatt** (Høringsradar filtrerer ingenting bort). Filteret skal prioritere recall. Antall saker som filtreres bort, telles og vises i statistikken, og recall-settet i backtesten kontrollerer filteret.
-- **Sitater fra tittel eller sammendrag.** Høringsradar krever dokument, side og verifisert ordrett sitat per funn. EU/EØS-radaren vurderer tittel og sammendrag uten sidetall, så hvert funn har i stedet et kort ordrett sitat fra tittel eller sammendrag. Sitatet verifiseres i kode mot den teksten (med `quotes.py`). Uverifiserte sitater markeres synlig, aldri stille fjernet eller rettet.
+- **Sitater fra begrunnelsen, med sidetall.** Cellar har ingen sammendrag av forslagene, så LLM-en leser begrunnelsen i forslaget (se LLM-vurdering). Hvert funn har side og et kort ordrett sitat på engelsk, verifisert i kode mot sidene (med `quotes.py`, som i Høringsradar). Uverifiserte sitater markeres synlig, aldri stille fjernet eller rettet. Sidetallet rettes bare når sitatet står på en annen side. (Endret 29.10.2026 fra «sitat fra tittel eller sammendrag».)
 - **EDPS-regel.** En sak med EDPS-uttalelse om forslaget får minst `middels`. Regelen er deterministisk og vises i rapporten som en regel, ikke som modellens vurdering. Det er den eneste regelen som endrer nivået LLM-en har satt, og den kan bare heve det.
 
 ## Utviklingsflyt
@@ -139,18 +139,22 @@ Temaene er brede. Nøkkelordfilteret på tittel og sammendrag er derfor obligato
 
 ## LLM-vurdering
 
-- Input: tittel, sammendrag/abstract og kildemetadata. Ikke fulltekst.
-- **Avklares i milepæl 3:** Cellar har ingen sammendrag for COM-forslag, bare tittel. LLM-en trenger mer tekst, for eksempel begrunnelsen («explanatory memorandum») i forslaget. Sitatregelen gjelder den teksten som brukes.
-- Fulltekst hentes bare for saker som allerede er vurdert som relevante, og bare hvis det trengs for et kort sammendrag.
+- **Input: tittel, metadata og begrunnelsen («explanatory memorandum»)** fra den engelske PDF-en av forslaget, ikke rettsakten selv. Begrunnelsen har kontekst, rettsgrunnlag, høringer og konsekvensutredning, grunnleggende rettigheter og forklaring av bestemmelsene.
+- PDF-en finnes med SPARQL (første item i den engelske PDF-manifestasjonen) og hentes gjennom pilotens `Fetcher`. Teksten trekkes ut med pilotens PyMuPDF-uttrekk, med `[[side N]]`.
+- Begrunnelsen er sidene fra «EXPLANATORY MEMORANDUM» (eller «CONTEXT OF THE PROPOSAL», som noen forslag starter med) til siden der rettsakten begynner («Proposal for a …» øverst på siden). Over 90 000 tegn kuttes den, og det står i prompten og i dokumentets merknad. Uten overskriften brukes de første sidene, og det merkes.
+- Målt 29.10.2026 på alle 112 kandidater over 24 måneder: begrunnelsen funnet i 111, gjennomsnitt 26 000 tegn (3 000–90 000), én kuttet. Til sammen rundt 3 millioner tegn, omtrent 1 million input-tokens for første vurdering.
+- Bare kandidater får hentet tekst. En sak uten engelsk PDF ennå venter og prøves igjen ved neste kjøring.
 - **Skala: samme fire nivåer som Høringsradar** (`hoy`, `middels`, `lav`, `ingen`), satt av LLM-en. Ingen numerisk score.
 - Output (JSON, validert med Pydantic): relevansnivå, kort begrunnelse, sektor og funn (se Sitater under Regler).
-- **Sektor** fra en egen sektorliste for EU-saker (ikke Høringsradars norske liste). Listen foreslås og avklares i milepæl 3.
+- **Sektor** (1–3) fra en egen liste for EU-saker, godkjent 29.10.2026: digitale tjenester og plattformer, cybersikkerhet, digital identitet og tillitstjenester, kunstig intelligens, dataøkonomi og datadeling, helse, justis/politi/rettshåndhevelse, grensekontroll/migrasjon/visum, finans og betaling, transport og kjøretøy, energi og miljø, arbeidsliv og trygd, forbrukervern og indre marked, internasjonale avtaler og samarbeid, annet (`eu/schema.py`).
+- **Funn** bruker Høringsradars personvernkategorier.
 - Relevans vurderes mot personvern. Prompten sier eksplisitt at tekniske forslag er relevante når de påvirker behandling av personopplysninger, for eksempel krav til eller svekkelse av kryptering, logging og lagring av metadata, sikkerhetskrav til systemer som behandler personopplysninger, avviks- og hendelsesrapportering som omfatter personopplysninger, digital identitet, sporing, tilkoblede enheter og datadeling.
 - Bare saker som er ren informasjonssikkerhet uten kobling til personopplysninger, vurderes som `ingen`. Ved tvil velges det høyeste nivået.
 - **EDPS:** en EDPS-uttalelse vises som et eget flagg og gir minst `middels` (se EDPS-regel under Regler). Både LLM-ens nivå og det endelige nivået lagres, så det er sporbart hva regelen har endret.
-- Egen prompt i `prompts/` (for eksempel `eu_assess_v1.md`), versjonert som før. Versjonen velges med `EU_PROMPT_VERSION`.
+- Egen prompt `prompts/assess_eu_v1.md`, versjonert som før (lastes som versjon `eu_v1`). Versjonen velges med `EU_PROMPT_VERSION`. Prompten nevner ingen virksomhet.
+- Ugyldig svar gir ett nytt forsøk, deretter lagres vurderingen som feilet. Etter to feilede forsøk venter saken til teksten endres. Avvisningen av modellens egne anbefalinger er den samme som i Høringsradar.
 - Liten, billig modell via `LLM_MODEL` i EU-instansens `.env`. Forventet volum er noen titalls kandidater i uka.
-- Cache resultater per sak og input-hash, så ingen sak vurderes to ganger med samme input.
+- En sak vurderes når den blir kandidat og har tekst; den vurderes ikke på nytt med mindre teksten endres eller `assess` kjøres for hånd. Input-hash, modell, promptversjon, tokens, kostnadsestimat og rått svar lagres med hver vurdering.
 
 ## EØS-status (uten LLM)
 
@@ -210,7 +214,7 @@ Sortering som i Høringsradar: relevans og deretter frist. Lav og ingen relevans
 0. Branch. Nye regler i `CLAUDE.md` og SPEC (flere kilder, forfiltrering, sitatregel, EDPS-regel). Kommandoen `horingsradar-eu`, `.env.eu.example`, systemd-filer og deploy-skript i `deploy/eu/`. Status føres i [`EU-PLAN.md`](EU-PLAN.md).
 1. EUR-Lex SPARQL-henting med EuroVoc-filter. Egen datamodell i egen database.
 2. EEA-Lex: liste over registrerte forslag, og faktaark for vedtatte rettsakter.
-3. LLM-vurdering med egen prompt og eget skjema.
+3. LLM-vurdering av begrunnelsen med egen prompt, eget skjema og egen sektorliste.
 4. Egen PDF-rapport.
 5. Have Your Say-henting og kobling mot EUR-Lex-saker.
 6. EDPS som relevanssignal.

@@ -80,6 +80,21 @@ WHERE {{
 GROUP BY ?work"""
 )
 
+# The English PDF of each work: the first item of its PDF manifestation.
+ENGLISH_PDF = (
+    PREFIXES
+    + """SELECT ?work (MIN(STR(?item_)) AS ?item)
+WHERE {{
+  VALUES ?work {{ {works} }}
+  ?expression cdm:expression_belongs_to_work ?work ;
+    cdm:expression_uses_language <http://publications.europa.eu/resource/authority/language/ENG> .
+  ?manifestation cdm:manifestation_manifests_expression ?expression ;
+    cdm:manifestation_type "pdf"^^xsd:string .
+  ?item_ cdm:item_belongs_to_manifestation ?manifestation .
+}}
+GROUP BY ?work"""
+)
+
 LABELS = (
     PREFIXES
     + """SELECT ?concept ?label
@@ -156,6 +171,10 @@ def dossiers_query(work_uris: list[str]) -> str:
     return DOSSIERS.format(works=" ".join(f"<{w}>" for w in work_uris))
 
 
+def english_pdf_query(work_uris: list[str]) -> str:
+    return ENGLISH_PDF.format(works=" ".join(f"<{w}>" for w in work_uris))
+
+
 def labels_query(concept_ids: list[str]) -> str:
     return LABELS.format(concepts=" ".join(f"<{EUROVOC_BASE}{c}>" for c in concept_ids))
 
@@ -203,6 +222,15 @@ def parse_dossiers(data: dict) -> dict[str, tuple[str | None, str | None]]:
             code = WITHDRAWN
         result[_value(row, "work") or ""] = (_value(row, "procedure"), code)
     return result
+
+
+def parse_english_pdfs(data: dict) -> dict[str, str]:
+    """work URI -> URL of its English PDF (https; Cellar's identifiers are http)."""
+    return {
+        _value(row, "work") or "": (_value(row, "item") or "").replace("http://", "https://", 1)
+        for row in data["results"]["bindings"]
+        if _value(row, "item")
+    }
 
 
 def parse_labels(data: dict) -> dict[str, str]:
@@ -254,6 +282,12 @@ class EurLexClient:
         result: dict[str, tuple[str | None, str | None]] = {}
         for batch in _batches(work_uris):
             result.update(parse_dossiers(self.select(dossiers_query(batch))))
+        return result
+
+    def english_pdfs(self, work_uris: list[str]) -> dict[str, str]:
+        result: dict[str, str] = {}
+        for batch in _batches(work_uris):
+            result.update(parse_english_pdfs(self.select(english_pdf_query(batch))))
         return result
 
     def labels(self, concept_ids: list[str]) -> dict[str, str]:

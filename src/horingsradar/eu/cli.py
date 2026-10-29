@@ -27,6 +27,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("run", help="hent og vurder nye EU-forslag og høringer")
+    p.add_argument(
+        "--no-assess", action="store_true", help="hent og trekk ut tekst, men ikke vurder"
+    )
+    p.add_argument("--triggered-by", choices=TRIGGERS, default="cli", help=argparse.SUPPRESS)
+
+    p = sub.add_parser("assess", help="vurder én sak på nytt")
+    p.add_argument("case", help="saks-ID, COM-nummer («COM(2026) 681») eller CELEX (52026PC0681)")
+    p.add_argument("--prompt-version", help="for eksempel v2 (standard fra EU_PROMPT_VERSION)")
     p.add_argument("--triggered-by", choices=TRIGGERS, default="cli", help=argparse.SUPPRESS)
 
     sub.add_parser("report", help="lag PDF-rapport (ikke bygget ennå)")
@@ -42,13 +50,71 @@ def _connect(settings: EUSettings) -> sqlite3.Connection:
     return eu_db.connect(settings.db_path)
 
 
-def _run(settings: EUSettings, triggered_by: str) -> int:
+def find_case(conn: sqlite3.Connection, ref: str) -> sqlite3.Row | None:
+    """A case by id, COM reference or CELEX number (variants find their proposal)."""
+    from horingsradar.eu.sources.eurlex import base_celex
+
+    ref = ref.strip()
+    if ref.isdigit():
+        return conn.execute("SELECT * FROM eu_case WHERE id = ?", (int(ref),)).fetchone()
+    by_com = conn.execute(
+        "SELECT * FROM eu_case WHERE REPLACE(com_ref, ' ', '') = ?", (ref.replace(" ", ""),)
+    ).fetchone()
+    if by_com is not None:
+        return by_com
+    return conn.execute(
+        "SELECT * FROM eu_case WHERE celex = ?", (base_celex(ref.upper()),)
+    ).fetchone()
+
+
+def _assess(
+    settings: EUSettings, conn: sqlite3.Connection, job, ref: str, version: str | None
+) -> int:
+    from horingsradar.eu.assess import assess_case
+    from horingsradar.eu.documents import fetch_document
+    from horingsradar.eu.sources.eurlex import EurLexClient
+    from horingsradar.http import Fetcher
+    from horingsradar.llm.client import get_client
+
+    case = find_case(conn, ref)
+    if case is None:
+        raise SystemExit(f"Fant ingen sak «{ref}». Kjør run først, eller bruk saks-ID/CELEX.")
+    doc = conn.execute("SELECT * FROM eu_document WHERE case_id = ?", (case["id"],)).fetchone()
+    if doc is None or doc["fetch_status"] != "ok":
+        fetcher = Fetcher(settings)
+        try:
+            url = EurLexClient(fetcher).english_pdfs([case["work_uri"]]).get(case["work_uri"])
+            fetch_document(settings, conn, case, url, fetcher)
+        finally:
+            fetcher.close()
+    assessment_id = assess_case(settings, conn, case["id"], get_client(settings), version)
+    a = conn.execute("SELECT * FROM eu_assessment WHERE id = ?", (assessment_id,)).fetchone()
+    job.summary.update(
+        case=case["com_ref"],
+        assessment_id=assessment_id,
+        status=a["status"],
+        relevance=a["relevance"],
+        error=a["error"],
+    )
+    print(f"Vurdering {assessment_id}: {a['status']} {a['relevance'] or ''} {a['error'] or ''}")
+    return 0 if a["status"] == "ok" else 1
+
+
+def _run_job(settings: EUSettings, args: argparse.Namespace) -> int:
+    triggered_by = args.triggered_by
     conn = _connect(settings)
+    job_args = {
+        k: str(v)
+        for k, v in vars(args).items()
+        if k not in ("command", "triggered_by") and v not in (None, False)
+    }
     try:
-        with job_context(settings, conn, "run", triggered_by) as job:
+        with job_context(settings, conn, args.command, triggered_by, job_args) as job:
+            if args.command == "assess":
+                return _assess(settings, conn, job, args.case, args.prompt_version)
             from horingsradar.eu.pipeline import run
 
-            run(settings, conn, job)
+            run(settings, conn, job, assess=not args.no_assess)
     except JobSkipped as exc:
         message = {
             "paused": "Planlagt kjøring er pauset.",
@@ -91,6 +157,10 @@ def _status(settings: EUSettings) -> int:
             f"EEA-Lex (kandidater): registrert {c['eea_registered']},"
             f" ikke registrert {c['eea_not_registered']}"
         )
+        print(
+            f"Vurdert: {c['cases_assessed']}, venter: {c['waiting']},"
+            f" høy {c['hoy']}, middels {c['middels']}, lav {c['lav']}, ingen {c['ingen']}"
+        )
         print("\nSiste jobber:")
         for row in conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 10"):
             print(
@@ -106,8 +176,8 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     settings = get_eu_settings()
     require_eu_instance(settings)
-    if args.command == "run":
-        return _run(settings, args.triggered_by)
+    if args.command in ("run", "assess"):
+        return _run_job(settings, args)
     if args.command in NOT_BUILT:
         print(NOT_BUILT[args.command], file=sys.stderr)
         return 2

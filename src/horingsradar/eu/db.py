@@ -60,7 +60,67 @@ CREATE TABLE IF NOT EXISTS eu_eurovoc (
     label TEXT
 );
 
+-- The English PDF of a case, and where its explanatory memorandum is.
+CREATE TABLE IF NOT EXISTS eu_document (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id INTEGER NOT NULL REFERENCES eu_case(id),
+    url TEXT NOT NULL,
+    sha256 TEXT,
+    page_count INTEGER,
+    text_path TEXT,
+    memo_first_page INTEGER,
+    memo_last_page INTEGER,
+    memo_found INTEGER,
+    memo_truncated INTEGER,
+    memo_chars INTEGER,
+    fetch_status TEXT NOT NULL,
+    note TEXT,
+    first_seen TEXT NOT NULL,
+    last_changed TEXT,
+    UNIQUE (case_id)
+);
+
+-- LLM assessments of a case. relevance is the final level; llm_relevance what the model said
+-- (they differ only when a rule such as the EDPS rule raised the level, see `rule`).
+CREATE TABLE IF NOT EXISTS eu_assessment (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_id INTEGER NOT NULL REFERENCES eu_case(id),
+    created_at TEXT NOT NULL,
+    model TEXT NOT NULL,
+    prompt_version TEXT NOT NULL,
+    status TEXT NOT NULL,
+    llm_relevance TEXT,
+    relevance TEXT,
+    rule TEXT,
+    relevance_reason TEXT,
+    sectors TEXT,
+    summary TEXT,
+    input_tokens INTEGER NOT NULL DEFAULT 0,
+    output_tokens INTEGER NOT NULL DEFAULT 0,
+    input_chars INTEGER,
+    cost_estimate REAL,
+    raw_response_path TEXT,
+    input_hash TEXT,
+    notes TEXT,
+    error TEXT
+);
+
+CREATE TABLE IF NOT EXISTS eu_finding (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    assessment_id INTEGER NOT NULL REFERENCES eu_assessment(id),
+    category TEXT,
+    description TEXT,
+    chapter TEXT,
+    page INTEGER,
+    page_stated INTEGER,
+    quote TEXT,
+    quote_verified INTEGER NOT NULL DEFAULT 0,
+    match_score REAL
+);
+
 CREATE INDEX IF NOT EXISTS idx_eu_case_date ON eu_case (date_document);
+CREATE INDEX IF NOT EXISTS idx_eu_assessment_case ON eu_assessment (case_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_eu_finding_assessment ON eu_finding (assessment_id);
 CREATE INDEX IF NOT EXISTS idx_eu_case_work ON eu_case (work_uri);
 CREATE INDEX IF NOT EXISTS idx_eu_case_source_case ON eu_case_source (case_id);
 CREATE INDEX IF NOT EXISTS idx_eu_case_change_case ON eu_case_change (case_id, detected_at);

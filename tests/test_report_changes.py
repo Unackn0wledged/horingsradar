@@ -1,6 +1,6 @@
 """What the report says about hearings that were in an earlier report."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import pymupdf
 import pytest
@@ -170,6 +170,11 @@ def test_document_back_after_transient_error_is_ok_again(settings, conn, site):
 
 
 def test_replaced_document_is_one_changed_document(settings, conn):
+    # After the baseline report: a fast machine can write both in the same millisecond.
+    reported = conn.execute("SELECT MAX(created_at) FROM report").fetchone()[0]
+    detected = (datetime.fromisoformat(reported) + timedelta(seconds=1)).isoformat(
+        timespec="milliseconds"
+    )
     for kind, title in (
         ("document_added", "Høringsbrev"),
         ("document_removed", "Høringsbrev"),  # same title, new URL: replaced
@@ -178,7 +183,7 @@ def test_replaced_document_is_one_changed_document(settings, conn):
         conn.execute(
             "INSERT INTO hearing_change (hearing_id, detected_at, kind, document_title)"
             " VALUES (3170511, ?, ?, ?)",
-            (db.now_iso(), kind, title),
+            (detected, kind, title),
         )
     result = build_report(settings, conn, now=LATER)
     assert result["hearings"] == 1

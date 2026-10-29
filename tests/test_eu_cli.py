@@ -83,3 +83,21 @@ def test_example_env_files_load(monkeypatch):
     assert eu.run_timer_unit == "horingsradar-eu-run.timer"
     pilot = load_settings(env_file=REPO_ROOT / ".env.example")
     assert pilot.data_dir.name == "data" and pilot.web_binds[0][1] == 8080
+
+
+def test_assess_one_case_by_com_reference_or_celex(env, monkeypatch, capsys):
+    from fakes import FakeLLM
+    from test_eu_assess import eu_output
+
+    assert cli.main(["run", "--no-assess"]) == 0
+    llm = FakeLLM(default=eu_output("middels"))
+    monkeypatch.setattr("horingsradar.llm.client.get_client", lambda settings: llm)
+    assert cli.main(["assess", "COM(2026) 681"]) == 0
+    assert "ok middels" in capsys.readouterr().out
+    assert cli.main(["assess", "52026pc0681"]) == 0
+    conn = db.connect(env / "horingsradar.sqlite3")
+    jobs = [r["kind"] for r in conn.execute("SELECT kind FROM job ORDER BY id")]
+    assert jobs == ["run", "assess", "assess"]
+    assert conn.execute("SELECT COUNT(*) FROM eu_assessment WHERE status = 'ok'").fetchone()[0] == 2
+    with pytest.raises(SystemExit, match="Fant ingen sak"):
+        cli.main(["assess", "COM(1999) 1"])

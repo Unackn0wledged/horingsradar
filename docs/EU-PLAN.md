@@ -16,9 +16,11 @@ Arbeidsform:
 | Kjøring | Ukentlig, mandag kl. 07:15 |
 | Første kjøring | COM-forslag fra de siste 24 månedene, og alle åpne høringer på Have Your Say |
 | Relevansskala | Samme fire nivåer som Høringsradar, satt av LLM-en |
-| Sitater | Kort ordrett sitat fra tittel eller sammendrag, verifisert i kode |
+| Tekst til LLM-en | Begrunnelsen («explanatory memorandum») fra den engelske PDF-en |
+| Sitater | Ordrett sitat med sidetall fra begrunnelsen, verifisert i kode (endret i milepæl 3) |
 | EDPS | Flagg, og minst middels (deterministisk regel, vises som regel) |
-| Sektorer | Egen liste for EU-saker, foreslås i milepæl 3 |
+| Sektorer | Egen liste med 15 sektorer (`eu/schema.py`) |
+| Første vurdering på lab | Gradvis: `run --no-assess`, `assess` på noen få, så `run` |
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
@@ -30,7 +32,7 @@ Arbeidsform:
 | 0 | Oppsett og regler: `horingsradar-eu`, `RADAR=eu`-vern, `.env.eu.example`, `deploy/eu/`, regler i CLAUDE.md og SPEC, installasjonsguide | Ferdig |
 | 1 | EUR-Lex SPARQL: ekte svar som fixtures, egen datamodell, henting med EuroVoc-filter | Ferdig |
 | 2 | EEA-Lex: EØS-status fra listen og faktaark for vedtatte rettsakter | Ferdig |
-| 3 | LLM-vurdering: egen prompt, eget skjema, sektorliste, sitatsjekk, EDPS-regel | Ikke startet |
+| 3 | LLM-vurdering av begrunnelsen: egen prompt, eget skjema, sektorliste, sitatsjekk | Ferdig (EDPS-regelen kommer med EDPS-data i milepæl 6) |
 | 4 | Egen PDF-rapport | Ikke startet |
 | 5 | Have Your Say og kobling mot EUR-Lex | Ikke startet |
 | 6 | EDPS som relevanssignal | Ikke startet |
@@ -73,3 +75,14 @@ Funn underveis:
 Funn underveis:
 - Faktaark for forslag (numeriske nøkler) sender videre til seg selv, og å følge løkken ga 429. Status for forslag utover «registrert» er derfor ikke tilgjengelig. Valgt: alternativ A.
 - robots.txt sperrer filtrerte lister og søk, og sperrer ClaudeBot (Anthropics søkerobot for trening). EU-radaren har egen User-Agent og er ikke ClaudeBot.
+
+## Milepæl 3: LLM-vurdering
+
+- `eu/documents.py`: den engelske PDF-en for kandidater (SPARQL finner den, pilotens `Fetcher` henter den), uttrekk med `[[side N]]`, ny tabell `eu_document`.
+- `eu/text.py`: begrunnelsen er sidene fra «EXPLANATORY MEMORANDUM» til siden der rettsakten begynner; kuttes over 90 000 tegn.
+- `eu/schema.py`, `eu/assess.py`, `prompts/assess_eu_v1.md`: relevans, begrunnelse, sammendrag, sektorer og funn med side og ordrett sitat. Gjenbruker pilotens LLM-klient, promptlasting, personvernkategorier, avvisning av egne anbefalinger og sitatsjekk, uten å endre dem.
+- Nye tabeller `eu_assessment` (med både LLM-ens og endelig nivå, for EDPS-regelen) og `eu_finding`.
+- `horingsradar-eu run --no-assess` og `horingsradar-eu assess <saks-ID, COM-nummer eller CELEX>`.
+- Testdata: to ekte forslag i `tests/fixtures/eurlex/pdf/` (rådsbeslutningen COM(2026) 558, og de første 17 sidene av EU KIDS Act gjenskapt med originalteksten for å holde filen liten).
+- En test i Høringsradar (`test_replaced_document_is_one_changed_document`) var ustabil på raske maskiner: rapporten og endringene fikk samme millisekund. Rettet i testen; Høringsradars kode er uendret.
+- Ekte kjøring uten LLM 29.10.2026: alle 112 PDF-er hentet på 11 minutter (5 sekunder mellom kall). Begrunnelsen funnet i 111; den siste manglet overskriften og startet med «CONTEXT OF THE PROPOSAL», som nå også gjenkjennes. Ingen LLM-kall er gjort lokalt.
