@@ -152,10 +152,9 @@ class Changes:
         if self.deadline:
             tags.append("Ny frist")
         kinds = {d["kind"] for d in self.documents}
-        if "document_added" in kinds:
-            tags.append("Nytt dokument")
-        if kinds & {"document_changed", "document_removed"}:
-            tags.append("Endret dokument")
+        for kind, label in DOCUMENT_CHANGE_LABELS.items():
+            if kind in kinds:
+                tags.append(label)
         if self.relevance:
             tags.append("Endret relevans")
         if not self.relevance and self.new_findings:
@@ -352,14 +351,21 @@ def compare(conn: sqlite3.Connection, view: HearingView, base: dict[str, Any]) -
     if old_deadline and current_deadline and old_deadline != current_deadline:
         changes.deadline = (old_deadline, current_deadline)
 
+    # A document removed and added again under the same title (typically a new URL) is one
+    # changed document, not a new one plus a removed one.
+    doc_rows = [r for r in rows if r["kind"].startswith("document_")]
+    added = {r["document_title"] for r in doc_rows if r["kind"] == "document_added"}
+    removed = {r["document_title"] for r in doc_rows if r["kind"] == "document_removed"}
+    replaced = added & removed
     seen_docs: set[tuple[str, str]] = set()
-    for r in rows:
-        if r["kind"].startswith("document_") and (r["kind"], r["document_title"]) not in seen_docs:
-            seen_docs.add((r["kind"], r["document_title"]))
+    for r in doc_rows:
+        kind = "document_changed" if r["document_title"] in replaced else r["kind"]
+        if (kind, r["document_title"]) not in seen_docs:
+            seen_docs.add((kind, r["document_title"]))
             changes.documents.append(
                 {
-                    "kind": r["kind"],
-                    "label": DOCUMENT_CHANGE_LABELS.get(r["kind"], r["kind"]),
+                    "kind": kind,
+                    "label": DOCUMENT_CHANGE_LABELS.get(kind, kind),
                     "title": r["document_title"],
                     "date": r["detected_at"],
                 }

@@ -128,3 +128,60 @@ def test_report_items_store_the_baseline(conn):
     rows = conn.execute("SELECT COUNT(*) FROM report_item").fetchone()[0]
     tracked = conn.execute("SELECT COUNT(*) FROM hearing WHERE tracked = 1").fetchone()[0]
     assert rows == tracked
+
+
+def pdf_of(conn, hearing_id=3170511):
+    return next(d for d in db.documents_for(conn, hearing_id) if d["url"].endswith(".pdf"))
+
+
+def count(conn, sql):
+    return conn.execute(sql).fetchone()[0]
+
+
+ASSESSMENTS = "SELECT COUNT(*) FROM assessment WHERE hearing_id = 3170511 AND context = 'drift'"
+DOC_CHANGES = (
+    "SELECT COUNT(*) FROM hearing_change WHERE hearing_id = 3170511 AND kind LIKE 'document_%'"
+)
+
+
+def test_missing_document_is_a_change_only_once(settings, conn, site):
+    pdf = pdf_of(conn)
+    before = count(conn, ASSESSMENTS)
+    site.overrides[pdf["url"]] = (404, b"", {})
+    rerun(settings, conn, site)
+    assert count(conn, DOC_CHANGES) == 1 and count(conn, ASSESSMENTS) == before + 1
+    rerun(settings, conn, site)  # still gone: no new change, no new assessment
+    assert count(conn, DOC_CHANGES) == 1 and count(conn, ASSESSMENTS) == before + 1
+
+
+def test_document_back_after_transient_error_is_ok_again(settings, conn, site):
+    pdf = pdf_of(conn)
+    status = f"SELECT fetch_status FROM document WHERE id = {pdf['id']}"
+    conn.execute("UPDATE hearing SET needs_assessment = 1 WHERE id = 3170511")
+    before = count(conn, ASSESSMENTS)
+    site.overrides[pdf["url"]] = (503, b"", {})
+    rerun(settings, conn, site)
+    assert count(conn, status) == "error" and count(conn, ASSESSMENTS) == before  # waits
+    del site.overrides[pdf["url"]]
+    rerun(settings, conn, site)
+    # Same content as before: status restored, the waiting assessment runs, nothing logged.
+    assert count(conn, status) == "ok" and count(conn, ASSESSMENTS) == before + 1
+    assert count(conn, DOC_CHANGES) == 0
+
+
+def test_replaced_document_is_one_changed_document(settings, conn):
+    for kind, title in (
+        ("document_added", "Høringsbrev"),
+        ("document_removed", "Høringsbrev"),  # same title, new URL: replaced
+        ("document_removed", "Vedlegg.pdf"),
+    ):
+        conn.execute(
+            "INSERT INTO hearing_change (hearing_id, detected_at, kind, document_title)"
+            " VALUES (3170511, ?, ?, ?)",
+            (db.now_iso(), kind, title),
+        )
+    result = build_report(settings, conn, now=LATER)
+    assert result["hearings"] == 1
+    text = text_of(result).replace("\n", " ")
+    assert "Endret dokument" in text and "Fjernet dokument" in text
+    assert "Nytt dokument" not in text

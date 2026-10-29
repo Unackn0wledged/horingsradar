@@ -325,6 +325,9 @@ class RegjeringenSource:
             self._update_doc(doc_id, sha, 1, text_path, "ok", None)
             return "changed"
 
+        prev_status = self.conn.execute(
+            "SELECT fetch_status FROM document WHERE id = ?", (doc_id,)
+        ).fetchone()["fetch_status"]
         try:
             fetched = self.fetcher.get(link.url, max_age=max_age)
         except FetchError as exc:
@@ -334,7 +337,8 @@ class RegjeringenSource:
                     (f"Dokumentet finnes ikke lenger ({exc.status})", doc_id),
                 )
                 log.warning("Document %s is gone: %s", link.url, exc)
-                return "changed" if old_sha else "unchanged"
+                # A change only the first time it goes missing, not on every later run.
+                return "changed" if old_sha and prev_status != "missing" else "unchanged"
             self.conn.execute(
                 "UPDATE document SET fetch_status = 'error', note = ? WHERE id = ?",
                 (str(exc), doc_id),
@@ -343,8 +347,17 @@ class RegjeringenSource:
             return "transient"
 
         sha = hashlib.sha256(fetched.content).hexdigest()
-        if sha == old_sha and (text_path.is_file() or not self._is_pdf(link.url, fetched)):
+        # Missing or failed before: store it again so the status is right. Back after a
+        # transient error with the same content is not a change; back from missing is, since
+        # the last assessment ran without it.
+        recovered = prev_status in ("missing", "error")
+        if (
+            sha == old_sha
+            and not recovered
+            and (text_path.is_file() or not self._is_pdf(link.url, fetched))
+        ):
             return "unchanged"
+        outcome = "unchanged" if sha == old_sha and prev_status == "error" else "changed"
         suffix = Path(urlparse(link.url).path).suffix.lower() or ".bin"
         file_path = self.settings.documents_dir / str(hearing_id) / f"{doc_id}{suffix}"
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -355,13 +368,13 @@ class RegjeringenSource:
                 doc_id, sha, None, None, "unsupported", f"{UNSUPPORTED_NOTE} ({suffix})"
             )
             log.info("Unsupported document format %s (%s)", suffix, link.url)
-            return "changed"
+            return outcome
         try:
             extracted = extract_pdf(file_path)
         except Exception as exc:  # corrupt or encrypted PDF
             self._update_doc(doc_id, sha, None, None, "unreadable", f"Kunne ikke leses: {exc}")
             log.warning("Could not read PDF %s: %s", link.url, exc)
-            return "changed"
+            return outcome
         write_text(text_path, extracted.text)
         note = (
             f"{extracted.low_text_pages} av {extracted.page_count} sider uten tekst (skannet?)"
@@ -369,7 +382,7 @@ class RegjeringenSource:
             else None
         )
         self._update_doc(doc_id, sha, extracted.page_count, text_path, "ok", note)
-        return "changed"
+        return outcome
 
     @staticmethod
     def _is_pdf(url: str, fetched) -> bool:

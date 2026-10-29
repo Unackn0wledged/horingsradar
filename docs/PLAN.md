@@ -125,6 +125,8 @@ Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er 
   - Endret frist alene gir én linje i en egen seksjon.
   - Lav og ingen vises ikke igjen.
   - En ny vurdering med samme resultat regnes ikke som en endring.
+  - Et dokument som fjernes og legges ut igjen med samme navn (typisk ny adresse), vises som ett «Endret dokument». Et dokument som bare forsvinner, vises som «Fjernet dokument».
+  - Et dokument som gir 404, regnes som endret bare første gang. Kommer det tilbake etter en midlertidig feil med samme innhold, får det riktig status igjen uten å regnes som endret.
   - Ingen ekstra LLM-kall.
 - **Adminpanelet:**
   - Nytt utseende: blekk på arkivpapir, relevans som eneste farge, Source Sans 3 fra repoet.
