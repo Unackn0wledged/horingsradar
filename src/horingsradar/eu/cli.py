@@ -16,11 +16,6 @@ from horingsradar.jobs import TRIGGERS, JobSkipped, job_context
 
 log = logging.getLogger("horingsradar")
 
-# Built in later milestones (docs/EU-PLAN.md).
-NOT_BUILT = {
-    "backtest": "Backtesten kommer i milepæl 9.",
-}
-
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="horingsradar-eu", description="EU/EØS-radar (pilot)")
@@ -39,7 +34,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("report", help="lag PDF-rapport for saker som ikke er rapportert før")
     p.add_argument("--triggered-by", choices=TRIGGERS, default="cli", help=argparse.SUPPRESS)
-    sub.add_parser("backtest", help="manuell backtest (ikke bygget ennå)")
     sub.add_parser("pause", help="pause planlagt kjøring")
     sub.add_parser("resume", help="gjenoppta planlagt kjøring")
     sub.add_parser("status", help="vis status og siste jobber")
@@ -215,9 +209,6 @@ def main(argv: list[str] | None = None) -> int:
     require_eu_instance(settings)
     if args.command in ("run", "assess", "report"):
         return _run_job(settings, args)
-    if args.command in NOT_BUILT:
-        print(NOT_BUILT[args.command], file=sys.stderr)
-        return 2
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
     )

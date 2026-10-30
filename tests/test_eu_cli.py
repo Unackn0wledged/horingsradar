@@ -63,10 +63,11 @@ def test_timer_run_when_paused_exits_cleanly(env):
     assert not db.runs_paused(conn)
 
 
-@pytest.mark.parametrize("command", ["backtest"])
-def test_commands_not_built_yet_say_so(env, command, capsys):
-    assert cli.main([command]) == 2
-    assert "milepæl" in capsys.readouterr().err
+def test_there_is_no_backtest_for_the_eu_radar(env):
+    # Left out of scope 29.10.2026 (docs/EU-PLAN.md).
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["backtest"])
+    assert exc.value.code == 2
 
 
 def test_status_shows_the_eu_data_dir(env, capsys):

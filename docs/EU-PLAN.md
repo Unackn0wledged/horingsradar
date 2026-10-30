@@ -25,6 +25,7 @@ Arbeidsform:
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Liten modell, satt i EU-instansens `.env` |
+| Backtest | Ingen backtest for EU/EØS-radaren. Recall-settet brukes bare i testene for forfilteret (valgt 29.10.2026) |
 | Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel nå, lenken andre veien etter presentasjonen (valgt 29.10.2026) |
 | OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
 | Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
@@ -42,7 +43,7 @@ Arbeidsform:
 | 6 | EDPS som relevanssignal, fra Rådets dokumenter i Cellar | Ferdig |
 | 7 | OEIL-status for høy og middels | Ferdig |
 | 8 | Panel og statistikk | Ferdig |
-| 9 | Backtest med recall-sett | Ikke startet |
+| 9 | Backtest med recall-sett | Holdt utenfor (29.10.2026) |
 
 ## Milepæl 0: Oppsett og regler
 

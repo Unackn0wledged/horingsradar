@@ -18,7 +18,7 @@ from horingsradar.web.runner import JobBusy, cancel_job, job_running
 
 __all__ = ["ALLOWED", "JobBusy", "cancel_job", "job_running", "spawn", "start_job"]
 
-# Backtest comes in milestone 9.
+# No backtest for the EU radar (out of scope, docs/EU-PLAN.md).
 ALLOWED = {"run", "report", "assess"}
 
 

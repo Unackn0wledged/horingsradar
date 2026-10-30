@@ -13,7 +13,7 @@ Rammer som gjelder som for Høringsradar:
 - Pilot på hjemmelab med egen LLM-API-nøkkel (test, ikke produksjon).
 - Formålet er å oppdage, sortere og lese. Verktøyet gir ikke skrivestøtte og lager ikke høringsinnspill.
 - Ingen e-post og ingen fristvarsler i piloten.
-- Backtest kjøres aldri automatisk, bare manuelt fra panelet eller CLI.
+- Ingen backtest for EU/EØS-radaren (holdt utenfor 29.10.2026).
 
 ## Regler for EU/EØS-radaren
 
@@ -28,7 +28,7 @@ Disse gjelder som i Høringsradar:
 
 Disse er annerledes, og må skrives inn i `CLAUDE.md` og SPEC på branchen før koding:
 - **Flere kilder enn regjeringen.no.** Kildespesifikk kode ligger i egne moduler.
-- **Forfiltrering er tillatt** (Høringsradar filtrerer ingenting bort). Filteret skal prioritere recall. Antall saker som filtreres bort, telles og vises i statistikken, og recall-settet i backtesten kontrollerer filteret.
+- **Forfiltrering er tillatt** (Høringsradar filtrerer ingenting bort). Filteret skal prioritere recall. Antall saker som filtreres bort, telles og vises i statistikken, og testene kontrollerer at recall-settet slipper gjennom filteret.
 - **Sitater fra begrunnelsen, med sidetall.** Cellar har ingen sammendrag av forslagene, så LLM-en leser begrunnelsen i forslaget (se LLM-vurdering). Hvert funn har side og et kort ordrett sitat på engelsk, verifisert i kode mot sidene (med `quotes.py`, som i Høringsradar). Uverifiserte sitater markeres synlig, aldri stille fjernet eller rettet. Sidetallet rettes bare når sitatet står på en annen side. (Endret 29.10.2026 fra «sitat fra tittel eller sammendrag».)
 - **EDPS-regel.** En sak med EDPS-uttalelse om forslaget får minst `middels`. Regelen er deterministisk og vises i rapporten som en regel, ikke som modellens vurdering. Det er den eneste regelen som endrer nivået LLM-en har satt, og den kan bare heve det.
 
@@ -72,7 +72,7 @@ Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksem
 
 ## Kjøring
 
-- **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` og `backtest` startes manuelt.
+- **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` startes manuelt.
 - **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`). Kandidatene slås opp på Have Your Say (rundt 10–15 minutter med 5 sekunder mellom kall).
 - Senere kjøringer går tilbake til forrige kjøring minus 60 dager (`EU_DISCOVERY_OVERLAP_DAYS`), fordi EuroVoc-indekseringen kommer dager eller uker etter at et forslag er publisert.
 - Forslag hentes i vinduer på 30 dager. Én spørring over flere måneder tar minutter på et kaldt endepunkt, over tidsgrensen, mens et vindu på 30 dager svarer på rundt ett sekund. Første kjøring tar rundt 2 minutter.
@@ -263,7 +263,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 ## Panel og statistikk
 
 - Eget panel for EU-instansen på egen port (8081), egen prosess og egen tjeneste (`horingsradar-eu web`, `deploy/eu/systemd/horingsradar-eu-web.service`). Bare for administratoren.
-- **Bygget i milepæl 8** (`src/horingsradar/eu/web/`): Status (pågående jobb med fremdrift per steg, siste og neste kjøring, pause/gjenoppta, kjøring med og uten vurdering, rapport), Saker (filtre for relevans, EØS-status, EDPS, åpen frist og fritekst; sortering på dato, relevans og frist), side per sak med alt fra kildene, vurderingshistorikk og «Vurder på nytt», Filtrert bort (forslagene som ikke ble kandidater, med EuroVoc og søk), Rapporter, Statistikk og Jobber og logg. Backtest kommer i milepæl 9.
+- **Bygget i milepæl 8** (`src/horingsradar/eu/web/`): Status (pågående jobb med fremdrift per steg, siste og neste kjøring, pause/gjenoppta, kjøring med og uten vurdering, rapport), Saker (filtre for relevans, EØS-status, EDPS, åpen frist og fritekst; sortering på dato, relevans og frist), side per sak med alt fra kildene, vurderingshistorikk og «Vurder på nytt», Filtrert bort (forslagene som ikke ble kandidater, med EuroVoc og søk), Rapporter, Statistikk og Jobber og logg.
 - Jobber startes som egne prosesser (`python -m horingsradar.eu`). Ingen pipeline-kode kjører i panelet, det styrer ikke systemd og endrer ikke konfigurasjon. Ingen bryter for kildene.
 - Innlogging, CSRF, avbryting av jobber, socket-oppsett, stilark og HTMX er Høringsradars, gjenbrukt uendret. Sidene, malene og jobbstarten er egne.
 - Statistikk per kilde: EUR-Lex (hentet, kandidater, filtrert bort, grunn), EEA-Lex (status), Have Your Say (med side, åpne), EDPS (dokumenter, koblinger, hevet av regelen), OEIL (status), LLM (vurderinger, nivåer, tokens og kostnad per måned, modell og prompt) og de siste kjøringene.
@@ -271,10 +271,9 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 
 ## Backtest
 
-- Bare manuell kjøring, med kostnadsestimat og bekreftelse.
-- Fast **recall-sett** av kjente, tekniske forslag med personvernrelevans som skal fanges opp. Minimum: NIS2, Cyber Resilience Act, eIDAS2 / EU Digital Identity Wallet, CSAM-forordningen («chat control»), European Health Data Space, Data Act og AI Act.
-- Backtesten rapporterer hvilke saker som falt ut, og i hvilket steg (forfilter eller LLM).
-- Merk: sakene i recall-settet er velkjente og trolig kjent for modellen fra treningen. Settet tester derfor mest forfilteret. Supplér gjerne med mindre kjente saker.
+**Ikke i scope** (valgt 29.10.2026). EU/EØS-radaren har ingen backtest, verken i CLI eller panel.
+
+Recall-settet (NIS2, Cyber Resilience Act, eIDAS2 / EU Digital Identity Wallet, CSAM-forordningen, European Health Data Space, Data Act og AI Act, i `tests/fixtures/eurlex/recall_set.json`) brukes i testene for å kontrollere at forfilteret slipper sakene gjennom.
 
 ## Implementeringsrekkefølge
 
@@ -287,7 +286,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 6. EDPS som relevanssignal, fra Rådets dokumenter i Cellar.
 7. OEIL-status for saker med høy og middels relevans.
 8. Panel og statistikk.
-9. Backtest med recall-sett.
+9. ~~Backtest med recall-sett~~ – holdt utenfor (29.10.2026).
 
 ## Ikke i scope
 
@@ -298,3 +297,4 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 - Andre EU-kilder (Rådets register, komitologiregisteret) – vurderes etter piloten
 - Høringer på Have Your Say som ennå ikke har et COM-forslag (call for evidence, offentlige konsultasjoner, utkast til gjennomførings- og delegerte rettsakter). Kan legges til senere med temafilter og nøkkelord. Målt 29.10.2026: temaene «Justice and fundamental rights» og «Digital economy and society» gir 135 initiativer på 24 måneder, med «Home affairs» og «Public health» 222 (CSAM ligger under «Home affairs», EHDS under «Public health»). Nøkkelord i kort tittel alene fanger lite, så sammendraget må med, og det krever ett kall per initiativ.
 - Kobling mot Høringsradar – vurderes senere (se arkitekturvalget)
+- Backtest – holdt utenfor 29.10.2026. Recall-settet brukes bare i testene for forfilteret.

@@ -12,7 +12,7 @@ WorkingDirectory=/opt/horingsradar-eu
 Environment=ENV_FILE=/opt/horingsradar-eu/.env
 # Hjemmemappen (/var/lib/horingsradar) er skrivebeskyttet her, så cache legges i EU-mappen.
 Environment=XDG_CACHE_HOME=/var/lib/horingsradar-eu/.cache
-# Bare `run`. report og backtest startes manuelt.
+# Bare `run`. report startes manuelt. EU-radaren har ingen backtest.
 ExecStart=/opt/horingsradar-eu/.venv/bin/horingsradar-eu run --triggered-by timer
 TimeoutStartSec=6h
 Nice=10
