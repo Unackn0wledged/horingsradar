@@ -24,7 +24,7 @@ Arbeidsform:
 | Rapport | Saker eldre enn 8 uker som én linje; samme regler for gjentak som Høringsradar |
 | Forfilter for EUR-Lex | Filter B: 20 EuroVoc-emner, pluss nøkkelord i tittelen |
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
-| Modell | Liten modell, satt i EU-instansens `.env` |
+| Modell | Claude Sonnet 5.5 med `medium` innsats, som Høringsradar, satt i EU-instansens `.env` (endret 31.10.2026 fra liten modell: LLM-en leser hele begrunnelsen, ikke bare tittel og sammendrag) |
 | Backtest | Ingen backtest for EU/EØS-radaren. Recall-settet brukes bare i testene for forfilteret (valgt 29.10.2026) |
 | Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel nå, lenken andre veien etter presentasjonen (valgt 29.10.2026) |
 | OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |

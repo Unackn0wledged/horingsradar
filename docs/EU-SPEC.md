@@ -149,7 +149,7 @@ hent → forfiltrer → dedupliser/koble (CELEX/COM) → EØS-status → Have Yo
 - **EDPS:** en EDPS-uttalelse vises som et eget flagg og gir minst `middels` (se EDPS-regel under Regler). Både LLM-ens nivå og det endelige nivået lagres, så det er sporbart hva regelen har endret. Regelen ligger i `eu/rules.py` og brukes når en vurdering lagres. Kommer uttalelsen etter vurderingen, lagres en ny vurderingsrad uten LLM-kall: samme tekst og funn, hevet nivå, `rule = 'edps'`, null tokens og en merknad.
 - Egen prompt `prompts/assess_eu_v1.md`, versjonert som før (lastes som versjon `eu_v1`). Versjonen velges med `EU_PROMPT_VERSION`. Prompten nevner ingen virksomhet.
 - Ugyldig svar gir ett nytt forsøk, deretter lagres vurderingen som feilet. Etter to feilede forsøk venter saken til teksten endres. Avvisningen av modellens egne anbefalinger er den samme som i Høringsradar.
-- Liten, billig modell via `LLM_MODEL` i EU-instansens `.env`. Forventet volum er noen titalls kandidater i uka.
+- Modell via `LLM_MODEL` i EU-instansens `.env`: Claude Sonnet 5.5 med `medium` innsats, som Høringsradar (endret 31.10.2026 fra Haiku, som ble valgt da bare tittel og sammendrag skulle vurderes). Modellen leser hele begrunnelsen, og en for lav vurdering er vanskelig å oppdage. Anslått kostnad: rundt 2–4 dollar for første kjøring og 0,10–0,20 dollar per uke.
 - En sak vurderes når den blir kandidat og har tekst; den vurderes ikke på nytt med mindre teksten endres eller `assess` kjøres for hånd. Input-hash, modell, promptversjon, tokens, kostnadsestimat og rått svar lagres med hver vurdering.
 
 ## EØS-status (uten LLM)

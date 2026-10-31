@@ -74,7 +74,7 @@ Endre minst disse:
 | `DATA_DIR` | `/var/lib/horingsradar-eu`. **Aldri** `/var/lib/horingsradar`. |
 | `USER_AGENT` | `Horingsradar-EU/0.1 (kontakt: <din e-post>)` |
 | `ANTHROPIC_API_KEY` | Gjerne en egen nøkkel, så forbruket holdes adskilt fra Høringsradar |
-| `PRICE_INPUT_PER_MTOK` / `PRICE_OUTPUT_PER_MTOK` | Prisene for modellen i `LLM_MODEL`. Fjern `#` foran linjene. |
+| `PRICE_INPUT_PER_MTOK` / `PRICE_OUTPUT_PER_MTOK` | Prisene for modellen i `LLM_MODEL`. Eksempelfilen har prisene for Sonnet 5.5. Sjekk dem mot Anthropics prisliste. |
 
 ## 5. Første kjøring, gradvis
 
