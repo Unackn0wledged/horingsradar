@@ -14,7 +14,7 @@ Arbeidsform:
 | Målgruppe og rapport | Egen målgruppe (internasjonale saker), egen PDF |
 | Instans | Egen instans på samme LXC: egen checkout, `DATA_DIR`, database, `.env`, tjenester og panel |
 | Kjøring | Ukentlig, mandag kl. 07:15 |
-| Første kjøring | COM-forslag fra de siste 24 månedene |
+| Første kjøring | COM-forslag fra de siste 6 månedene (endret 31.10.2026 fra 24 måneder; nok til å verifisere funksjonaliteten i piloten). Tallene fra 29.10.2026 under gjelder 24 måneder |
 | Relevansskala | Samme fire nivåer som Høringsradar, satt av LLM-en |
 | Tekst til LLM-en | Begrunnelsen («explanatory memorandum») fra den engelske PDF-en |
 | Sitater | Ordrett sitat med sidetall fra begrunnelsen, verifisert i kode (endret i milepæl 3) |

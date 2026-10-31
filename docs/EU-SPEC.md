@@ -73,9 +73,9 @@ Tilbakerulling: rollback til snapshot, eller sjekk ut forrige versjon (for eksem
 ## Kjøring
 
 - **Ukentlig**, mandag kl. 07:15 (etter Høringsradars daglige kjøring). `report` startes manuelt.
-- **Første kjøring:** COM-forslag fra de siste 24 månedene (`EU_INITIAL_LOOKBACK_DAYS=730`). Kandidatene slås opp på Have Your Say (rundt 10–15 minutter med 5 sekunder mellom kall).
+- **Første kjøring:** COM-forslag og EDPS-uttalelser fra de siste 6 månedene (`EU_INITIAL_LOOKBACK_DAYS=183`, endret 31.10.2026 fra 24 måneder: det holder for å verifisere funksjonaliteten i piloten). Innstillingen gjelder bare første kjøring. Skal eldre forslag med senere, må EU-databasen startes på nytt.
 - Senere kjøringer går tilbake til forrige kjøring minus 60 dager (`EU_DISCOVERY_OVERLAP_DAYS`), fordi EuroVoc-indekseringen kommer dager eller uker etter at et forslag er publisert.
-- Forslag hentes i vinduer på 30 dager. Én spørring over flere måneder tar minutter på et kaldt endepunkt, over tidsgrensen, mens et vindu på 30 dager svarer på rundt ett sekund. Første kjøring tar rundt 2 minutter.
+- Forslag hentes i vinduer på 30 dager. Én spørring over flere måneder tar minutter på et kaldt endepunkt, over tidsgrensen, mens et vindu på 30 dager svarer på rundt ett sekund. Over 24 måneder tok hentingen rundt 2 minutter.
 
 ## Designprinsipp: billig først, LLM sist
 

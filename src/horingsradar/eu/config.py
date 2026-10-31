@@ -22,7 +22,7 @@ class EUSettings(Settings):
     # EEA-Lex asks for 5 seconds between requests (robots.txt); the EU instance uses it for all.
     request_interval_seconds: float = 5.0
     # First run looks this far back for proposals; consultations that are open are always taken.
-    eu_initial_lookback_days: int = 730
+    eu_initial_lookback_days: int = 183
     # Later runs go back to the previous run minus this. EuroVoc indexing arrives days or weeks
     # after a proposal is published, so recent proposals are looked at again.
     eu_discovery_overlap_days: int = 60

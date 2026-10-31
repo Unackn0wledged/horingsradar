@@ -120,7 +120,7 @@ def test_run_links_by_procedure_and_by_exact_title(eu_settings, conn):
     site = EUSite()
     site.add_edps()
     summary = do_run(eu_settings, conn, site, assess=False)
-    assert summary["edps_notes"] == 31
+    assert summary["edps_notes"] == 11  # the notes from the last 6 months
     assert links(conn, "52026PC0580") == [("ST 12655 2026 INIT", "procedure")]  # Europol
     assert links(conn, "52026PC0502") == [("WK 13042 2026 INIT", "procedure")]  # Cloud and AI
     assert links(conn, "52026PC0570") == [("ST 12449 2026 INIT", "title")]  # Eurojust

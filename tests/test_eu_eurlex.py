@@ -145,7 +145,7 @@ def test_discovery_runs_in_windows_and_pages(eu_settings, site):
 
 def test_first_run_stores_every_proposal_and_marks_candidates(eu_settings, conn, site):
     summary = do_run(eu_settings, conn, site)
-    assert summary["since"] == "2024-10-29"  # 730 days back
+    assert summary["since"] == "2026-04-29"  # 183 days back
     assert summary["fetched"] == summary["new"] == summary["cases"] == 67
     assert summary["candidates"] == summary["new_candidates"] == 14
     assert summary["filtered_out"] == 53

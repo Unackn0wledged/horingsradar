@@ -78,7 +78,7 @@ Endre minst disse:
 
 ## 5. Første kjøring, gradvis
 
-Kjør først **uten LLM**. Da hentes forslag, EDPS-uttalelser, EØS-status, frister fra Have Your Say, status i Europaparlamentet og tekst, men ingenting sendes til modellen, så det koster ingenting. Med 5 sekunder mellom kall tar første kjøring 35–45 minutter (uten vurdering slås alle kandidater opp i OEIL; senere bare høy og middels):
+Kjør først **uten LLM**. Da hentes forslag, EDPS-uttalelser, EØS-status, frister fra Have Your Say, status i Europaparlamentet og tekst, men ingenting sendes til modellen, så det koster ingenting. Første kjøring går 6 måneder tilbake (`EU_INITIAL_LOOKBACK_DAYS=183`). Med 5 sekunder mellom kall tar den anslagsvis 10–15 minutter (uten vurdering slås alle kandidater opp i OEIL; senere bare høy og middels):
 
 ```bash
 cd /opt/horingsradar-eu

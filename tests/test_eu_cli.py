@@ -79,7 +79,7 @@ def test_example_env_files_load(monkeypatch):
     for name in ("RADAR", "DATA_DIR", "ENV_FILE"):
         monkeypatch.delenv(name, raising=False)
     eu = load_eu_settings(env_file=REPO_ROOT / ".env.eu.example")
-    assert eu.radar == "eu" and eu.eu_initial_lookback_days == 730
+    assert eu.radar == "eu" and eu.eu_initial_lookback_days == 183
     assert eu.data_dir.name == "data-eu" and eu.web_binds[0][1] == 8081
     assert eu.run_timer_unit == "horingsradar-eu-run.timer"
     pilot = load_settings(env_file=REPO_ROOT / ".env.example")
