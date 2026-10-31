@@ -128,7 +128,7 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 </table>
 <p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">DT = Datatilsynet. Sortert etter relevans og deretter frist. Klikk på en rad for å gå til analysen.</p>
 {% else %}
-<p class="empty">Ingen nye eller oppdaterte høringer siden forrige rapport.</p>
+<p class="empty">{% if kind == "drift" %}Ingen nye eller oppdaterte høringer siden forrige rapport.{% else %}Ingen høringer publisert i perioden.{% endif %}</p>
 {% endif %}
 
 {% if kind == "drift" %}

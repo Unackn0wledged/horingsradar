@@ -2,8 +2,9 @@
 
 By default the report contains every tracked hearing that has not been in an earlier report,
 plus high/medium hearings that changed since the report that last showed them (see
-select_for_report). `--week YYYY-Www`
-regenerates the hearings published in that ISO week without touching `reported_in`.
+select_for_report). `--week YYYY-Www` regenerates the hearings published in that ISO week, and
+`--weeks N` makes a report of the hearings published in the last N weeks. Neither touches
+`reported_in`, so the next operational report is the same with or without them.
 """
 
 from __future__ import annotations
@@ -423,6 +424,10 @@ def select_for_report(
     return sorted(full, key=lambda v: v.sort_key), sorted(deadline_only, key=lambda v: v.sort_key)
 
 
+def period_start(weeks: int, today: date) -> date:
+    return today - timedelta(weeks=weeks)
+
+
 def select_week(conn: sqlite3.Connection, start: date, end: date, today: date) -> list[HearingView]:
     rows = conn.execute(
         "SELECT * FROM hearing WHERE tracked = 1 AND published_date BETWEEN ? AND ?",
@@ -478,11 +483,20 @@ def build_report(
     conn: sqlite3.Connection,
     week: str | None = None,
     now: datetime | None = None,
+    weeks: int | None = None,
 ) -> dict[str, Any]:
     now = now or datetime.now().astimezone()
     today = now.date()
     deadline_only: list[HearingView] = []
-    if week:
+    if weeks:
+        start = period_start(weeks, today)
+        views = select_week(conn, start, today, today)
+        unit = "uke" if weeks == 1 else "uker"
+        period_label = (
+            f"Siste {weeks} {unit} ({fmt_date(start)}–{fmt_date(today)}), publisert i perioden"
+        )
+        kind = "period"
+    elif week:
         start, end = parse_week(week)
         views = select_week(conn, start, end, today)
         iso_year, iso_week = int(week[:4]), int(week[-2:])
@@ -529,7 +543,8 @@ def build_report(
     }
     html = render_html(context)
     stamp = now.strftime("%Y-%m-%d_%H%M")
-    name = f"horingsradar_{week}_{stamp}.pdf" if week else f"horingsradar_{stamp}.pdf"
+    label = f"siste-{weeks}-uker" if weeks else week
+    name = f"horingsradar_{label}_{stamp}.pdf" if label else f"horingsradar_{stamp}.pdf"
     path = settings.reports_dir / name
     write_pdf(html, path)
     cur = conn.execute(

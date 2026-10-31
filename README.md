@@ -41,7 +41,7 @@ Begrens gjerne hvem i tailnettet som når port 8080 med Tailscale-ACL-er, og bru
 |---|---|
 | `uv run horingsradar run` | Henter nye og endrede høringer og vurderer dem. `--no-assess` henter uten LLM. |
 | `uv run horingsradar assess <id>` | Vurderer én høring på nytt, for eksempel med `--prompt-version v2` (prompt-iterasjon). |
-| `uv run horingsradar report` | Lager PDF for alle høringer som ikke er rapportert før. `--week 2026-W42` regenererer en uke. |
+| `uv run horingsradar report` | Lager PDF for alle høringer som ikke er rapportert før. `--week 2026-W42` regenererer en uke. `--weeks 6` tar med høringene fra de siste seks ukene uten å merke noe som rapportert. |
 | `uv run horingsradar backtest --split dev\|test` | Bare manuelt. Viser kostnadsestimat og krever bekreftelse. Støtter `--limit N`, `--from`/`--to`, `--estimate-only`, `--no-batch` og `--yes`. |
 | `uv run horingsradar web` | Starter adminpanelet på `WEB_BIND`. |
 | `uv run horingsradar hash-password` | Lager `WEB_PASSWORD_HASH` til `.env`. |

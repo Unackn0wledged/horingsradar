@@ -14,6 +14,27 @@
   </div>
 </div>
 
+<section class="sheet" aria-labelledby="period-heading">
+  <h2 id="period-heading">Rapport for en periode</h2>
+  <p class="small muted">Tar med alle høringer publisert i perioden, også de som har vært i en rapport før. Høy og middels relevans får full analyse, lav og ingen én linje. Ingenting merkes som rapportert, så neste vanlige rapport blir som før. Bruker ingen API-tokens.</p>
+  {% if periods %}
+  <form class="filters" method="post" action="/actions/report">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="sort" style="flex: 0 1 460px">
+      <label for="weeks">Periode</label>
+      <select id="weeks" name="weeks">
+        {% for p in periods %}
+        <option value="{{ p.weeks }}"{% if p.selected %} selected{% endif %}>Siste {{ p.weeks }} {{ "uke" if p.weeks == 1 else "uker" }}: {{ p.count }} {{ "høring" if p.count == 1 else "høringer" }}, {{ p.detailed }} med full analyse</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button class="btn" type="submit">Lag rapport for perioden</button>
+  </form>
+  {% else %}
+  <p class="empty">Ingen høringer med publiseringsdato ennå.</p>
+  {% endif %}
+</section>
+
 {% if reports %}
 <div class="table-wrap">
   <table>
@@ -24,7 +45,7 @@
         <td class="num nowrap">{{ r.created_at|ts }}</td>
         <td>{{ r.period_label }}</td>
         <td class="num">{{ r.hearing_count }}</td>
-        <td class="opt small">{{ "Regenerert uke" if r.kind == "week" else "Drift" }}</td>
+        <td class="opt small">{{ {"week": "Regenerert uke", "period": "Periode"}.get(r.kind, "Drift") }}</td>
         <td class="num"><a class="btn quiet small" href="/reports/{{ r.id }}/download">Last ned PDF</a></td>
       </tr>
     {% endfor %}

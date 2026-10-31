@@ -40,6 +40,24 @@ def test_report_command_writes_pdf(env, capsys):
     assert conn.execute("SELECT status FROM job").fetchone()[0] == "ok"
 
 
+def test_report_for_the_last_weeks_records_the_choice(env, capsys):
+    assert cli.main(["report", "--weeks", "6"]) == 0
+    assert "siste-6-uker" in capsys.readouterr().out
+    conn = db.connect(get_settings().db_path)
+    job = conn.execute("SELECT * FROM job ORDER BY id DESC LIMIT 1").fetchone()
+    assert str(db.loads(job["args"], {})["weeks"]) == "6"
+    conn.close()
+
+
+@pytest.mark.parametrize(
+    "args", [["--weeks", "0"], ["--weeks", "seks"], ["--weeks", "6", "--week", "2026-W42"]]
+)
+def test_report_rejects_a_bad_period(env, args):
+    with pytest.raises(SystemExit) as exc:
+        cli.main(["report", *args])
+    assert exc.value.code == 2
+
+
 def test_backtest_from_web_requires_confirmation(env):
     with pytest.raises(SystemExit):
         cli.main(["backtest", "--split", "dev", "--triggered-by", "web"])

@@ -22,6 +22,13 @@ def _date(value: str) -> date:
     return date.fromisoformat(value)
 
 
+def _weeks(value: str) -> int:
+    weeks = int(value)
+    if weeks < 1:
+        raise argparse.ArgumentTypeError("må være minst 1")
+    return weeks
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="horingsradar", description="Høringsradar (pilot)")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -44,7 +51,13 @@ def build_parser() -> argparse.ArgumentParser:
     add_trigger(p)
 
     p = sub.add_parser("report", help="lag PDF-rapport")
-    p.add_argument("--week", help="regenerer en uke, for eksempel 2026-W42")
+    period = p.add_mutually_exclusive_group()
+    period.add_argument("--week", help="regenerer en uke, for eksempel 2026-W42")
+    period.add_argument(
+        "--weeks",
+        type=_weeks,
+        help="høringer publisert de siste N ukene; endrer ikke hva som regnes som rapportert",
+    )
     add_trigger(p)
 
     p = sub.add_parser("backtest", help="manuell backtest med kostnadsestimat og bekreftelse")
@@ -145,7 +158,7 @@ def _run_job(args: argparse.Namespace) -> int:
             elif args.command == "report":
                 from horingsradar.report.build import build_report
 
-                result = build_report(settings, conn, week=args.week)
+                result = build_report(settings, conn, week=args.week, weeks=args.weeks)
                 job.summary.update(result)
                 print(result["path"])
             elif args.command == "backtest":

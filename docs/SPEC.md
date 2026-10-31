@@ -151,7 +151,7 @@ TODO: tilpass til egen ansvarsfordeling. Utgangspunkt:
 
 ## Rapport (PDF)
 
-Som standard tar rapporten med alle høringer som ikke har vært i en tidligere rapport, pluss høringer som er oppdatert siden. `--week YYYY-Www` regenererer en bestemt periode.
+Som standard tar rapporten med alle høringer som ikke har vært i en tidligere rapport, pluss høringer som er oppdatert siden. `--week YYYY-Www` regenererer en bestemt periode. `--weeks N`, også fra panelet (**Rapporter → Rapport for en periode**), lager en rapport av alle høringer publisert de siste N ukene. Ingen av dem endrer `reported_in`.
 
 Innhold:
 1. **Topptekst**: periode, tidspunkt for generering, modell og promptversjon, og en merknad om at innholdet er KI-generert sortering som må verifiseres mot kilden.

@@ -339,6 +339,7 @@ nft list ruleset
 | Lage rapport | Panelet, **Rapporter → Generer rapport**, eller `horingsradar report` |
 | Laste ned PDF | Panelet, **Rapporter** |
 | Regenerere en uke | `horingsradar report --week 2026-W42` |
+| Rapport for en periode | Panelet, **Rapporter → Rapport for en periode**, eller `horingsradar report --weeks 6`. Merker ingenting som rapportert. |
 | Pause og gjenoppta | Panelet, eller `horingsradar pause` / `horingsradar resume` |
 | Vurdere én høring på nytt | Panelet, **Høringer**, eller `horingsradar assess <id>` |
 | Backtest | Panelet, **Backtest**: først estimat, deretter bekreftelse. Eller `horingsradar backtest --split dev --limit 20` |
