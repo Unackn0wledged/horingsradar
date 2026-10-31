@@ -13,7 +13,7 @@ What the portal gives an automated client (checked 29.10.2026):
   own feedback period. The initiative's own reference is often the Ares number of the first
   stage, so the COM number is read from the publications.
 - The initiative JSON also names the Commission officials responsible (name, e-mail, phone).
-  Only the fields below are kept.
+  Only the fields below go into the database; the raw answer stays in the HTTP cache.
 """
 
 from __future__ import annotations

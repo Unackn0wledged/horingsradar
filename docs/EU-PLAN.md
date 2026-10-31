@@ -27,7 +27,7 @@ Arbeidsform:
 | Modell | Claude Sonnet 5.5 med `medium` innsats, som Høringsradar, satt i EU-instansens `.env` (endret 31.10.2026 fra liten modell: LLM-en leser hele begrunnelsen, ikke bare tittel og sammendrag) |
 | Backtest | Ingen backtest for EU/EØS-radaren. Recall-settet brukes bare i testene for forfilteret (valgt 29.10.2026) |
 | Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel nå, lenken andre veien etter presentasjonen (valgt 29.10.2026) |
-| OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
+| OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn i databasen eller rapporten. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
 | Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
 
 ## Milepæler
@@ -116,7 +116,7 @@ Funn underveis:
 - Søkelisten er usortert og overlapper mellom sidene; den brukes ikke.
 - Dokumentene for call for evidence er ofte DOCX, og nedlastingsruten for vedlegg er ikke verifisert.
 - Noen titler har U+FFFD i selve kilden. Rapporten bruker EUR-Lex-tittelen.
-- Initiativ-JSON-en navngir saksbehandlerne. Bare fasefeltene lagres.
+- Initiativ-JSON-en navngir saksbehandlerne. Bare fasefeltene legges i databasen. De rå svarene blir liggende i HTTP-cachen i `DATA_DIR`.
 
 ## Milepæl 6: EDPS
 
@@ -135,7 +135,7 @@ Funn underveis:
 
 ## Milepæl 7: OEIL
 
-- `eu/sources/oeil.py`: henter og tolker prosedyresiden i OEIL (kort navn, status, ansvarlig komité, hovedhendelser). Personnavn leses ikke. Pilotens `Fetcher` uendret, 5 sekunder mellom kall.
+- `eu/sources/oeil.py`: henter og tolker prosedyresiden i OEIL (kort navn, status, ansvarlig komité, hovedhendelser). Personnavn tolkes ikke og legges ikke i databasen, men de rå sidene blir liggende i HTTP-cachen. Pilotens `Fetcher` uendret, 5 sekunder mellom kall.
 - Nytt steg sist i `run`, etter vurderingen: kandidater med prosedyrenummer som er høy, middels eller ikke vurdert, og som ikke er avsluttet i OEIL. 404 prøves igjen neste kjøring.
 - Nye kolonner `eu_case.oeil_ref`, `oeil_title`, `oeil_status`, `oeil_committees`, `oeil_checked_at`, ny tabell `eu_oeil_event`, og endringen `oeil_status`.
 - Rapporten har raden «Europaparlamentet» og én linje ved ny status. `status` viser hvor mange kandidater som har OEIL-status.

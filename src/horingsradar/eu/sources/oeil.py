@@ -5,7 +5,8 @@ What OEIL gives an automated client (checked 29.10.2026):
   Procedure pages answer quickly, without a bot check.
 - A procedure page has a short title ("New Europol Regulation"), the status in Parliament
   ("Awaiting committee decision"), the committee responsible, and the key events.
-- It also names rapporteurs, shadow rapporteurs and Commissioners. They are not read.
+- It also names rapporteurs, shadow rapporteurs and Commissioners. They are not parsed, but
+  the raw page stays in the HTTP cache.
 - New NLE procedures (Council decisions on agreements) are often not in OEIL yet (404).
 - The Parliament's Open Data API has the same procedures but answered 500 to half the calls,
   and lacks the status text. It is not used.

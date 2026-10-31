@@ -137,6 +137,22 @@ sudo -u horingsradar nano /opt/horingsradar-eu/.env
 
 Sett også `WEB_BIND` til LXC-ens LAN-adresse med port 8081 (for eksempel `<LXC-ens IP>:8081`), og gjerne `OTHER_PANEL_URL` til adressen til Høringsradars panel (for eksempel `http://<LXC-ens IP>:8080`). Bytt ut `<LXC-ens IP>` med adressen containeren har på nettet ditt.
 
+Har du satt opp brannmuren fra [`INSTALL-LXC.md`](INSTALL-LXC.md) (nftables), må port 8081 åpnes også. Sjekk først:
+
+```bash
+nft list ruleset | grep 'dport 8080'
+```
+
+Gir det ingen linje, er nftables-regelen ikke i bruk, og du kan hoppe over neste kommando. Gir det en linje, legger disse kommandoene til 8081, sjekker filen og laster brannmuren på nytt:
+
+```bash
+sed -i 's/dport 8080 accept/dport { 8080, 8081 } accept/' /etc/nftables.conf
+nft -c -f /etc/nftables.conf && systemctl restart nftables
+nft list ruleset | grep 'dport'
+```
+
+Siste kommando skal vise en linje med `tcp dport { 8080, 8081 } accept`. Bruker du Proxmox-brannmuren i stedet, åpner du 8081 fra LAN der.
+
 Start panelet:
 
 ```bash

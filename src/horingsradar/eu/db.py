@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS eu_report_item (
 );
 
 -- Have Your Say initiatives found by a candidate's COM number (eu_case.hys_initiative_id).
--- Only these fields are kept; the portal's JSON also names the officials responsible.
+-- Only these fields go into the database; the portal's JSON also names the officials.
 CREATE TABLE IF NOT EXISTS eu_hys_initiative (
     id INTEGER PRIMARY KEY,  -- the portal's initiative ID
     path TEXT NOT NULL,  -- 14628-Cloud-and-AI-Development-Act, for the page URL

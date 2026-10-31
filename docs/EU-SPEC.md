@@ -203,7 +203,7 @@ Ekte funn i testdataene: European Investigation Order (omarbeiding, COM(2026) 31
 
 **Hva OEIL gir en automatisk klient** (sjekket 29.10.2026):
 - `oeil.europarl.europa.eu` har ingen robots.txt (404). Prosedyresidene (`/oeil/en/procedure-file?reference=2026/0165(COD)`) svarer raskt og uten bot-sjekk. Parlamentets juridiske merknad svarer 403 til radaren og er lest for hånd av brukeren 29.10.2026.
-- En side har kort navn («New Europol Regulation»), status i Parlamentet («Awaiting committee decision»), ansvarlig komité og hovedhendelser med dato. Den navngir også saksordførere og kommissær; det leses ikke.
+- En side har kort navn («New Europol Regulation»), status i Parlamentet («Awaiting committee decision»), ansvarlig komité og hovedhendelser med dato. Den navngir også saksordførere og kommissær. Det tolkes ikke og legges ikke i databasen eller rapporten, men HTTP-cachen i `DATA_DIR` beholder de rå sidene.
 - Nye NLE-prosedyrer (rådsbeslutninger om avtaler) finnes ofte ikke ennå (404).
 - Parlamentets Open Data API (`data.europarl.europa.eu`) har de samme prosedyrene, men svarte 500 på halvparten av kallene (med 13 MB feilmelding) og mangler statusteksten. Det brukes ikke.
 
@@ -224,7 +224,7 @@ Have Your Say er Kommisjonens høringsportal. Hvert initiativ har faser med egne
   - `groupInitiatives/{id}` gir initiativet med én publikasjon per fase: type, fase, referanse, publisert, frist (`endDate`), status (`OPEN`, `CLOSED`, `UPCOMING`, `DISABLED`) og planlagt periode («Q-2027-4»).
   - Søkelisten (`searchInitiatives`, filtre `topic`, `feedbackStatus`, `feedbackOpenDateFrom`, høyst 100 per side) brukes ikke. Den er usortert, og sidene kan overlappe (4 155 rader, 4 146 unike).
 - Initiativets egen referanse er ofte Ares-nummeret fra første fase, også etter at forslaget er vedtatt. COM-nummeret står i forslagsfasen.
-- JSON-en navngir saksbehandlerne i Kommisjonen (navn, e-post, telefon). Feltene lagres ikke, og de er fjernet fra testdataene.
+- JSON-en navngir saksbehandlerne i Kommisjonen (navn, e-post, telefon). Feltene legges ikke i databasen eller rapporten, og de er fjernet fra testdataene. HTTP-cachen i `DATA_DIR` beholder de rå svarene, også disse feltene.
 
 **Slik settes fristen for kandidater:**
 1. En kandidat med COM-nummer slås opp. Treff gir initiativet, som bare kobles hvis en av fasene har samme COM-nummer.
