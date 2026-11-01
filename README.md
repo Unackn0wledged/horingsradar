@@ -1,5 +1,7 @@
 # Høringsradar
 
+![Høringsradar: en radar som finner høringer og fargelegger dem etter personvernrelevans](docs/images/horingsradar-radar.png)
+
 Pilot og proof of concept.
 
 Hver morgen henter Høringsradar nye og endrede høringer fra regjeringen.no. En LLM vurderer hvor relevante de er for personvern, med verifiserte sitater og sidehenvisninger. Resultatet blir en PDF-rapport som administratoren videresender manuelt til pilotbrukerne. Et enkelt adminpanel på LAN og Tailscale lar administratoren styre jobbene og følge med.
