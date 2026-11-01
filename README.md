@@ -1,6 +1,6 @@
 # Høringsradar
 
-![Høringsradar: en radar som finner høringer og fargelegger dem etter personvernrelevans](docs/images/horingsradar-radar.png)
+![Høringsradar: en radar som finner høringer og fargelegger dem etter personvernrelevans](docs/images/horingsradar-radar.gif)
 
 Pilot og proof of concept.
 
