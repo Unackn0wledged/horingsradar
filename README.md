@@ -14,7 +14,8 @@ Verktøyet beskriver hva som foreslås og hvor det står. Det skriver aldri hør
 - Plan og beslutninger: [`docs/PLAN.md`](docs/PLAN.md)
 - Installasjon på Proxmox-LXC: [`docs/INSTALL-LXC.md`](docs/INSTALL-LXC.md)
 
-## Kom i gang (utvikling)
+<details>
+<summary><strong>Kom i gang (utvikling)</strong></summary>
 
 ```bash
 uv sync
@@ -28,7 +29,10 @@ PDF-rapporten bruker WeasyPrint, som trenger Pango:
 - **Debian/Ubuntu:** `apt install libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0`
 - **Windows:** installer MSYS2 og kjør `pacman -S mingw-w64-x86_64-pango`. Koden finner `C:\msys64\mingw64\bin` automatisk, ellers settes `WEASYPRINT_DLL_DIRECTORIES`.
 
-## Tilgang utenfra (Tailscale)
+</details>
+
+<details>
+<summary><strong>Tilgang utenfra (Tailscale)</strong></summary>
 
 Adminpanelet lytter bare på adressene i `WEB_BIND`, og det er ingen portvideresending fra internett. Skal panelet nås fra en annen lokasjon, kan Tailscale brukes på to måter:
 
@@ -37,7 +41,10 @@ Adminpanelet lytter bare på adressene i `WEB_BIND`, og det er ingen portvideres
 
 Begrens gjerne hvem i tailnettet som når port 8080 med Tailscale-ACL-er, og bruk aldri `tailscale funnel`, som eksponerer tjenesten mot internett.
 
-## Kommandoer
+</details>
+
+<details>
+<summary><strong>Kommandoer</strong></summary>
 
 | Kommando | Hva den gjør |
 |---|---|
@@ -51,7 +58,10 @@ Begrens gjerne hvem i tailnettet som når port 8080 med Tailscale-ACL-er, og bru
 
 Alle jobber tar en felles fil-lås i `DATA_DIR`. Bare én jobb kan kjøre om gangen, uansett om den startes fra timer, panel eller terminal.
 
-## Hvordan det virker
+</details>
+
+<details>
+<summary><strong>Hvordan det virker</strong></summary>
 
 1. **Discovery.** Listesiden `/no/dokument/hoyringar/id1763/` leses side for side, nyeste først.
    - Første kjøring går 90 dager tilbake, senere kjøringer til forrige kjøring minus 14 dager.
@@ -75,7 +85,10 @@ Alle jobber tar en felles fil-lås i `DATA_DIR`. Bare én jobb kan kjøre om gan
 
 Metadata (tittel, datoer, frist, departement, status og adresseliste) kommer alltid fra HTML-en, aldri fra LLM-en. Ingen høring filtreres bort.
 
-## Struktur
+</details>
+
+<details>
+<summary><strong>Struktur</strong></summary>
 
 ```
 src/horingsradar/
@@ -96,6 +109,11 @@ deploy/                systemd-filer og deploy.sh
 tests/                 pytest med lagrede fixtures fra regjeringen.no
 ```
 
-## Lisenser
+</details>
+
+<details>
+<summary><strong>Lisenser</strong></summary>
 
 Fontene i `src/horingsradar/report/fonts/` er Source Sans 3 (SIL Open Font License). htmx i `src/horingsradar/web/static/` er BSD Zero Clause License.
+
+</details>
