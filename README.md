@@ -15,7 +15,7 @@ Verktøyet beskriver hva som foreslås og hvor det står. Det skriver aldri hør
 - Installasjon på Proxmox-LXC: [`docs/INSTALL-LXC.md`](docs/INSTALL-LXC.md)
 
 <details>
-<summary><strong>Kom i gang (utvikling)</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Kom i gang (utvikling)</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 ```bash
 uv sync
@@ -32,7 +32,7 @@ PDF-rapporten bruker WeasyPrint, som trenger Pango:
 </details>
 
 <details>
-<summary><strong>Tilgang utenfra (Tailscale)</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Tilgang utenfra (Tailscale)</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 Adminpanelet lytter bare på adressene i `WEB_BIND`, og det er ingen portvideresending fra internett. Skal panelet nås fra en annen lokasjon, kan Tailscale brukes på to måter:
 
@@ -44,7 +44,7 @@ Begrens gjerne hvem i tailnettet som når port 8080 med Tailscale-ACL-er, og bru
 </details>
 
 <details>
-<summary><strong>Kommandoer</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Kommandoer</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 | Kommando | Hva den gjør |
 |---|---|
@@ -61,7 +61,7 @@ Alle jobber tar en felles fil-lås i `DATA_DIR`. Bare én jobb kan kjøre om gan
 </details>
 
 <details>
-<summary><strong>Hvordan det virker</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Hvordan det virker</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 1. **Discovery.** Listesiden `/no/dokument/hoyringar/id1763/` leses side for side, nyeste først.
    - Første kjøring går 90 dager tilbake, senere kjøringer til forrige kjøring minus 14 dager.
@@ -88,7 +88,7 @@ Metadata (tittel, datoer, frist, departement, status og adresseliste) kommer all
 </details>
 
 <details>
-<summary><strong>Struktur</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Struktur</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 ```
 src/horingsradar/
@@ -112,7 +112,7 @@ tests/                 pytest med lagrede fixtures fra regjeringen.no
 </details>
 
 <details>
-<summary><strong>Lisenser</strong></summary>
+<summary><table width="100%"><tr><td width="100%"><h2>Lisenser</h2></td><td nowrap><b>Vis&nbsp;▼</b></td></tr></table></summary>
 
 Fontene i `src/horingsradar/report/fonts/` er Source Sans 3 (SIL Open Font License). htmx i `src/horingsradar/web/static/` er BSD Zero Clause License.
 
