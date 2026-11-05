@@ -232,6 +232,7 @@ Have Your Say er Kommisjonens høringsportal. Hvert initiativ har faser med egne
 3. Koblede initiativer hentes på nytt så lenge en fase er åpen eller kommende.
 4. En periode som åpner, eller en frist som flyttes, logges som endring.
 5. Feil eller uventet svar stopper Have Your Say-steget for kjøringen. Resten fullføres, og ingenting gjettes.
+6. Unntak: svarer ett initiativ 404, selv om oppslaget pekte dit, gjelder det bare den saken. En kandidat regnes da som uten treff og slås opp igjen som i punkt 2. Et koblet initiativ beholdes som det var og hentes på nytt neste kjøring. Steget fortsetter med de andre sakene.
 
 Have Your Say endrer aldri hvem som er kandidat eller relevansnivået.
 

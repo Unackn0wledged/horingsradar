@@ -44,6 +44,10 @@ class HaveYourSayUnavailable(Exception):
     """The portal refused or answered unexpectedly; the step stops for this run."""
 
 
+class InitiativeNotFound(HaveYourSayUnavailable):
+    """One initiative answers 404, although the lookup pointed to it. Only that case waits."""
+
+
 @dataclass
 class Publication:
     id: int
@@ -168,7 +172,7 @@ class HaveYourSayClient:
         try:
             data = json.loads(self._get(url))
         except FetchError as exc:
-            raise HaveYourSayUnavailable(f"404: {url}") from exc
+            raise InitiativeNotFound(f"404: {url}") from exc
         except ValueError as exc:
             raise HaveYourSayUnavailable(f"ugyldig JSON: {url}") from exc
         if not isinstance(data, dict):

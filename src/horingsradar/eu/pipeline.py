@@ -508,7 +508,13 @@ def update_hys(
                 continue
             path = client.find(case["com_ref"])
             looked_up += 1
-            init = client.initiative(path) if path else None
+            try:
+                init = client.initiative(path) if path else None
+            except haveyoursay.InitiativeNotFound as exc:
+                # The lookup can point to an initiative the portal does not serve. Treated as
+                # no page, so the case is looked up again like one that was not found.
+                log.warning("%s: Have Your Say %s; not linked", case["com_ref"], exc)
+                init = None
             if init is None or not init.has_com_ref(case["com_ref"]):
                 if init is not None:
                     log.warning(
@@ -550,7 +556,12 @@ def update_hys(
         for row in still_open:
             if row["id"] in fetched:
                 continue
-            changes += _save_initiative(conn, client.initiative(row["path"]))
+            try:
+                init = client.initiative(row["path"])
+            except haveyoursay.InitiativeNotFound as exc:
+                log.warning("Have Your Say %s: %s; kept as it was", row["id"], exc)
+                continue
+            changes += _save_initiative(conn, init)
             fetched.add(row["id"])
             refreshed += 1
     except haveyoursay.HaveYourSayUnavailable as exc:

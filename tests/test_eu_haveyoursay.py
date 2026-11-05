@@ -190,6 +190,41 @@ def test_portal_errors_stop_only_this_step(eu_settings, conn):
     assert case(conn, KIDS)["hys_status"] is None  # looked up again next run
 
 
+class PointsToMissing(dict):
+    """Lookups that all find an initiative; the ones not captured point to one that is gone."""
+
+    def __contains__(self, ref):
+        return True
+
+    def __missing__(self, ref):
+        return "18614-Missing-initiative"
+
+
+def test_an_initiative_that_answers_404_stops_only_its_case(eu_settings, conn):
+    site = EUSite()
+    site.hys.lookups = PointsToMissing(site.hys.lookups)
+    summary = do_run(eu_settings, conn, site)
+    assert "have_your_say" not in summary
+    assert summary["hys_looked_up"] == 14 and summary["hys_new_links"] == 1
+    assert sum(u.endswith("/groupInitiatives/18614") for u in site.hys.requests) == 13
+    assert case(conn, KIDS)["hys_status"] == "found"
+    europol = case(conn, EUROPOL)
+    assert europol["hys_status"] == "not_found" and europol["hys_initiative_id"] is None
+
+
+def test_a_linked_initiative_that_answers_404_is_kept_as_it_was(eu_settings, conn):
+    site = EUSite()
+    do_run(eu_settings, conn, site)
+    del site.hys.groups[19418]
+    site.hys.requests.clear()
+    summary = do_run(eu_settings, conn, site, today=date(2026, 11, 5))
+    assert "have_your_say" not in summary
+    assert summary["hys_looked_up"] == 13 and summary["hys_refreshed"] == 0
+    assert case(conn, KIDS)["hys_initiative_id"] == 19418
+    pub = conn.execute("SELECT * FROM eu_hys_publication WHERE initiative_id = 19418").fetchone()
+    assert (pub["deadline"], pub["status"]) == ("2026-12-03", "OPEN")
+
+
 # -- the report -------------------------------------------------------------------
 
 
