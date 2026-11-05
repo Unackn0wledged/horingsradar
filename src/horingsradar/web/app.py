@@ -38,6 +38,7 @@ from horingsradar.report.build import (
     format_ranges,
     linked_ranges,
     page_link,
+    period_start,
 )
 from horingsradar.web import runner, stats
 from horingsradar.web.auth import check_basic_auth, check_csrf, csrf_token
@@ -46,6 +47,8 @@ HERE = Path(__file__).parent
 FONTS_DIR = HERE.parent / "report" / "fonts"  # same typeface as the PDF report
 RELEVANCE_KEYS = ("hoy", "middels", "lav", "ingen", "feilet", "ikke_vurdert")
 ESTIMATE_MAX_AGE = timedelta(hours=24)
+MAX_PERIOD_WEEKS = 26
+PERIOD_TARGET = 15  # the option preselected on the reports page: the first with this many
 # Sort options on the hearings page: URL value -> label. The first one is the default.
 HEARING_SORTS = {
     "nyeste": "Publisert, nyeste først",
@@ -113,6 +116,24 @@ class AuthMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Cache-Control"] = "no-store"
         return response
+
+
+def period_options(items: list[dict[str, Any]], today: date) -> list[dict[str, Any]]:
+    """The choices for a report of the last N weeks: only those that add hearings, each with how
+    many hearings it holds and how many of them get a full analysis."""
+    options: list[dict[str, Any]] = []
+    for weeks in range(1, MAX_PERIOD_WEEKS + 1):
+        start = period_start(weeks, today).isoformat()
+        shown = [
+            i for i in items if i["published_date"] and start <= i["published_date"] <= str(today)
+        ]
+        if shown and (not options or len(shown) > options[-1]["count"]):
+            detailed = sum(1 for i in shown if i["relevance"] in ("hoy", "middels"))
+            options.append({"weeks": weeks, "count": len(shown), "detailed": detailed})
+    target = next((o for o in options if o["count"] >= PERIOD_TARGET), None)
+    if options:
+        (target or options[-1])["selected"] = True
+    return options
 
 
 def _fmt_ts(value: str | None) -> str:
@@ -369,7 +390,12 @@ def create_app(settings: Settings) -> FastAPI:
     def reports(request: Request):
         with connection() as conn:
             rows = conn.execute("SELECT * FROM report ORDER BY id DESC LIMIT 200").fetchall()
-            return render(request, "reports.html", reports=[dict(r) for r in rows])
+            return render(
+                request,
+                "reports.html",
+                reports=[dict(r) for r in rows],
+                periods=period_options(tracked_hearings(conn), date.today()),
+            )
 
     @app.get("/reports/{report_id}/download")
     def download(report_id: int):
@@ -507,7 +533,17 @@ def create_app(settings: Settings) -> FastAPI:
         data = await require_csrf(request)
         if isinstance(data, Response):
             return data
+        weeks = data.get("weeks", "").strip()
+        if weeks and not (weeks.isdigit() and 1 <= int(weeks) <= MAX_PERIOD_WEEKS):
+            return back("/reports", "Ugyldig antall uker.")
         with connection() as conn:
+            if weeks:
+                return start(
+                    conn,
+                    ["report", "--weeks", weeks],
+                    "/reports",
+                    f"Rapport for siste {weeks} uker",
+                )
             return start(conn, ["report"], "/reports", "Rapportgenerering")
 
     @app.post("/actions/assess/{hearing_id}")

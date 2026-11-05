@@ -21,6 +21,7 @@
           {% if j.args_data.hearing_id %}<div class="small muted">Høring {{ j.args_data.hearing_id }}</div>{% endif %}
           {% if j.args_data.split %}<div class="small muted">{{ "Dev" if j.args_data.split == "dev" else "Test" }}{% if j.args_data.limit %}, {{ j.args_data.limit }} høringer{% endif %}{% if j.args_data.estimate_only %}, estimat{% endif %}</div>{% endif %}
           {% if j.args_data.week %}<div class="small muted">Uke {{ j.args_data.week }}</div>{% endif %}
+          {% if j.args_data.weeks %}<div class="small muted">Siste {{ j.args_data.weeks }} uker</div>{% endif %}
         </td>
         <td class="num nowrap">{{ j.started_at|ts }}</td>
         <td><span class="state state-{{ j.status }}">{{ job_states.get(j.status, j.status) }}</span></td>

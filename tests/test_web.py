@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 
 from horingsradar import db
 from horingsradar.web import runner
-from horingsradar.web.app import create_app
+from horingsradar.web.app import create_app, period_options
 from horingsradar.web.auth import csrf_token, hash_password, verify_password
 
 PASSWORD = "riktig-passord"
@@ -127,6 +127,51 @@ def test_assess_from_hearing_list(web):
     assert web.spawned == [["assess", "3170511"]]
     post(web, "/actions/assess/999")
     assert len(web.spawned) == 1
+
+
+def _published(conn, hearing_id, days_ago):
+    published = (date.today() - timedelta(days=days_ago)).isoformat()
+    conn.execute(
+        "INSERT INTO hearing (id, url, title, tracked, published_date, first_seen)"
+        " VALUES (?, 'u', 'Tittel', 1, ?, ?)",
+        (hearing_id, published, db.now_iso()),
+    )
+
+
+def test_period_choices_show_how_much_each_holds(web):
+    assert "Ingen høringer med publiseringsdato" in web.get("/reports").text
+    for hearing_id, days_ago in ((1, 3), (2, 10), (3, 11), (4, 400)):
+        _published(web.conn, hearing_id, days_ago)
+    text = web.get("/reports").text
+    assert "Siste 1 uke: 1 høring, 0 med full analyse" in text
+    assert "Siste 2 uker: 3 høringer, 0 med full analyse" in text
+    assert "Siste 3 uker" not in text  # adds nothing
+
+
+def test_period_choice_starts_at_the_first_with_enough_hearings():
+    today = date(2026, 10, 14)
+    items = [
+        {"published_date": str(today - timedelta(days=d)), "relevance": rel}
+        for d, rel in [(1, "hoy")] * 5 + [(8, "lav")] * 10 + [(15, "ingen")] * 10
+    ]
+    options = period_options(items, today)
+    assert [(o["weeks"], o["count"], o["detailed"]) for o in options] == [
+        (1, 5, 5),
+        (2, 15, 5),
+        (3, 25, 5),
+    ]
+    assert [o["weeks"] for o in options if o.get("selected")] == [2]
+
+
+def test_period_report_from_the_panel(web):
+    response = post(web, "/actions/report", weeks="6")
+    assert "Rapport for siste 6 uker" in unquote(response.headers["location"])
+    assert web.spawned == [["report", "--weeks", "6"]]
+    post(web, "/actions/report")  # the ordinary button is unchanged
+    assert web.spawned[-1] == ["report"]
+    for bad in ("0", "27", "seks", "-1"):
+        assert "Ugyldig" in unquote(post(web, "/actions/report", weeks=bad).headers["location"])
+    assert len(web.spawned) == 2
 
 
 def _estimate_job(conn, split="dev", limit=None, status="ok"):

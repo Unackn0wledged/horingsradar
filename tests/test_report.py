@@ -132,6 +132,36 @@ def test_week_report_does_not_touch_reported_in(settings, conn):
     )
 
 
+def test_period_report_takes_the_last_weeks_and_touches_nothing(settings, conn):
+    result = build_report(settings, conn, weeks=4, now=NOW)
+    assert result["kind"] == "period" and "siste-4-uker" in result["path"]
+    expected = conn.execute(
+        "SELECT COUNT(*) FROM hearing WHERE tracked = 1"
+        " AND published_date BETWEEN '2026-09-16' AND '2026-10-14'"
+    ).fetchone()[0]
+    assert result["hearings"] == expected > 0
+    assert result["upcoming"] == 0 and result["deadline_changes"] == 0
+    assert "Siste 4 uker (16.09.2026–14.10.2026)" in pdf_text(result["path"])
+    assert (
+        conn.execute("SELECT COUNT(*) FROM hearing WHERE reported_in IS NOT NULL").fetchone()[0]
+        == 0
+    )
+    assert conn.execute("SELECT COUNT(*) FROM report_item").fetchone()[0] == 0
+
+
+def test_period_report_does_not_change_the_next_operational_report(settings, conn):
+    first = build_report(settings, conn, now=NOW)
+    assert first["kind"] == "drift" and first["hearings"] > 0
+    # Shown before, but a period report takes everything published in the period again.
+    period = build_report(settings, conn, weeks=4, now=NOW)
+    assert period["hearings"] > 0
+    reported = conn.execute(
+        "SELECT id, reported_in FROM hearing WHERE reported_in IS NOT NULL ORDER BY id"
+    ).fetchall()
+    assert {r["reported_in"] for r in reported} == {first["report_id"]}
+    assert build_report(settings, conn, now=NOW)["hearings"] == 0
+
+
 def test_failed_assessment_is_listed_not_hidden(settings):
     c = db.connect(settings.db_path)
     llm = FakeLLM(default=by_hearing({3170511: "not json"}, output("ingen", reading_guide=[])))

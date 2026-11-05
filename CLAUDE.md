@@ -32,7 +32,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - `uv run ruff check . && uv run ruff format .`
 - `uv run horingsradar run` – hent nye og endrede høringer og vurder dem
 - `uv run horingsradar assess <id>` – vurder én høring på nytt (prompt-iterasjon)
-- `uv run horingsradar report` – PDF for alle høringer som ikke er rapportert før
+- `uv run horingsradar report` – PDF for alle høringer som ikke er rapportert før. `--weeks N` tar med de siste N ukene og endrer ikke hva som regnes som rapportert
 - `uv run horingsradar backtest --split dev|test` – kun manuelt; viser kostnadsestimat og krever bekreftelse
 - `uv run horingsradar web` – start adminpanelet lokalt
 - `uv run horingsradar-eu run [--no-assess]|assess <sak>|report|status|pause|resume|web` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`). `horingsradar-eu hash-password` lager passord-hash til EU-panelet.

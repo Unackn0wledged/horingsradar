@@ -84,6 +84,7 @@ docs/INSTALL-LXC.md  installasjonsguide for Proxmox-LXC
 6. **Rapport**:
    - Uten argumenter tas alle høringer med `tracked=1` som ikke er rapportert, pluss de som er vurdert på nytt siden.
    - `--week YYYY-Www` regenererer uken etter publiseringsdato og endrer ikke `reported_in`.
+   - `--weeks N` lager en rapport av høringene publisert de siste N ukene, også fra panelet, og endrer heller ikke `reported_in`.
    - Fem seksjoner som i SPEC. Fonter (Source Sans 3, OFL) ligger i repoet.
 7. **Jobber og panel**:
    - Felles fil-lås og `job`-tabell. `run --triggered-by timer` blir `skipped` ved pause eller tatt lås.
