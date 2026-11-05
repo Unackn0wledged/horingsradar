@@ -173,6 +173,7 @@ def create_app(settings: Settings) -> FastAPI:
         loads=db.loads,
         page_link=page_link,
         linked_ranges=linked_ranges,
+        other_panel_url=settings.other_panel_url,
         job_states={
             "ok": "Ferdig",
             "running": "Kjører",

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Status{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Status</h1>
+    <p class="lede">Forslag fra Europakommisjonen, sortert etter hvor mye de berører personvern.</p>
+  </div>
+  <div class="actions">
+    <form method="post" action="/actions/run" onsubmit="return confirm('Starte en kjøring nå? Nye kandidater vurderes og koster API-tokens.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn" type="submit" {{ 'disabled' if current }}>Kjør nå</button>
+    </form>
+    <form method="post" action="/actions/run">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="no_assess" value="1">
+      <button class="btn quiet" type="submit" {{ 'disabled' if current }}>Kjør uten vurdering</button>
+    </form>
+    <form method="post" action="/actions/report">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button class="btn quiet" type="submit" {{ 'disabled' if current }}>Generer rapport</button>
+    </form>
+  </div>
+</div>
+
+<section class="sheet" aria-labelledby="radar-heading">
+  <h2 id="radar-heading">Kandidater</h2>
+  {% if radar %}
+  <div class="radar">
+    {% for seg in radar %}
+    <a class="r-{{ seg.key }}" style="--n: {{ seg.count }}" href="/cases?relevans={{ seg.key }}" aria-label="{{ seg.count }} med {{ relevance_labels.get(seg.key, seg.key)|lower }} relevans">
+      <span class="count">{{ seg.count }}</span>
+      <span class="label">{{ relevance_labels.get(seg.key, seg.key) }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  <p class="radar-caption">{{ candidates }} kandidater av {{ counts.cases }} forslag; {{ counts.filtered_out }} er <a href="/filtered">filtrert bort uten LLM</a>. Velg et nivå for å se sakene.</p>
+  {% else %}
+  <p class="empty">Ingen forslag er hentet ennå. Start en kjøring for å hente forslag fra EUR-Lex.</p>
+  {% endif %}
+</section>
+
+{% include "partials/status.html" %}
+
+<section class="sheet" aria-labelledby="log-heading">
+  <div class="page-head" style="margin-bottom: 12px">
+    <h2 id="log-heading" style="margin: 0">Logg fra siste jobb</h2>
+    {% if last_job %}
+    <span class="meta" style="margin: 0">
+      <span>{{ job_kinds.get(last_job.kind, last_job.kind) }}, {{ last_job.started_at|ts }}</span>
+      <span class="state state-{{ last_job.status }}">{{ job_states.get(last_job.status, last_job.status) }}</span>
+      <a href="/jobs/{{ last_job.id }}/log">Hele loggen</a>
+    </span>
+    {% endif %}
+  </div>
+  {% if log_tail %}<pre class="log">{{ log_tail }}</pre>{% else %}<p class="empty">Ingen logg ennå.</p>{% endif %}
+</section>
+{% endblock %}

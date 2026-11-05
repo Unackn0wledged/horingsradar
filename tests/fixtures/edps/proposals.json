@@ -1,0 +1,186 @@
+{
+ "head": {
+  "link": [],
+  "vars": [
+   "work",
+   "celex",
+   "type",
+   "date",
+   "title",
+   "eea",
+   "modified",
+   "prefix",
+   "year",
+   "number",
+   "eurovoc"
+  ]
+ },
+ "results": {
+  "distinct": false,
+  "ordered": true,
+  "bindings": [
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/6e73e2db-5f40-11f1-aa6d-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0502"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-06-03"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL establishing a framework of measures for strengthening Europe\u2019s cloud and AI ecosystem (Cloud and AI Development Act)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-16T16:46:02.932+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "502"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1347 http://eurovoc.europa.eu/1439 http://eurovoc.europa.eu/2602 http://eurovoc.europa.eu/3030 http://eurovoc.europa.eu/45 http://eurovoc.europa.eu/5355 http://eurovoc.europa.eu/5674 http://eurovoc.europa.eu/664 http://eurovoc.europa.eu/830 http://eurovoc.europa.eu/c_433922a6"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/177bc109-708a-11f1-9800-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0570"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-06-24"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the European Union Agency for Criminal Justice Cooperation (Eurojust) and repealing Regulation (EU) 2018/1727"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-09T10:24:27.298+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "570"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1708 http://eurovoc.europa.eu/226 http://eurovoc.europa.eu/5640 http://eurovoc.europa.eu/6723"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/de018274-7088-11f1-9800-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0580"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-06-24"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the European Union Agency for Law Enforcement Cooperation (Europol), amending Regulation (EU)\u00a02018/1726 and Regulation (EU)\u00a02024/982, and repealing Regulation (EU) 2016/794"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-11T09:43:18.341+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "580"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1708 http://eurovoc.europa.eu/4452 http://eurovoc.europa.eu/5551 http://eurovoc.europa.eu/5630 http://eurovoc.europa.eu/5640"
+    }
+   }
+  ]
+ }
+}

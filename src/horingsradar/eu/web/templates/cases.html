@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Saker{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Saker</h1>
+    <p class="lede">
+      {% if matched != total %}Viser {{ matched }} av {{ total }} kandidater.{% else %}{{ total }} kandidater. Relevansen er fra siste vurdering.{% endif %}
+    </p>
+  </div>
+</div>
+
+<div class="filters">
+  <nav class="chips" aria-label="Filtrer på relevans">
+    <a class="chip" href="{{ link(relevans='') }}"{% if not relevance %} aria-current="true"{% endif %}>Alle <span class="num">{{ total }}</span></a>
+    {% for c in counts if c.count %}
+    <a class="chip" href="{{ link(relevans=c.key) }}"{% if relevance == c.key %} aria-current="true"{% endif %}>
+      <span class="rel rel-{{ c.key }}">{{ relevance_labels.get(c.key, c.key) }}</span> <span class="num">{{ c.count }}</span>
+    </a>
+    {% endfor %}
+  </nav>
+  <nav class="chips" aria-label="Andre filtre">
+    {% for key, label in eea_filters.items() %}
+    <a class="chip" href="{{ link(eos='' if eea == key else key) }}"{% if eea == key %} aria-current="true"{% endif %}>{{ label }}</a>
+    {% endfor %}
+    <a class="chip" href="{{ link(edps='' if edps else '1') }}"{% if edps %} aria-current="true"{% endif %}>EDPS-uttalelse</a>
+    <a class="chip" href="{{ link(frist='' if open_only else '1') }}"{% if open_only %} aria-current="true"{% endif %}>Åpen frist på Have Your Say</a>
+  </nav>
+  <form id="case-filter" class="search" method="get" action="/cases" role="search">
+    {% for key, value in [("relevans", relevance), ("eos", eea), ("edps", "1" if edps else ""), ("frist", "1" if open_only else "")] if value %}
+    <input type="hidden" name="{{ key }}" value="{{ value }}">
+    {% endfor %}
+    <div>
+      <label for="q">Søk i tittel, COM-nummer, CELEX eller prosedyre</label>
+      <input id="q" name="q" type="search" value="{{ query }}" placeholder="for eksempel Europol">
+    </div>
+    <button class="btn quiet" type="submit">Søk</button>
+  </form>
+  <div class="sort">
+    <label for="sorter">Sorter</label>
+    <select id="sorter" name="sorter" form="case-filter" onchange="this.form.submit()">
+      {% for key, label in sorts.items() %}
+      <option value="{{ key }}"{% if key == sort %} selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+{% if cases %}
+<ul class="hearing-list">
+  {% for c in cases %}
+  <li class="hearing-row">
+    <span class="rail rel-{{ c.relevance }}" aria-hidden="true"></span>
+    <div class="body">
+      <a class="title" href="/cases/{{ c.id }}">{{ c.title }}</a>
+      <div class="meta">
+        <span class="rel rel-{{ c.relevance }}">{{ relevance_labels.get(c.relevance, c.relevance) }}</span>
+        <span>{{ c.com_ref or c.celex }}</span>
+        <span>Forslag <span class="date">{{ c.date_document|d }}</span></span>
+        <span>{{ c.eea_label }}</span>
+        {% if c.edps %}<span><strong>EDPS</strong></span>{% endif %}
+        {% if c.oeil_status %}<span>Parlamentet: {{ oeil_status_label(c.oeil_status) }}</span>{% endif %}
+        <a href="{{ eurlex_url(c.celex) }}" target="_blank" rel="noopener">EUR-Lex</a>
+      </div>
+    </div>
+    <div class="due">
+      {% if c.deadline %}
+      <div class="days"><span>Tilbakemelding til {{ c.deadline|d }}</span></div>
+      {% endif %}
+      <form method="post" action="/actions/assess/{{ c.id }}" onsubmit="return confirm('Vurdere saken på nytt? Det koster API-tokens.');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn quiet small" type="submit">Vurder på nytt</button>
+      </form>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% elif total %}
+<p class="empty">Ingen saker passer filteret. <a href="/cases">Vis alle</a>.</p>
+{% else %}
+<p class="empty">Ingen kandidater ennå. Start en kjøring fra <a href="/">statussiden</a>.</p>
+{% endif %}
+{% endblock %}

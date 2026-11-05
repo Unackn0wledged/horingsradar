@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Statistikk{% endblock %}
+{% block content %}
+{% set c = s.counts %}
+<div class="page-head">
+  <div>
+    <h1>Statistikk</h1>
+    <p class="lede">Tall per kilde: hva som ble hentet, hva forfilteret slapp gjennom, hva som ble vurdert, og hva det koster.</p>
+  </div>
+</div>
+
+<div class="split">
+  <section class="sheet" aria-labelledby="eurlex-heading">
+    <h2 id="eurlex-heading">EUR-Lex og forfilteret</h2>
+    <dl class="facts">
+      <dt>Forslag hentet</dt><dd><span class="figure">{{ c.cases }}</span></dd>
+      <dt>Kandidater</dt><dd><a href="/cases"><span class="num">{{ c.candidates }}</span></a></dd>
+      <dt>Filtrert bort uten LLM</dt><dd><a href="/filtered"><span class="num">{{ c.filtered_out }}</span></a></dd>
+      <dt>Uten EuroVoc-emner ennå</dt><dd class="num">{{ c.not_indexed }}</dd>
+      <dt>Kandidat på grunn av</dt>
+      <dd class="small">EuroVoc-emne: <span class="num">{{ s.reasons.eurovoc }}</span> · nøkkelord i tittelen: <span class="num">{{ s.reasons.keywords }}</span> · bare EDPS-uttalelse: <span class="num">{{ s.reasons.edps_only }}</span><div class="muted">En sak kan ha både EuroVoc-emne og nøkkelord.</div></dd>
+    </dl>
+  </section>
+
+  <section class="sheet" aria-labelledby="llm-heading">
+    <h2 id="llm-heading">Vurdering</h2>
+    <dl class="facts">
+      <dt>Kandidater vurdert</dt><dd><span class="figure">{{ c.cases_assessed }}</span><div class="small muted">{{ c.waiting }} venter på vurdering</div></dd>
+      <dt>Relevans</dt><dd class="small">{% for level in ("hoy", "middels", "lav", "ingen") %}<a class="rel rel-{{ level }}" href="/cases?relevans={{ level }}">{{ relevance_labels[level] }} {{ c[level] }}</a> {% endfor %}</dd>
+      <dt>Vurderinger</dt><dd class="num">{{ s.assessments.ok }} ok, {{ s.assessments.failed }} feilet</dd>
+      <dt>Hevet av EDPS-regelen</dt><dd class="num">{{ s.edps_raised }}</dd>
+      <dt>Kostnad (est.)</dt><dd><span class="figure">${{ "%.2f"|format(s.total_cost) }}</span><div class="small muted">siste 24 måneder</div></dd>
+      <dt>Modell og prompt</dt><dd class="small">{% for m in s.models %}{{ m.model }}, prompt {{ m.prompt_version }} ({{ m.n }}){% if not loop.last %}<br>{% endif %}{% else %}–{% endfor %}</dd>
+    </dl>
+  </section>
+</div>
+
+<div class="split" style="margin-top: 18px">
+  <section class="sheet" aria-labelledby="eea-heading">
+    <h2 id="eea-heading">EØS-status (EEA-Lex)</h2>
+    <dl class="facts">
+      {% for e in s.eea %}<dt>{{ eea_labels.get(e.status, "Ikke sjekket") if e.status else "Ikke sjekket" }}</dt><dd class="num">{{ e.n }}</dd>{% else %}<dt>Ingen kandidater</dt><dd>–</dd>{% endfor %}
+    </dl>
+  </section>
+
+  <section class="sheet" aria-labelledby="sources-heading">
+    <h2 id="sources-heading">Have Your Say, EDPS og OEIL</h2>
+    <dl class="facts">
+      <dt>Have Your Say</dt><dd class="small"><span class="num">{{ c.hys_linked }}</span> kandidater med side, <a href="/cases?frist=1"><span class="num">{{ c.hys_open }}</span> åpne for tilbakemelding</a></dd>
+      <dt>EDPS (Rådets dokumenter)</dt><dd class="small"><span class="num">{{ s.edps_notes }}</span> dokumenter, koblet på prosedyre <span class="num">{{ s.edps_links.procedure }}</span> og på tittel <span class="num">{{ s.edps_links.title }}</span>; <a href="/cases?edps=1"><span class="num">{{ c.edps_cases }}</span> kandidater</a><div class="muted">Listen er ikke fullstendig.</div></dd>
+      <dt>Europaparlamentet (OEIL)</dt>
+      <dd class="small">{% for o in s.oeil_status %}{{ o.label }}: <span class="num">{{ o.n }}</span><br>{% endfor %}Ikke i OEIL ennå: <span class="num">{{ s.oeil_missing }}</span><div class="muted">Bare høy, middels og ikke vurdert slås opp.</div></dd>
+    </dl>
+  </section>
+</div>
+
+<section class="sheet" style="margin-top: 18px" aria-labelledby="runs-heading">
+  <h2 id="runs-heading">Siste kjøringer</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Startet</th><th>Status</th><th class="num">Hentet</th><th class="num opt">Nye</th><th class="num">Nye kandidater</th><th class="num opt">Vurdert</th><th class="num opt">HTTP-kall</th><th class="num opt">Minutter</th></tr></thead>
+      <tbody>
+      {% for r in s.runs %}{% set rs = r.summary_data %}
+        <tr>
+          <td class="num nowrap"><a href="/jobs/{{ r.id }}/log">{{ r.started_at|ts }}</a></td>
+          <td><span class="state state-{{ r.status }}">{{ job_states.get(r.status, r.status) }}</span></td>
+          <td class="num">{{ rs.fetched if rs.fetched is defined else "–" }}</td>
+          <td class="num opt">{{ rs.new if rs.new is defined else "–" }}</td>
+          <td class="num">{{ rs.new_candidates if rs.new_candidates is defined else "–" }}</td>
+          <td class="num opt">{{ rs.assessed or 0 }}</td>
+          <td class="num opt">{{ rs.http_requests if rs.http_requests is defined else "–" }}</td>
+          <td class="num opt">{{ r.minutes if r.minutes is not none else "–" }}</td>
+        </tr>
+      {% else %}<tr><td colspan="8" class="empty">Ingen kjøringer ennå.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sheet" style="margin-top: 18px" aria-labelledby="usage-heading">
+  <h2 id="usage-heading">API-forbruk per måned</h2>
+  <p class="small muted">Tokens fra API-svarene. Kostnaden er beregnet med prisene i EU-instansens .env da vurderingen ble gjort. Vurderinger som EDPS-regelen har laget, koster ingenting.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Måned</th><th class="num">Kostnad (est.)</th><th class="num opt">Vurderinger</th><th class="num">Tokens inn</th><th class="num opt">Tokens ut</th></tr></thead>
+      <tbody>
+      {% for u in s.usage %}
+        <tr><td class="num">{{ u.month }}</td><td class="num">${{ "%.2f"|format(u.cost) }}</td><td class="num opt">{{ u.assessments }}</td><td class="num">{{ u.input_tokens|num }}</td><td class="num opt">{{ u.output_tokens|num }}</td></tr>
+      {% else %}<tr><td colspan="5" class="empty">Ingen forbruk ennå.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

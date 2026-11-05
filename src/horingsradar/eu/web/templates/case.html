@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ case.com_ref or case.celex }}{% endblock %}
+{% block content %}
+{% set a = v.assessment %}
+<a class="back" href="/cases">Alle saker</a>
+<div class="page-head">
+  <div>
+    <h1 class="long">{{ case.title }}</h1>
+    <p class="meta">
+      <span class="rel rel-{{ v.relevance }}">{{ v.relevance_label }}</span>
+      {% if v.edps_rule %}<span>{{ v.edps_rule }}</span>{% endif %}
+      <span>{{ v.reference }}</span>
+      <span>Forslag <span class="date">{{ case.date_document|d }}</span></span>
+      {% if v.edps %}<span><strong>EDPS</strong></span>{% endif %}
+      <a href="{{ v.eurlex_url }}" target="_blank" rel="noopener">Åpne i EUR-Lex</a>
+    </p>
+  </div>
+  <div class="actions">
+    {% if case.candidate %}
+    <form method="post" action="/actions/assess/{{ case.id }}" onsubmit="return confirm('Vurdere saken på nytt? Det koster API-tokens.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <button type="submit" class="btn quiet">Vurder på nytt</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="split">
+  <section class="sheet" aria-labelledby="assessment-heading">
+    <h2 id="assessment-heading">Vurdering</h2>
+    {% if not case.candidate %}
+      <p class="empty">Ikke kandidat: forfilteret slapp ikke forslaget gjennom, så det er ikke vurdert.</p>
+    {% elif not a %}
+      <p class="empty">{{ v.not_assessed_reason }}</p>
+    {% elif a.status != 'ok' %}
+      <div class="alert">Vurderingen feilet: {{ a.error }}</div>
+    {% else %}
+      <h3 style="margin-top: 0">Hva foreslås</h3>
+      <p class="prose">{{ a.summary }}</p>
+      <h3>Begrunnelse for relevansnivå</h3>
+      <p class="prose">{{ a.relevance_reason }}</p>
+      {% if v.document and v.document.memo_first_page %}
+      <p class="small muted">Begrunnelsen står på <a href="{{ v.page_href(v.document.memo_first_page) }}" target="_blank" rel="noopener">s. {{ v.document.memo_first_page }}–{{ v.document.memo_last_page }}</a> av {{ v.document.page_count }} i den engelske PDF-en.</p>
+      {% endif %}
+    {% endif %}
+  </section>
+
+  <section class="sheet" aria-labelledby="facts-heading">
+    <h2 id="facts-heading">Fra kildene</h2>
+    <dl class="facts">
+      <dt>Referanse</dt><dd>{{ v.reference }} · CELEX {{ case.celex }}</dd>
+      <dt>Type</dt><dd>{{ v.doc_type }}</dd>
+      <dt>Prosedyre</dt><dd>{{ v.procedure }}</dd>
+      <dt>Forfilter</dt>
+      <dd>{% if not case.candidate %}Ikke kandidat{% else %}
+        {% if reasons.eurovoc %}EuroVoc-emner{% endif %}{% if reasons.keywords %}{% if reasons.eurovoc %}, {% endif %}nøkkelord: {{ reasons.keywords|join(", ") }}{% endif %}{% if reasons.edps %}{% if reasons.eurovoc or reasons.keywords %}, {% endif %}EDPS-uttalelse{% endif %}
+      {% endif %}</dd>
+      <dt>EuroVoc</dt><dd>{{ v.eurovoc|join(", ") if v.eurovoc else "–" }}</dd>
+      <dt>EØS-status</dt><dd>{% if v.eea_url %}<a href="{{ v.eea_url }}" target="_blank" rel="noopener">{{ v.eea_label }}</a>{% else %}{{ v.eea_label }}{% endif %}{% if v.eea_derived %} <span class="muted">(utledet)</span>{% endif %}{% if v.eea_areas %}<div class="small muted">{{ v.eea_areas|join(" · ") }}</div>{% endif %}</dd>
+      <dt>Have Your Say</dt><dd>{% if v.hys %}{{ v.feedback|join("; ") }} · <a href="{{ hys_url }}" target="_blank" rel="noopener">Åpne</a>{% elif case.hys_status == "not_found" %}Ingen side funnet ennå{% else %}–{% endif %}</dd>
+      <dt>EDPS</dt><dd>{% for n in v.edps %}{% if n.url %}<a href="{{ n.url }}" target="_blank" rel="noopener">{{ n.doc }}</a>{% else %}{{ n.doc or "Rådets dokument" }}{% endif %} ({{ n.date|d }}{% if n.method == "title" %}, koblet på tittel{% endif %}){% if not loop.last %}<br>{% endif %}{% else %}Ingen funnet (listen er ikke fullstendig){% endfor %}</dd>
+      <dt>Europaparlamentet</dt><dd>{% if v.oeil_url %}<a href="{{ v.oeil_url }}" target="_blank" rel="noopener">{{ case.oeil_title or case.oeil_ref }}</a>: {% endif %}{{ v.parliament or "Ikke slått opp" }}</dd>
+      <dt>Først sett</dt><dd class="num">{{ case.first_seen|ts }}</dd>
+    </dl>
+  </section>
+</div>
+
+{% if a and a.status == 'ok' %}
+<section class="sheet" style="margin-top: 18px" aria-labelledby="findings-heading">
+  <h2 id="findings-heading">Funn ({{ v.findings|length }})</h2>
+  {% for f in v.findings %}
+  <article class="finding{% if not f.quote_verified %} unverified{% endif %}">
+    <div class="where">
+      <strong>{{ category_labels.get(f.category, f.category) }}</strong><br>
+      {% if f.chapter %}{{ f.chapter }}, {% endif %}{% if f.page_href %}<a href="{{ f.page_href }}" target="_blank" rel="noopener">s. {{ f.page }}</a>{% else %}s. {{ f.page }}{% endif %}{% if f.page_stated and f.page_stated != f.page %} <span class="muted">(modellen oppga s. {{ f.page_stated }})</span>{% endif %}
+    </div>
+    <p class="prose" style="margin: 6px 0 0">{{ f.description }}</p>
+    <blockquote class="quote" style="margin-left: 0">«{{ f.quote }}»</blockquote>
+    {% if f.quote_verified %}<span class="verdict ok">Sitatet er funnet i begrunnelsen ({{ f.match_score }} % samsvar)</span>{% else %}<span class="verdict bad">Ikke verifisert: sitatet ble ikke funnet ({{ f.match_score }} % samsvar). Kontroller mot kilden.</span>{% endif %}
+  </article>
+  {% else %}<p class="empty">Ingen funn.</p>{% endfor %}
+  {% if v.notes %}<h3>Merknader</h3><ul class="small">{% for n in v.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+</section>
+{% else %}<div style="height: 18px"></div>{% endif %}
+
+<section class="sheet" aria-labelledby="history-heading">
+  <h2 id="history-heading">Vurderingshistorikk</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tidspunkt</th><th>Relevans</th><th class="opt">Modellen</th><th class="opt">Modell og prompt</th><th class="num opt">Tokens inn og ut</th><th class="num">Kostnad</th></tr></thead>
+      <tbody>
+      {% for h in assessments %}
+        {% set hrel = h.relevance if h.status == 'ok' else 'feilet' %}
+        <tr>
+          <td class="num nowrap">{{ h.created_at|ts }}</td>
+          <td><span class="rel rel-{{ hrel }}">{{ relevance_labels.get(hrel, hrel) }}</span>{% if h.rule %} <span class="small muted">({{ h.rule|upper }}-regelen)</span>{% endif %}</td>
+          <td class="opt small">{{ relevance_labels.get(h.llm_relevance, h.llm_relevance or "–") }}</td>
+          <td class="opt small">{{ h.model }}, prompt {{ h.prompt_version }}</td>
+          <td class="num opt">{{ h.input_tokens|num }} / {{ h.output_tokens|num }}</td>
+          <td class="num">${{ "%.3f"|format(h.cost_estimate or 0) }}</td>
+        </tr>
+      {% else %}<tr><td colspan="6" class="empty">Ingen vurderinger.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="split" style="margin-top: 18px">
+  <section class="sheet" aria-labelledby="changes-heading">
+    <h2 id="changes-heading">Endringer</h2>
+    {% if changes %}
+    <ul class="small">
+      {% for c in changes %}<li><span class="num">{{ c.detected_at|ts }}</span>: {{ c.kind }}{% if c.old_value %} {{ c.old_value }} →{% endif %} {{ c.new_value or "" }}</li>{% endfor %}
+    </ul>
+    {% else %}<p class="empty">Ingen endringer siden saken ble hentet.</p>{% endif %}
+  </section>
+
+  <section class="sheet" aria-labelledby="sources-heading">
+    <h2 id="sources-heading">Kilder og hendelser</h2>
+    <ul class="small">
+      {% for s in sources %}<li>{{ s.source }}: {% if s.url %}<a href="{{ s.url }}" target="_blank" rel="noopener">{{ s.source_id }}</a>{% else %}{{ s.source_id }}{% endif %}</li>{% endfor %}
+    </ul>
+    {% if oeil_events %}
+    <h3>Hovedhendelser i Parlamentet</h3>
+    <ul class="small">{% for e in oeil_events %}<li><span class="date">{{ e.date|d }}</span>: {{ e.event }}{% if e.reference %} ({{ e.reference }}){% endif %}</li>{% endfor %}</ul>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

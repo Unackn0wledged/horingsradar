@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Jobber og logg{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Jobber og logg</h1>
+    <p class="lede">De siste 100 jobbene i EU-instansen, uansett om de ble startet fra timeren, panelet eller terminalen.</p>
+  </div>
+</div>
+
+{% if jobs %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Jobb</th><th>Startet</th><th>Status</th><th class="opt">Fra</th><th class="opt">Resultat</th><th><span class="sr-only">Logg</span></th></tr></thead>
+    <tbody>
+    {% for j in jobs %}
+      {% set s = j.summary_data %}
+      <tr>
+        <td>
+          <strong>{{ job_kinds.get(j.kind, j.kind) }}</strong>
+          {% if j.args_data.case %}<div class="small muted">Sak {{ j.args_data.case }}</div>{% endif %}
+          {% if j.args_data.no_assess %}<div class="small muted">Uten vurdering</div>{% endif %}
+        </td>
+        <td class="num nowrap">{{ j.started_at|ts }}</td>
+        <td><span class="state state-{{ j.status }}">{{ job_states.get(j.status, j.status) }}</span></td>
+        <td class="opt small">{{ triggers.get(j.triggered_by, j.triggered_by) }}</td>
+        <td class="opt small">
+          {% if s.reason %}Hoppet over: {{ skip_reasons.get(s.reason, s.reason) }}
+          {% elif s.error %}<span class="muted">{{ s.error }}</span>
+          {% elif j.kind == "run" and s.fetched is defined %}{{ s.fetched }} hentet, {{ s.new_candidates or 0 }} nye kandidater, {{ s.assessed or 0 }} vurdert
+          {% elif j.kind == "report" and s.cases is defined %}{{ s.cases }} saker
+          {% elif j.kind == "assess" and s.relevance %}{{ s.case }}: {{ relevance_labels.get(s.relevance, s.relevance) }}
+          {% endif %}
+        </td>
+        <td class="num">{% if j.log_path %}<a href="/jobs/{{ j.id }}/log">Logg</a>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="empty">Ingen jobber ennå.</p>
+{% endif %}
+{% endblock %}

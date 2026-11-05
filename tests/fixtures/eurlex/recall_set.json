@@ -1,0 +1,367 @@
+{
+ "head": {
+  "link": [],
+  "vars": [
+   "work",
+   "celex",
+   "type",
+   "date",
+   "title",
+   "eea",
+   "modified",
+   "prefix",
+   "year",
+   "number",
+   "eurovoc"
+  ]
+ },
+ "results": {
+  "distinct": false,
+  "ordered": true,
+  "bindings": [
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/be0b5038-3fa8-11eb-b27b-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52020PC0823"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DIR"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2020-12-16"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2022-12-27T12:32:11.070+01:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2020"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "823"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/3027 http://eurovoc.europa.eu/3453 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/c_04ae3ba8 http://eurovoc.europa.eu/c_406ad4cc http://eurovoc.europa.eu/c_57f3c49f"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/e0649735-a372-11eb-9585-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52021PC0206"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2021-04-21"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2024-07-12T09:58:40.670+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2021"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "206"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1439 http://eurovoc.europa.eu/3030 http://eurovoc.europa.eu/3636 http://eurovoc.europa.eu/4347 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5451 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/5726 http://eurovoc.europa.eu/7219 http://eurovoc.europa.eu/7410"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5d88943a-c458-11eb-a925-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52021PC0281"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2021-06-03"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2024-04-30T13:53:19.751+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2021"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "281"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/2602 http://eurovoc.europa.eu/3027 http://eurovoc.europa.eu/4488 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/6370 http://eurovoc.europa.eu/7219 http://eurovoc.europa.eu/c_04ae3ba8 http://eurovoc.europa.eu/c_6f7bbe63"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/2c5d30ae-961f-11ec-b4e4-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52022PC0068"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2022-02-23"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2023-12-22T11:17:15.161+01:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2022"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "68"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/3024 http://eurovoc.europa.eu/3028 http://eurovoc.europa.eu/3648 http://eurovoc.europa.eu/4502 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5334 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/6030 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/7219 http://eurovoc.europa.eu/c_6f7bbe63"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/dbfd8974-cb79-11ec-b6f4-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52022PC0197"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2022-05-03"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2025-03-05T09:32:16.761+01:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2022"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "197"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/226 http://eurovoc.europa.eu/2828 http://eurovoc.europa.eu/3011 http://eurovoc.europa.eu/3370 http://eurovoc.europa.eu/3885 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/5921 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_31da5694"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/13e33abf-d209-11ec-a95f-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52022PC0209"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2022-05-11"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2022-07-18T18:22:22.388+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2022"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "209"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1708 http://eurovoc.europa.eu/2828 http://eurovoc.europa.eu/3919 http://eurovoc.europa.eu/4727 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5550 http://eurovoc.europa.eu/6088 http://eurovoc.europa.eu/6132 http://eurovoc.europa.eu/6553 http://eurovoc.europa.eu/758"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/864f472b-34e9-11ed-9c68-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52022PC0454"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2022-09-15"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2024-11-20T08:59:23.549+01:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2022"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "454"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1696 http://eurovoc.europa.eu/3027 http://eurovoc.europa.eu/3299 http://eurovoc.europa.eu/4347 http://eurovoc.europa.eu/5451 http://eurovoc.europa.eu/5613 http://eurovoc.europa.eu/5726 http://eurovoc.europa.eu/7219 http://eurovoc.europa.eu/c_04ae3ba8 http://eurovoc.europa.eu/c_4e75f061"
+    }
+   }
+  ]
+ }
+}

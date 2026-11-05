@@ -1,0 +1,2184 @@
+{
+ "head": {
+  "link": [],
+  "vars": [
+   "work",
+   "celex",
+   "type",
+   "date",
+   "title",
+   "eea",
+   "modified",
+   "prefix",
+   "year",
+   "number",
+   "eurovoc"
+  ]
+ },
+ "results": {
+  "distinct": false,
+  "ordered": true,
+  "bindings": [
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/e5504f2e-aaa4-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0442"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the signing and provisional application of the Agreement between the European Union and the Republic of San Marino on several aspects in the field of border management"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-08T07:10:17.507+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "442"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1633 http://eurovoc.europa.eu/3466 http://eurovoc.europa.eu/3814 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/4004 http://eurovoc.europa.eu/5407 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5649"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/f284e819-aaa8-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0443"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the conclusion of the Agreement between the European Union and the Republic of San Marino on several aspects in the field of border management"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-08T07:10:38.477+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "443"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1633 http://eurovoc.europa.eu/2901 http://eurovoc.europa.eu/3814 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/4004 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5649"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/c9cbeac1-aab6-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0444"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the conclusion of the Agreement between the European Union and the Principality of Andorra on several aspects in the field of border management"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-08T08:33:17.507+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "444"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1633 http://eurovoc.europa.eu/1874 http://eurovoc.europa.eu/2901 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/4004 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5649"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/38180043-aab7-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0445"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the signing and provisional application of the Agreement between the European Union and the Principality of Andorra on several aspects in the field of border management"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-08T08:36:17.568+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "445"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1633 http://eurovoc.europa.eu/1874 http://eurovoc.europa.eu/3466 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/4004 http://eurovoc.europa.eu/5407 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5649"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/9a2f06a0-aa98-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0448"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union on the amendments to the Annexes to the Agreement concerning the International Carriage of Dangerous Goods by Road (ADR) and to the Annexed Regulations to the European Agreement concerning the International Carriage of Dangerous Goods by Inland Waterways (ADN)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-02T09:36:18.300+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "448"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1195 http://eurovoc.europa.eu/2457 http://eurovoc.europa.eu/3681 http://eurovoc.europa.eu/3700 http://eurovoc.europa.eu/4033 http://eurovoc.europa.eu/4519 http://eurovoc.europa.eu/5870"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/d1f73d73-aa9b-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0464"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-07"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union in the Energy Community Ministerial Council as regards the Mutual Recognition of Guarantees of Origin for electricity from renewable energy sources issued by Contracting Parties of the Energy Community and by Member States of the EU"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-07T13:57:17.505+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "464"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/3463 http://eurovoc.europa.eu/435164 http://eurovoc.europa.eu/4886 http://eurovoc.europa.eu/5367 http://eurovoc.europa.eu/5811 http://eurovoc.europa.eu/5861 http://eurovoc.europa.eu/5870 http://eurovoc.europa.eu/754 http://eurovoc.europa.eu/c_d3334ae3"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/004fc6f6-ab69-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0447"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-08"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL REGULATION amending Council Regulation 2023/2720 opening and providing for the management of autonomous Union tariff quotas for certain fishery products for the 2024-2026 period"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-28T10:31:17.638+01:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "447"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1377 http://eurovoc.europa.eu/161 http://eurovoc.europa.eu/2718 http://eurovoc.europa.eu/3191 http://eurovoc.europa.eu/4080 http://eurovoc.europa.eu/4385"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/ff0608e5-ab68-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0449"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-08"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union within the Council of Members of the International Olive Council with respect to the extension of the International Agreement on Olive Oil and Table Olives, 2015"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-09T07:55:17.536+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "449"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1264 http://eurovoc.europa.eu/2136 http://eurovoc.europa.eu/2189 http://eurovoc.europa.eu/3463 http://eurovoc.europa.eu/4828 http://eurovoc.europa.eu/5833"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/584441ba-ab69-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0451"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-08"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union within the Council of Members of the International Olive Council with respect to the extension of the date for notifying the acceptance of the amendment of Article 36 of the International Agreement on Olive Oil and Table Olives, 2015"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-09T07:55:32.491+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "451"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1264 http://eurovoc.europa.eu/2136 http://eurovoc.europa.eu/2189 http://eurovoc.europa.eu/3463 http://eurovoc.europa.eu/4828 http://eurovoc.europa.eu/5870"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/9ebc8aac-ab6c-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0555"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-08"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a DECISION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the mobilisation of the European Globalisation Adjustment Fund for Displaced Workers following an application from Finland – EGF/2026/004 FI/Etelä-Suomi and Helsinki-Uusimaa paper"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-08T14:41:17.596+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "555"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1019 http://eurovoc.europa.eu/1375 http://eurovoc.europa.eu/1646 http://eurovoc.europa.eu/3516 http://eurovoc.europa.eu/5158 http://eurovoc.europa.eu/6125 http://eurovoc.europa.eu/6251 http://eurovoc.europa.eu/723 http://eurovoc.europa.eu/763 http://eurovoc.europa.eu/8549"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/038c8c6d-ac5b-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0567"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-09"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL establishing a framework of measures for strengthening the Union innovation ecosystem and amending Regulation (EU) 2017/1001 (European Innovation Act)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-23T10:33:08.582+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "567"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1439 http://eurovoc.europa.eu/20 http://eurovoc.europa.eu/2359 http://eurovoc.europa.eu/2602 http://eurovoc.europa.eu/2817 http://eurovoc.europa.eu/5237 http://eurovoc.europa.eu/5725 http://eurovoc.europa.eu/6128 http://eurovoc.europa.eu/c_4c7717f3"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/93796e70-ac61-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0590"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-09"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on public contracts and concessions, repealing Directives 2014/23/EU, 2014/24/EU and 2014/25/EU, and amending Regulations (EC) No 1370/2007, (EU) 2023/1542, (EU) 2024/1157, (EU) 2024/1252, (EU) 2024/1735, (EU) 2024/1781, (EU) 2024/2847, (EU) 2024/3110 and (EU) 2025/40, and Directives 2008/98/EC, (EU) 2019/882, (EU) 2022/2381, (EU) 2023/1791 and (EU) 2024/1760 (Public Procurement Act)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-24T11:57:18.361+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "590"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1796 http://eurovoc.europa.eu/1798 http://eurovoc.europa.eu/20 http://eurovoc.europa.eu/4219 http://eurovoc.europa.eu/5725 http://eurovoc.europa.eu/6365 http://eurovoc.europa.eu/c_4c7717f3"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/03161c95-ac5e-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0599"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-09"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL establishing a framework for measures in Member States to safeguard housing affordability and availability (Affordable Housing Act)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-21T15:13:47.096+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "599"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1687 http://eurovoc.europa.eu/1690 http://eurovoc.europa.eu/31724 http://eurovoc.europa.eu/3464 http://eurovoc.europa.eu/4850 http://eurovoc.europa.eu/5433 http://eurovoc.europa.eu/5812 http://eurovoc.europa.eu/6133 http://eurovoc.europa.eu/8468"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/d52df8d3-acf9-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0455"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a DECISION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL renewing a Union action for the European Capitals of Culture for the years 2034 to 2047 and repealing Decision No 445/2014/EU"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-11T09:52:41.545+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "455"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/2278 http://eurovoc.europa.eu/4097 http://eurovoc.europa.eu/5230 http://eurovoc.europa.eu/5413 http://eurovoc.europa.eu/5826 http://eurovoc.europa.eu/6562 http://eurovoc.europa.eu/6563"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cbfad875-ad27-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0468"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union in the European Committee for drawing up Standards in the field of Inland Navigation (CESNI) and in the Central Commission for the Navigation of the Rhine (CCNR) concerning the adoption of the European Standard laying down Technical Requirements for Inland Navigation vessels (ES-TRIN 2027/1), the European Standard for River Information Services (ES-RIS 2027/1) and a draft amendment to the Rhine Vessel Inspection Regulations (RVIR)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-21T13:42:19.197+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "468"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1036 http://eurovoc.europa.eu/2040 http://eurovoc.europa.eu/3645 http://eurovoc.europa.eu/3646 http://eurovoc.europa.eu/4359 http://eurovoc.europa.eu/5234 http://eurovoc.europa.eu/5235 http://eurovoc.europa.eu/5889 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/7186"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/53c21e3b-acfd-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0484"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the signing and provisional application of a Framework Agreement between the European Union and the United States of America on the reciprocal exchange of information for identity verification, and screening and vetting, relating to border procedures and applications for travel authorisations and visas"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-07T08:36:18.566+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "484"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1379 http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/3466 http://eurovoc.europa.eu/4005 http://eurovoc.europa.eu/5407 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/5796 http://eurovoc.europa.eu/5956 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/888"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/807fbd87-acfb-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0485"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the conclusion of Framework Agreement between the European Union and the United States of America on the reciprocal exchange of information for identity verification, and screening and vetting, relating to border procedures and applications for travel authorizations and visas"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-07T08:46:18.533+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "485"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1379 http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/2901 http://eurovoc.europa.eu/4005 http://eurovoc.europa.eu/5540 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/5796 http://eurovoc.europa.eu/5956 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/888"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/ce769955-acf5-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0661"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL REGULATION amending Regulations (EU) No 1380/2013, (EU) No 1308/2013, (EU) 2023/1115 and (EU) 2024/1348 of the European Parliament and of the Council, and Council Regulation (EU) 2023/2720 as regards adaptation of certain requirements and reduction of administrative burden in the Union outermost regions"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-01T10:45:17.739+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "661"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1086 http://eurovoc.europa.eu/161 http://eurovoc.europa.eu/1730 http://eurovoc.europa.eu/2173 http://eurovoc.europa.eu/2455 http://eurovoc.europa.eu/339 http://eurovoc.europa.eu/3816 http://eurovoc.europa.eu/4128 http://eurovoc.europa.eu/4172 http://eurovoc.europa.eu/5070 http://eurovoc.europa.eu/5076 http://eurovoc.europa.eu/c_f5d6dbf6"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/b381ae43-ad08-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0662"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-10"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION amending Decision (EU) 2021/991 concerning the dock dues scheme in the French outermost regions"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-01T17:59:18.532+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "662"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1086 http://eurovoc.europa.eu/1317 http://eurovoc.europa.eu/2771 http://eurovoc.europa.eu/365 http://eurovoc.europa.eu/4128 http://eurovoc.europa.eu/4400 http://eurovoc.europa.eu/5581 http://eurovoc.europa.eu/935"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/72eb6d9d-adc5-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0462"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-11"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the signing of the Sustainable Investment Facilitation Agreement between the European Union and the Republic of Ecuador"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-14T10:28:29.511+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "462"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1488 http://eurovoc.europa.eu/3466 http://eurovoc.europa.eu/841"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/0474ecba-adc5-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0463"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-11"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the conclusion of the Sustainable Investment Facilitation Agreement between the European Union and the Republic of Ecuador"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-14T10:29:33.428+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "463"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/1488 http://eurovoc.europa.eu/2901 http://eurovoc.europa.eu/841"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5be71f75-adc2-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0471"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-11"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union within the Cooperation Council established by the Partnership and Cooperation Agreement between the European Communities and their Member States, of the one part, and the Republic of Azerbaijan, of the other part, with regard to the amendment and extension of the EU-Azerbaijan Partnership Priorities"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-14T10:27:31.130+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "471"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/3489 http://eurovoc.europa.eu/5404 http://eurovoc.europa.eu/5454 http://eurovoc.europa.eu/5763"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/3693bf71-adc9-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0482"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-11"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the conclusion of the Free Trade Agreement between the European Union and the Republic of India"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-30T18:12:17.510+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "482"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1338 http://eurovoc.europa.eu/2275 http://eurovoc.europa.eu/2901 http://eurovoc.europa.eu/5403"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/9191f067-adcc-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0483"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-11"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the signing of the Free Trade Agreement between the European Union and the Republic of India"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-21T11:47:18.400+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "483"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1338 http://eurovoc.europa.eu/2275 http://eurovoc.europa.eu/3466 http://eurovoc.europa.eu/5403"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/8141ea89-b11b-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0980"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-15"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on digitalising the coordination of social security systems, laying down a framework for the European Social Security Pass (ESSPASS) and amending Regulations (EC) No 883/2004, (EC) No 987/2009 and (EU) No 2018/1724"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-22T11:54:24.950+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "980"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1634 http://eurovoc.europa.eu/1946 http://eurovoc.europa.eu/206 http://eurovoc.europa.eu/3011 http://eurovoc.europa.eu/3359 http://eurovoc.europa.eu/4359 http://eurovoc.europa.eu/5070 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/6191 http://eurovoc.europa.eu/6767"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/981bd4af-b11b-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0985"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-15"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL amending Regulation (EU) 2019/1149 establishing a European Labour Authority, Regulation (EU) 2016/589 on a European network of employment services (EURES), workers' access to mobility services and the further integration of labour markets and Regulation (EU) No 1024/2012 on administrative cooperation through the Internal Market Information System, and repealing Commission Implementing Decisions (EU) 2017/1256, (EU) 2018/170, (EU) 2018/1020 and (EU) 2018/1021"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-24T16:57:13.279+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "985"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1634 http://eurovoc.europa.eu/1946 http://eurovoc.europa.eu/206 http://eurovoc.europa.eu/4028 http://eurovoc.europa.eu/4054 http://eurovoc.europa.eu/4113 http://eurovoc.europa.eu/4359 http://eurovoc.europa.eu/5640 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_ea7ea83c"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/a0211845-b11c-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0990"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DIR"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-15"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a DIRECTIVE OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the recognition of qualifications of third-country nationals"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-20T17:52:17.114+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "990"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1074 http://eurovoc.europa.eu/1922 http://eurovoc.europa.eu/2208 http://eurovoc.europa.eu/2932 http://eurovoc.europa.eu/372 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/5178 http://eurovoc.europa.eu/6099 http://eurovoc.europa.eu/6353 http://eurovoc.europa.eu/854"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/5d635bc9-b192-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0992"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-15"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on portability of qualifications and skills and amending Regulation (EU) 2018/1724 (\"Skills Portabilty Act\")"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-16T18:09:26.356+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "992"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1634 http://eurovoc.europa.eu/1946 http://eurovoc.europa.eu/2868 http://eurovoc.europa.eu/6099 http://eurovoc.europa.eu/6767 http://eurovoc.europa.eu/c_6f7bbe63"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/70fd7be2-b195-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0995"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DIR"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-15"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a DIRECTIVE OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL amending Directive 2005/36/EC as regards the digitalisation of procedures and recognition of professional qualifications issued outside the Union and Regulation (EU) No 1024/2012"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-16T19:09:17.171+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "995"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1634 http://eurovoc.europa.eu/206 http://eurovoc.europa.eu/2208 http://eurovoc.europa.eu/2868 http://eurovoc.europa.eu/2932 http://eurovoc.europa.eu/4003 http://eurovoc.europa.eu/6099 http://eurovoc.europa.eu/6191 http://eurovoc.europa.eu/6894 http://eurovoc.europa.eu/854"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/d7d722e2-b27e-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0477"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-17"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union in the EU-Türkiye Customs Cooperation Committee, as regards the adoption of a Decision laying down detailed rules for the application of Decision No 1/95 of the EC-Turkey Association Council"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-18T10:21:51.632+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "477"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1631 http://eurovoc.europa.eu/2520 http://eurovoc.europa.eu/3156 http://eurovoc.europa.eu/3191 http://eurovoc.europa.eu/4048 http://eurovoc.europa.eu/4580 http://eurovoc.europa.eu/4600 http://eurovoc.europa.eu/5509 http://eurovoc.europa.eu/5545 http://eurovoc.europa.eu/6767"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/d16ccaa0-b27d-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0478"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-17"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL REGULATION fixing for 2027 the fishing opportunities for certain fish stocks and groups of fish stocks applicable in the Mediterranean and Black Seas"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-18T10:17:27.433+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "478"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1879 http://eurovoc.europa.eu/2308 http://eurovoc.europa.eu/2437 http://eurovoc.europa.eu/2879 http://eurovoc.europa.eu/4790 http://eurovoc.europa.eu/5256 http://eurovoc.europa.eu/544 http://eurovoc.europa.eu/5736 http://eurovoc.europa.eu/598 http://eurovoc.europa.eu/605"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/a9ea9e22-b271-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0681"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-17"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL EU KIDS ACT - 'EU Keeping Internet Digital Spaces Accountable and Trustworthy'"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-28T13:20:18.573+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "681"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/2828 http://eurovoc.europa.eu/2836 http://eurovoc.europa.eu/3030 http://eurovoc.europa.eu/3916 http://eurovoc.europa.eu/3919 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5333 http://eurovoc.europa.eu/6088 http://eurovoc.europa.eu/c_6f7bbe63 http://eurovoc.europa.eu/c_d6e5f3ab"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/c8303232-b29c-11f1-b9e5-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC7001"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-17"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a DECISION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL on the mobilisation of the European Union Solidarity Fund to provide assistance to Malta and Italy regarding storm Harry in January 2026 and to Portugal and Spain following the storms in January and February 2026"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-24T16:49:29.061+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "7001"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1519 http://eurovoc.europa.eu/1774 http://eurovoc.europa.eu/2563 http://eurovoc.europa.eu/3076 http://eurovoc.europa.eu/5158 http://eurovoc.europa.eu/5683 http://eurovoc.europa.eu/763 http://eurovoc.europa.eu/863 http://eurovoc.europa.eu/881 http://eurovoc.europa.eu/c_e548b67f"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/ab6aadcb-b340-11f1-81de-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0487"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-18"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION establishing the position to be taken on behalf of the European Union within the Joint Committee established by the Agreement on the withdrawal of the United Kingdom of Great Britain and Northern Ireland from the European Union and the European Atomic Energy Community as regards the adoption of a decision adding a newly adopted Union act to Annex 2 to the Windsor Framework"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-21T09:30:18.439+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "487"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/2081 http://eurovoc.europa.eu/2739 http://eurovoc.europa.eu/3774 http://eurovoc.europa.eu/4359 http://eurovoc.europa.eu/5334 http://eurovoc.europa.eu/5509 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_8a6f744c http://eurovoc.europa.eu/c_e5d85c14"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/63fdf2ae-b33d-11f1-81de-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0489"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-18"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION establishing the position to be taken on behalf of the European Union within the Joint Committee established by the Agreement on the withdrawal of the United Kingdom of Great Britain and Northern Ireland from the European Union and the European Atomic Energy Community as regards the adoption of a decision adding a newly adopted Union act to Annex 2 to the Windsor Framework"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-21T09:42:18.326+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "489"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1474 http://eurovoc.europa.eu/2828 http://eurovoc.europa.eu/3011 http://eurovoc.europa.eu/3774 http://eurovoc.europa.eu/5181 http://eurovoc.europa.eu/5509 http://eurovoc.europa.eu/5595 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_31da5694 http://eurovoc.europa.eu/c_8a6f744c"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/df399feb-b59b-11f1-81de-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0498"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-21"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL amending Regulation (EU) 2021/1139 as regards simplification and the transposition of the WTO Agreement on Fisheries Subsidies"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-22T18:03:13.422+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "498"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/1159 http://eurovoc.europa.eu/1372 http://eurovoc.europa.eu/2455 http://eurovoc.europa.eu/2850 http://eurovoc.europa.eu/5070 http://eurovoc.europa.eu/5765 http://eurovoc.europa.eu/712 http://eurovoc.europa.eu/c_4e3beee2 http://eurovoc.europa.eu/c_86d7db98 http://eurovoc.europa.eu/c_8702d5f7"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cc088e23-bb4b-11f1-81de-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0496"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_DEC"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-28"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a COUNCIL DECISION on the position to be taken on behalf of the European Union in the Specialised Committee on Law Enforcement and Judicial Cooperation established by the Trade and Cooperation Agreement between the European Union and the European Atomic Energy Community, of the one part, and the United Kingdom of Great Britain and Northern Ireland, of the other part, regarding an amendment of the standard forms for requests for provisional measures and confiscation referred to in Article 678(4) and (5) of that Agreement"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-29T09:23:18.761+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "496"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/217 http://eurovoc.europa.eu/3774 http://eurovoc.europa.eu/3839 http://eurovoc.europa.eu/3980 http://eurovoc.europa.eu/5344 http://eurovoc.europa.eu/5403 http://eurovoc.europa.eu/5404 http://eurovoc.europa.eu/5509 http://eurovoc.europa.eu/5550 http://eurovoc.europa.eu/616"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/cc9532f5-bb25-11f1-81de-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC0507"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-28"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL laying down management, conservation and control measures applicable in the Convention area of the North Pacific Fisheries Commission"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-09-29T11:31:18.907+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "507"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/133 http://eurovoc.europa.eu/2112 http://eurovoc.europa.eu/2308 http://eurovoc.europa.eu/2556 http://eurovoc.europa.eu/3463 http://eurovoc.europa.eu/3468 http://eurovoc.europa.eu/4790 http://eurovoc.europa.eu/5229 http://eurovoc.europa.eu/544 http://eurovoc.europa.eu/c_8702d5f7"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/2b8aa73e-bd7b-11f1-9aae-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC1010"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-30"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL establishing the European Union Critical Communication System (EUCCS)"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "0"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-02T15:19:36.627+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "1010"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/226 http://eurovoc.europa.eu/4361 http://eurovoc.europa.eu/5283 http://eurovoc.europa.eu/5684 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_71b063b1"
+    }
+   },
+   {
+    "work": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/cellar/246dd26c-bd7b-11f1-9aae-01aa75ed71a1"
+    },
+    "celex": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "52026PC1020"
+    },
+    "type": {
+     "type": "uri",
+     "value": "http://publications.europa.eu/resource/authority/resource-type/PROP_REG"
+    },
+    "date": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#date",
+     "value": "2026-09-30"
+    },
+    "title": {
+     "type": "literal",
+     "xml:lang": "en",
+     "value": "Proposal for a REGULATION OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL establishing the framework for the use of the European Union Critical Communication System by the Member States’ services and other organisations in charge of civil protection and amending Regulation (EU) …/…"
+    },
+    "eea": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#boolean",
+     "value": "1"
+    },
+    "modified": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#dateTime",
+     "value": "2026-10-02T15:19:27.469+02:00"
+    },
+    "prefix": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#string",
+     "value": "COM"
+    },
+    "year": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#year",
+     "value": "2026"
+    },
+    "number": {
+     "type": "literal",
+     "datatype": "http://www.w3.org/2001/XMLSchema#positiveInteger",
+     "value": "1020"
+    },
+    "eurovoc": {
+     "type": "literal",
+     "value": "http://eurovoc.europa.eu/226 http://eurovoc.europa.eu/3057 http://eurovoc.europa.eu/4361 http://eurovoc.europa.eu/5283 http://eurovoc.europa.eu/5684 http://eurovoc.europa.eu/616 http://eurovoc.europa.eu/c_71b063b1"
+    }
+   }
+  ]
+ }
+}

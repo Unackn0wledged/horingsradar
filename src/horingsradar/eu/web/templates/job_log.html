@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Logg for {{ job_kinds.get(job.kind, job.kind)|lower }}{% endblock %}
+{% block head %}{% if job.status == 'running' %}<meta http-equiv="refresh" content="4">{% endif %}{% endblock %}
+{% block content %}
+<a class="back" href="/jobs">Alle jobber</a>
+<div class="page-head">
+  <div>
+    <h1>{{ job_kinds.get(job.kind, job.kind) }}, {{ job.started_at|ts }}</h1>
+    <p class="meta">
+      <span class="state state-{{ job.status }}">{{ job_states.get(job.status, job.status) }}</span>
+      <span>Startet fra {{ triggers.get(job.triggered_by, job.triggered_by)|lower }}</span>
+      {% if job.finished_at %}<span>Ferdig <span class="num">{{ job.finished_at|ts }}</span></span>{% endif %}
+      {% if job.status == 'running' %}<span>Oppdateres automatisk</span>{% endif %}
+    </p>
+  </div>
+</div>
+{% if log %}<pre class="log">{{ log }}</pre>{% else %}<p class="empty">Loggen er tom eller finnes ikke.</p>{% endif %}
+{% endblock %}
