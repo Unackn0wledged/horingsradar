@@ -267,7 +267,7 @@ Sortering: relevans, så åpne tilbakemeldingsfrister på Have Your Say (nærmes
 - Jobber startes som egne prosesser (`python -m horingsradar.eu`). Ingen pipeline-kode kjører i panelet, det styrer ikke systemd og endrer ikke konfigurasjon. Ingen bryter for kildene.
 - Innlogging, CSRF, avbryting av jobber, socket-oppsett, stilark og HTMX er Høringsradars, gjenbrukt uendret. Sidene, malene og jobbstarten er egne.
 - Statistikk per kilde: EUR-Lex (hentet, kandidater, filtrert bort, grunn), EEA-Lex (status), Have Your Say (med side, åpne), EDPS (dokumenter, koblinger, hevet av regelen), OEIL (status), LLM (vurderinger, nivåer, tokens og kostnad per måned, modell og prompt) og de siste kjøringene.
-- Lenke fra EU-panelet til Høringsradars panel (`OTHER_PANEL_URL`). Lenken andre veien krever endring i Høringsradar og legges inn etter presentasjonen, ved merge til `main`.
+- Lenke mellom panelene med `OTHER_PANEL_URL` i hver instans sin `.env`: fra EU-panelet til Høringsradars panel, og fra Høringsradars panel til EU-panelet. Tom verdi gir ingen lenke, så Høringsradar ser ut som før til den settes.
 
 ## Backtest
 

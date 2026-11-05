@@ -38,6 +38,7 @@
       {{ nav("/stats", "Statistikk", path.startswith("/stats")) }}
       {{ nav("/backtest", "Backtest", path.startswith("/backtest")) }}
       {{ nav("/jobs", "Jobber og logg", path.startswith("/jobs")) }}
+      {% if other_panel_url %}<a href="{{ other_panel_url }}">EU/EØS-radar ↗</a>{% endif %}
     </nav>
     <span class="role">Adminpanel, pilot</span>
   </div>

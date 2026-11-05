@@ -26,7 +26,7 @@ Arbeidsform:
 | EØS-status | Alternativ A: registrert eller ikke fra EEA-Lex-listen, full status for vedtatte rettsakter |
 | Modell | Claude Sonnet 5.5 med `medium` innsats, som Høringsradar, satt i EU-instansens `.env` (endret 31.10.2026 fra liten modell: LLM-en leser hele begrunnelsen, ikke bare tittel og sammendrag) |
 | Backtest | Ingen backtest for EU/EØS-radaren. Recall-settet brukes bare i testene for forfilteret (valgt 29.10.2026) |
-| Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel nå, lenken andre veien etter presentasjonen (valgt 29.10.2026) |
+| Panel | Eget panel på port 8081, med siden «Filtrert bort». Lenke til Høringsradars panel, og lenken andre veien lagt inn før merge til `main` (valgt 29.10.2026, lagt inn 5.11.2026) |
 | OEIL | Enkel versjon: kort navn, status, komité og hovedhendelser fra prosedyresidene, ingen personnavn i databasen eller rapporten. Bare saker med høy eller middels relevans, og ikke vurderte (valgt 29.10.2026) |
 | Have Your Say | Bare tilbakemeldingsfrist og lenke for EUR-Lex-kandidater, slått opp på COM-nummer. Høringer uten COM-forslag hentes ikke, og det kobles ikke på tittel (valgt 29.10.2026) |
 
@@ -159,3 +159,9 @@ Funn underveis:
 Funn underveis:
 - Pilotens maler og jobbstart er bundet til høringene og `horingsradar`-kommandoen, så EU-panelet har egne. Utseendet er det samme.
 - Med EDPS-testdataene blir Cloud and AI Development Act kandidat og får åpen frist på Have Your Say; fristfilteret viser derfor to saker.
+
+## Før merge til `main`
+
+- `main` flettet inn i branchen 5.11.2026 (rapport for en periode og README), uten konflikter.
+- Lenke fra Høringsradars panel til EU-panelet: `OTHER_PANEL_URL` er flyttet til de felles innstillingene, så begge panelene leser den fra sin egen `.env`. Tom verdi gir ingen lenke, så Høringsradar ser ut som før til den settes. Test i `tests/test_web.py`.
+- De to radarene har fortsatt hver sin målgruppe, rapport, database og instans.

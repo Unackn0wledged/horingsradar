@@ -71,6 +71,14 @@ def test_pages_render_and_never_show_secrets(web, path):
     assert HASH not in response.text
 
 
+def test_link_to_the_eu_panel_only_when_set(settings, web):
+    assert "EU/EØS-radar ↗" not in web.get("/").text
+    settings.other_panel_url = "http://192.0.2.10:8081"
+    other = TestClient(create_app(settings), headers=auth())
+    assert 'href="http://192.0.2.10:8081"' in other.get("/").text
+    assert "EU/EØS-radar ↗" in other.get("/jobs").text
+
+
 def test_get_does_not_change_state(web):
     before = web.conn.execute("SELECT COUNT(*) FROM job").fetchone()[0]
     for path in ("/actions/run", "/actions/pause", "/actions/report"):

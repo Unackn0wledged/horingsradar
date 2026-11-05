@@ -78,6 +78,8 @@ class Settings(BaseModel):
     web_username: str = "operator"
     web_password_hash: str = Field(default="", repr=False)
     run_timer_unit: str = "horingsradar-run.timer"
+    # Link to the other radar's panel (regjeringen.no or EU/EEA); empty means no link.
+    other_panel_url: str = ""
 
     log_level: str = "INFO"
 

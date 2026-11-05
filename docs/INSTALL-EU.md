@@ -45,7 +45,7 @@ Klon til EU-mappen, og bytt ut `<adresse>` med svaret over:
 sudo -u horingsradar -H git clone <adresse> /opt/horingsradar-eu
 ```
 
-Mens EU/EØS-radaren er under utvikling, skal EU-mappen bruke utviklingsbranchen:
+Når EU/EØS-radaren er merget til `main`, står klonen allerede riktig, og du hopper over neste kommando. Før mergen må EU-mappen bruke utviklingsbranchen:
 
 ```bash
 sudo -u horingsradar -H git -C /opt/horingsradar-eu switch feature/eu-eos-kilder
@@ -161,6 +161,28 @@ systemctl status horingsradar-eu-web.service --no-pager
 ```
 
 Åpne `http://<LXC-ens IP>:8081` i nettleseren og logg inn med brukernavnet i `WEB_USERNAME` (standard `operator`) og passordet. Panelet kan starte kjøring (med eller uten vurdering), rapport og ny vurdering av én sak, pause og gjenoppta den ukentlige kjøringen og avbryte en jobb. Det styrer ikke systemd og endrer ikke `.env`.
+
+### Lenke fra Høringsradars panel
+
+Når Høringsradar kjører en versjon fra `main` med EU/EØS-radaren, kan panelet på port 8080 få en lenke til EU-panelet. Åpne Høringsradars `.env`:
+
+```bash
+sudo -u horingsradar nano /opt/horingsradar/.env
+```
+
+Legg til denne linjen, med LXC-ens adresse:
+
+```
+OTHER_PANEL_URL=http://<LXC-ens IP>:8081
+```
+
+Start Høringsradars panel på nytt:
+
+```bash
+systemctl restart horingsradar-web.service
+```
+
+Menyen i Høringsradars panel får da «EU/EØS-radar ↗» til slutt. Uten linjen ser panelet ut som før.
 
 ## 8. Oppdatere
 
