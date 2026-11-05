@@ -165,3 +165,8 @@ Funn underveis:
 - `main` flettet inn i branchen 5.11.2026 (rapport for en periode og README), uten konflikter.
 - Lenke fra Høringsradars panel til EU-panelet: `OTHER_PANEL_URL` er flyttet til de felles innstillingene, så begge panelene leser den fra sin egen `.env`. Tom verdi gir ingen lenke, så Høringsradar ser ut som før til den settes. Test i `tests/test_web.py`.
 - De to radarene har fortsatt hver sin målgruppe, rapport, database og instans.
+
+## Første kjøring på lab
+
+- Merget til `main` 5.11.2026 (PR #3) og installert på lab. `run --no-assess`: 153 forslag, 37 kandidater, 116 filtrert bort, 9 med EDPS-uttalelse, 10 registrert i EEA-Lex og 24 med OEIL-status, som lokalt 31.10.
+- Have Your Say stoppet etter 13 oppslag. Oppslaget på et COM-nummer pekte til initiativ 18614, som svarte 404. Steget stoppet da på samme sak ved hver kjøring, så de senere kandidatene ble aldri slått opp, og fristene for de koblede ble aldri hentet på nytt. Rettet: 404 på ett initiativ gjelder bare den saken (EU-SPEC, Have Your Say, punkt 6). Tester i `tests/test_eu_haveyoursay.py`.
