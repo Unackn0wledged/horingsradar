@@ -519,6 +519,12 @@ def build_report(
     detailed = [v for v in views if v.relevance in ("hoy", "middels")]
     brief = [v for v in views if v.relevance in ("lav", "ingen")]
     not_assessed = [v for v in views if v.relevance in ("feilet", "ikke_vurdert")]
+    labels = {v.relevance: v.relevance_label for v in views}
+    relevance_counts = [
+        {"level": level, "count": n, "label": labels[level].lower()}
+        for level in ("hoy", "middels", "lav", "ingen", "feilet", "ikke_vurdert")
+        if (n := sum(v.relevance == level for v in views))
+    ]
     models = sorted(
         {
             f"{v.assessment['model']} / prompt {v.assessment['prompt_version']}"
@@ -531,6 +537,7 @@ def build_report(
         "generated_at": now.strftime("%d.%m.%Y kl. %H:%M"),
         "models": models,
         "views": views,
+        "relevance_counts": relevance_counts,
         "detailed": detailed,
         "brief": brief,
         "not_assessed": not_assessed,

@@ -66,7 +66,17 @@ td.date { white-space: nowrap; }
 .warning { font-size: 8.5pt; color: #a8231b; font-weight: 700; }
 .flag { display: inline-block; background: #a8231b; color: #ffffff; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-right: 1mm; font-size: 7.5pt; letter-spacing: 0.3pt; }
 
-a.jump { display: inline-block; margin-top: 0.8mm; padding: 0.1mm 1.6mm; border: 0.3mm solid #1d4f91; border-radius: 1mm; font-size: 7.5pt; font-weight: 600; white-space: nowrap; }
+.counts { margin: 0 0 1.5mm; }
+.counts .badge { font-size: 9pt; padding: 0.5mm 2.2mm; margin-right: 1mm; }
+.legend { font-size: 8pt; color: #5b6470; margin: 0 0 2mm; }
+table.overview { table-layout: fixed; }
+table.overview th.rel { width: 16mm; }
+table.overview th.date { width: 18mm; }
+table.overview th.days { width: 11mm; text-align: right; }
+table.overview th.dt { width: 15mm; }
+table.overview td { padding: 1mm 1.5mm; }
+.row-title { font-size: 8.8pt; line-height: 1.25; }
+.row-meta { color: #5b6470; font-size: 7.6pt; line-height: 1.25; margin-top: 0.3mm; }
 a.badge-link { text-decoration: none; }
 a.page { text-decoration: underline; text-decoration-color: #9fb3cf; }
 .back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
@@ -102,10 +112,12 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
 
 <h2 id="oversikt">Oversikt</h2>
 {% if views %}
-<table>
+<p class="counts">{% for c in relevance_counts %}<span class="badge rel-{{ c.level }}">{{ c.count }} {{ c.label }}</span> {% endfor %}</p>
+<p class="legend">DT = Datatilsynet. Sortert etter relevans og deretter frist. Klikk på en tittel for å gå til høringen lenger ned i rapporten.</p>
+<table class="overview">
   <thead>
     <tr>
-      <th>Relevans</th><th>Tittel</th><th>Departement</th><th>Publisert</th><th>Frist</th><th>Dager igjen</th><th>Sektor</th><th>DT på adresse&shy;listen</th>
+      <th class="rel">Relevans</th><th>Høring</th><th class="date">Frist</th><th class="days">Dager igjen</th><th class="dt">DT på adresse&shy;listen</th>
     </tr>
   </thead>
   <tbody>
@@ -113,20 +125,16 @@ ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside
     <tr>
       <td><a class="badge-link" href="#h{{ v.id }}"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span></a></td>
       <td>
-        <a href="#h{{ v.id }}">{{ v.row.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}<br>
-        <a class="jump" href="#h{{ v.id }}">Gå til analyse ↓</a>
+        <div class="row-title"><a href="#h{{ v.id }}">{{ v.row.title }}</a>{% if v.changes %}{% for t in v.changes.tags %}<span class="tag">{{ t }}</span>{% endfor %}{% endif %}</div>
+        <div class="row-meta">{{ v.row.department or "–" }} · publisert {{ v.row.published_date|date }}{% if v.sectors %} · {{ v.sectors|join(", ") }}{% endif %}</div>
       </td>
-      <td>{{ v.row.department or "–" }}</td>
-      <td class="date">{{ v.row.published_date|date }}</td>
       <td class="date">{{ v.row.deadline|date }}</td>
       <td class="num">{% if v.days_left is none %}–{% elif v.days_left < 0 %}utløpt{% else %}{{ v.days_left }}{% endif %}</td>
-      <td>{{ v.sectors|join(", ") if v.sectors else "–" }}</td>
       <td>{% if v.row.dt_on_address_list is none %}–{% elif v.row.dt_on_address_list %}Ja{% else %}Nei{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
-<p class="muted" style="font-size: 8pt; margin-top: 1.5mm;">DT = Datatilsynet. Sortert etter relevans og deretter frist. Klikk på en rad for å gå til analysen.</p>
 {% else %}
 <p class="empty">{% if kind == "drift" %}Ingen nye eller oppdaterte høringer siden forrige rapport.{% else %}Ingen høringer publisert i perioden.{% endif %}</p>
 {% endif %}

@@ -157,7 +157,7 @@ Som standard tar rapporten med alle høringer som ikke har vært i en tidligere 
 
 Innhold:
 1. **Topptekst**: periode, tidspunkt for generering, modell og promptversjon, og en merknad om at innholdet er KI-generert sortering som må verifiseres mot kilden.
-2. **Oversiktstabell**, sortert på relevans og deretter frist: relevans, tittel, departement, publisert, frist, dager igjen, sektor, om målvirksomheten står på adresselisten.
+2. **Oversiktstabell**, sortert på relevans og deretter frist. Over tabellen står antall høringer per relevansnivå, også feilet og ikke vurdert. Kolonner: relevans, høring (tittel, og under den departement, publiseringsdato og sektor), frist, dager igjen og om målvirksomheten står på adresselisten. Tittelen lenker til høringen lenger ned i rapporten.
 3. **Frister som nærmer seg**: åpne høringer med høy eller middels relevans fra tidligere rapporter, med frist innen 28 dager.
 4. **Detaljer for høy og middels**: tittel med lenke, metadata, sammendrag, funn (kategori, beskrivelse, dokument, kapittel og side, sitat, verifiseringsstatus), leseguide (for eksempel «s. 22–41 og 88–95 av 140»), og om høringsnotatet har eget personvernkapittel.
 5. **Lav og ingen**: én linje per høring med kort begrunnelse.

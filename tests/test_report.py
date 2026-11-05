@@ -97,11 +97,23 @@ def test_report_contains_all_sections_and_marks_reported(settings, conn):
     assert any(link.get("uri", "").startswith("https://www.regjeringen.no/") for link in links)
 
 
+def test_overview_counts_the_levels_and_has_one_row_per_hearing(settings, conn):
+    result = build_report(settings, conn, now=NOW)
+    text = pdf_text(result["path"])
+    for count in ("1 høy", "1 middels", "1 lav", "37 ingen"):
+        assert count in text
+    assert "Gå til analyse" not in text
+    assert text.index("DT = Datatilsynet") < text.index("Høy og middels relevans")
+    overview = text[text.index("Oversikt") : text.index("Frister som nærmer seg")]
+    assert overview.count("publisert ") == result["hearings"]
+
+
 def test_second_report_is_empty_then_shows_updated(settings, conn):
     build_report(settings, conn, now=NOW)
     empty = build_report(settings, conn, now=NOW)
     assert empty["hearings"] == 0
     assert "Ingen nye eller oppdaterte" in pdf_text(empty["path"])
+    assert "DT = Datatilsynet" not in pdf_text(empty["path"])
     assess_hearing(settings, conn, 3170511, FakeLLM(default=output("hoy")))
     updated = build_report(settings, conn, now=datetime(2026, 10, 21, 9, 0).astimezone())
     assert updated["hearings"] == 1
@@ -170,6 +182,7 @@ def test_failed_assessment_is_listed_not_hidden(settings):
     result = build_report(settings, c, now=NOW)
     text = pdf_text(result["path"])
     assert "Ikke vurdert" in text and "Vurderingen feilet" in text
+    assert "1 feilet" in text and "39 ingen" in text  # the counts add up to all hearings
     c.close()
 
 
