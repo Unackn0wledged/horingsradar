@@ -57,7 +57,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 ## Arbeidsform
 
 - Bygg i milepælsrekkefølgen i `docs/SPEC.md`. Lag en plan for hver milepæl og få den godkjent før du koder.
-- EU/EØS-radaren: milepælene i `docs/EU-PLAN.md`, bare på branchen `feature/eu-eos-kilder`. Aldri commit EU-arbeid til `main`. Endringer i felles kode skal være bakoverkompatible og dekkes av Høringsradars tester.
+- EU/EØS-radaren er merget til `main` og følger samme arbeidsflyt som Høringsradar: egen branch og PR til `main`. Endringer i felles kode skal være bakoverkompatible og dekkes av begge radarenes tester.
 - Kjør `uv run pytest` og `uv run ruff check .` før du sier at noe er ferdig.
 - Ikke gjett på strukturen til kildene (HTML, JSON, SPARQL-svar). Hent et ekte svar, lagre det som fixture og bygg parseren mot det. Sjekk robots.txt og bruksvilkår før en ny kilde tas i bruk.
 
