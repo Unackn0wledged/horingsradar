@@ -30,7 +30,7 @@ from horingsradar.eu.sources import edps, eealex, haveyoursay, oeil
 from horingsradar.eu.sources.eurlex import eurlex_url
 from horingsradar.llm.schema import RELEVANCE_LABELS, RELEVANCE_ORDER
 from horingsradar.quotes import normalize
-from horingsradar.report.build import CATEGORY_LABELS, fmt_date, write_pdf
+from horingsradar.report.build import CATEGORY_LABELS, fmt_date, free_path, write_pdf
 
 log = logging.getLogger(__name__)
 
@@ -537,7 +537,7 @@ def build_report(settings, conn: sqlite3.Connection, now: datetime | None = None
         "fonts_dir": FONTS_DIR.as_uri(),
     }
     html = _environment().get_template("eu_report.html.j2").render(**context)
-    path = settings.reports_dir / f"horingsradar-eu_{now.strftime('%Y-%m-%d_%H%M')}.pdf"
+    path = free_path(settings.reports_dir / f"horingsradar-eu_{now.strftime('%Y-%m-%d_%H%M')}.pdf")
     write_pdf(html, path)
     shown = sel.shown
     cur = conn.execute(

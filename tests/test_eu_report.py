@@ -109,6 +109,10 @@ def test_next_report_shows_nothing_again_without_changes(eu_settings, conn):
     again = build_report(eu_settings, conn, now=NOW)
     assert again["cases"] == 0
     assert "Ingen nye forslag fra de siste 8 ukene" in text_of(again)
+    # Same minute: the empty report gets its own file and the first one is kept.
+    first = eu_settings.reports_dir / "horingsradar-eu_2026-10-29_1200.pdf"
+    assert again["path"] == str(eu_settings.reports_dir / "horingsradar-eu_2026-10-29_1200-2.pdf")
+    assert "Ingen nye forslag fra de siste 8 ukene" not in text_of({"path": str(first)})
 
 
 def test_changed_relevance_is_shown_again_and_same_result_is_not(eu_settings, conn):

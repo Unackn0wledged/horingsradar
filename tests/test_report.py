@@ -111,6 +111,10 @@ def test_overview_counts_the_levels_and_has_one_row_per_hearing(settings, conn):
 def test_second_report_is_empty_then_shows_updated(settings, conn):
     build_report(settings, conn, now=NOW)
     empty = build_report(settings, conn, now=NOW)
+    # Same minute: the second PDF gets its own file instead of overwriting the first.
+    first_path = settings.reports_dir / "horingsradar_2026-10-14_0930.pdf"
+    assert empty["path"] == str(settings.reports_dir / "horingsradar_2026-10-14_0930-2.pdf")
+    assert "Ingen nye eller oppdaterte" not in pdf_text(str(first_path))
     assert empty["hearings"] == 0
     assert "Ingen nye eller oppdaterte" in pdf_text(empty["path"])
     assert "DT = Datatilsynet" not in pdf_text(empty["path"])

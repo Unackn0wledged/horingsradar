@@ -4,19 +4,21 @@ import base64
 import os
 import subprocess
 import sys
+from datetime import date
 from urllib.parse import unquote
 
 import pytest
 from eu_fakes import EUSite
 from fakes import FakeLLM
 from fastapi.testclient import TestClient
-from test_eu_assess import case_id, do_run
+from test_eu_assess import TODAY, case_id, do_run
 from test_eu_report import EUROPOL, KIDS, SCRIPT
 
 from horingsradar import db
 from horingsradar.eu import cli
 from horingsradar.eu import db as eu_db
 from horingsradar.eu.config import load_eu_settings
+from horingsradar.eu.web import app as eu_app
 from horingsradar.eu.web import runner
 from horingsradar.eu.web.app import create_app
 from horingsradar.eu.web.server import serve
@@ -53,10 +55,18 @@ def conn(eu_settings):
     c.close()
 
 
+class FixedDate(date):
+    @classmethod
+    def today(cls):
+        return TODAY
+
+
 @pytest.fixture
 def web(eu_settings, conn, monkeypatch):
     spawned: list[list[str]] = []
     monkeypatch.setattr(runner, "spawn", lambda s, args: spawned.append(args) or 4242)
+    # The panel shows open deadlines on today's date; use the date of the test run.
+    monkeypatch.setattr(eu_app, "date", FixedDate)
     client = TestClient(create_app(eu_settings), headers=auth())
     client.spawned = spawned
     client.csrf = csrf_token(HASH, eu_settings.web_username)

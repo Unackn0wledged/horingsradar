@@ -470,6 +470,16 @@ def render_html(context: dict[str, Any]) -> str:
     return _environment().get_template("report.html.j2").render(**context)
 
 
+def free_path(path: Path) -> Path:
+    """`path`, or `name-2.pdf`, `name-3.pdf` ... if a file of that name already exists, so a
+    report made in the same minute as the previous one never overwrites it."""
+    candidate, n = path, 2
+    while candidate.exists():
+        candidate = path.with_name(f"{path.stem}-{n}{path.suffix}")
+        n += 1
+    return candidate
+
+
 def write_pdf(html: str, path: Path) -> None:
     _configure_weasyprint_dlls()
     from weasyprint import HTML
@@ -552,7 +562,7 @@ def build_report(
     stamp = now.strftime("%Y-%m-%d_%H%M")
     label = f"siste-{weeks}-uker" if weeks else week
     name = f"horingsradar_{label}_{stamp}.pdf" if label else f"horingsradar_{stamp}.pdf"
-    path = settings.reports_dir / name
+    path = free_path(settings.reports_dir / name)
     write_pdf(html, path)
     cur = conn.execute(
         "INSERT INTO report (created_at, period_label, path, hearing_count, kind) VALUES (?, ?, ?, ?, ?)",
