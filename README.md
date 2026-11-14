@@ -51,6 +51,7 @@ uv run ruff check .
 - Krav: [Høringsradar](docs/SPEC.md) og [EU/EØS-radaren](docs/EU-SPEC.md)
 - Plan og beslutninger: [Høringsradar](docs/PLAN.md) og [EU/EØS-radaren](docs/EU-PLAN.md)
 - Nettside for brukerne (Høringsradar): [plan](docs/PLAN-NETTSIDE.md) og [installasjon](docs/INSTALL-NETTSIDE.md)
+- Endringer: [CHANGELOG.md](CHANGELOG.md)
 
 Adminpanelet lytter bare på LAN. For tilgang utenfra kan Tailscale kjøre på Proxmox-verten som subnet router. Bruk aldri `tailscale funnel`.
 
