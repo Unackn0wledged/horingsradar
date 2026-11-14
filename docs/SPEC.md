@@ -178,6 +178,7 @@ Utforming:
 - Tittel med relevansmerke og lenke, metadata og full visning for alle nivåer, også lav og ingen: sammendrag, begrunnelse, funn med verifiseringsstatus, leseguide og merknader.
 - Feilet vurdering: en melding om at den prøves på nytt, uten den interne feilteksten. Ikke vurdert: «Venter på vurdering».
 - Uten oversiktstabell, antall, periode, «Frister som nærmer seg», endringer siden forrige rapport og «Ny»-merker.
+- Viser ikke «dager igjen», heller ikke før fristen. En bufret PDF ville blitt utdatert, og nettsiden viser dager igjen selv.
 - Bruker siste driftsvurdering, aldri backtest. Bare høringer i drift.
 - Skriver bare filen (standard `DATA_DIR/hearing_pdfs/horing-<id>.pdf`). Endrer ikke `report`, `report_item` eller `reported_in`, og tar ikke jobb-låsen, siden den bare leser databasen.
 
@@ -266,19 +267,31 @@ Ikke med: redigering av prompts, konfigurasjon eller API-nøkkel, brukerhåndter
 
 Statisk nettside der brukerne selv slår opp høringer. Gjelder bare Høringsradar. Plan, milepæler og avgjørelser står i [PLAN-NETTSIDE.md](PLAN-NETTSIDE.md), oppsettet i [INSTALL-NETTSIDE.md](INSTALL-NETTSIDE.md).
 
-- Siden lages på lab etter `run` og lastes opp til en statisk host (Cloudflare Pages). Lab-serveren eksponeres aldri; bare utgående trafikk.
+- Siden lages på lab etter `run` når `SITE_ENABLED=true`, og lastes opp til en statisk host (Cloudflare Pages). Lab-serveren eksponeres aldri; bare utgående trafikk.
 - Bare innloggede brukere kommer inn (Cloudflare Access med engangskode på e-post). Søkemotorer stenges ute med `noindex` og `robots.txt`.
 - Siden er bare til lesing: ingen knapper som starter jobber eller koster penger, ingen e-post, varsler, kommentarer eller tilbakemeldinger, og ingen brukerdata på server. Personlige valg lagres i nettleseren.
 - Samme regler som rapporten: alle høringer vises, metadata kommer fra HTML-en, og uverifiserte sitater er synlig merket.
 - Bare driftsvurderinger, aldri backtest-vurderinger.
 - Ingen hemmeligheter eller interne felt (kostnad, tokens, rå LLM-svar) i det som lastes opp.
+- Utvalg: alle sporede høringer publisert de siste `SITE_WEEKS` ukene (standard 26), pluss alle åpne. Alle relevansnivåer tas med, også lav, ingen, feilet og ikke vurdert.
+- `data.json` har bare det rapporten viser. Ingen kostnad, tokens, rå LLM-svar eller feiltekster.
+- Siden er vanlig HTML, CSS og JS fra repoet, uten CDN og byggesteg. Søk, filter, sortering og personlige valg (følger, lest, periode, fane) gjøres i nettleseren og lagres i nettleserens localStorage. Lys og mørk visning følger systemet.
+- Oppsett: sidepanel med fanene Aktuelle, Nye, Alle og Følger; fire kort som snarveier; periodevalg (1, 2, 3, 4, 8 uker eller alle); søk og sortering; synlige filtre for relevans, sektor, departement og adresseliste; tabell der høy og middels vises først, og lav og ingen samles i en sammenleggbar liste. Hver høring åpnes som en egen side som dekker hele vinduet, med «Tilbake til oversikten», lenke til regjeringen.no, følg, kopier lenke og «Last ned PDF».
+- Bunntekst og «Om siden» sier at siden er et privat prosjekt, ikke en offisiell tjeneste, og at sorteringen er KI-generert og må kontrolleres mot kildene.
+- `uv run horingsradar site` bygger `DATA_DIR/site/`. `uv run horingsradar publish` bygger først og laster opp med wrangler til Cloudflare Pages. `--preview` laster opp til forhåndsvisning og rører ikke produksjon. `--no-build` laster opp siden som allerede er bygget. Begge er jobber med jobb-lås og føres i jobblisten.
+- Med `SITE_ENABLED=true` bygges og publiseres siden etter hver vellykket `run`. Feiler `run`, publiseres ingenting. Feiler bygging eller opplasting, er `run` likevel ok; feilen vises i panelet, og forrige versjon blir liggende. Siden bygges i `DATA_DIR/site.new` og byttes inn til slutt.
+- PDF-er for enkelthøringer gjenbrukes når innholdet er uendret, så et daglig bygg tar sekunder.
+- API-nøkkelen og konto-ID-en gis til wrangler bare i miljøet. De står ikke på kommandolinjen, i logg, i jobbsammendraget eller i databasen, og wrangler-utskrift renses for nøkkelen før den logges.
+- `_headers` setter noindex, en streng Content-Security-Policy og no-cache for `data.json`, forsiden og PDF-ene.
+- Panelet viser under «Nettside for brukerne» om automatisk publisering er på, adressen, når siden sist ble bygget, og siste publisering (tidspunkt, resultat, produksjon eller forhåndsvisning, og adresse eller feil). Knappene «Publiser nettside» og «Publiser forhåndsvisning» starter `publish` og `publish --preview` som egne prosesser.
 
 ## Drift
 
 - Debian-LXC på Proxmox, Python via uv.
 - systemd service og timer kjører kun `run`, daglig. `report` og `backtest` kjøres manuelt.
+- Med `SITE_ENABLED=true` bygger og publiserer `run` også nettsiden etter en vellykket kjøring.
 - `horingsradar-web.service` kjører adminpanelet som tjenestebrukeren.
-- Kun utgående trafikk: regjeringen.no, LLM-API, pakkeregistre.
+- Kun utgående trafikk: regjeringen.no, LLM-API, pakkeregistre og Cloudflare Pages.
 - `.env` på LXC-en har `chmod 600` og eies av tjenestebrukeren.
 - Logging til journald.
 

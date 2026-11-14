@@ -367,3 +367,32 @@ def test_failed_assessment_is_shown_as_failed(web):
     )
     assert "Feilet sak" in web.get("/hearings?relevans=feilet").text
     assert "Feilet sak" not in web.get("/hearings?relevans=ikke_vurdert").text
+
+
+def test_site_section_without_cloudflare_config(web):
+    page = web.get("/").text
+    assert "Nettside for brukerne" in page
+    assert "Mangler" in page and "CLOUDFLARE_API_TOKEN" in page
+    assert "Publiser nettside" not in page
+
+
+def test_site_section_shows_last_publish_and_buttons(settings, web):
+    from horingsradar.site.publish import record
+
+    settings.cloudflare_api_token = "cf-hemmelig-nokkel"
+    settings.cloudflare_account_id = "acc"
+    settings.site_enabled = True
+    record(
+        web.conn,
+        {"at": db.now_iso(), "preview": False, "ok": False, "error": "wrangler feilet (kode 1)"},
+    )
+    page = web.get("/").text
+    assert "Publiser nettside" in page and "Publiser forhåndsvisning" in page
+    assert "wrangler feilet (kode 1)" in page and "produksjon" in page
+    assert "cf-hemmelig-nokkel" not in page
+
+
+def test_publish_buttons_start_publish_jobs(web):
+    assert post(web, "/actions/publish").status_code == 303
+    assert post(web, "/actions/publish", preview="1").status_code == 303
+    assert web.spawned == [["publish"], ["publish", "--preview"]]

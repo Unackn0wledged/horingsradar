@@ -1,0 +1,42 @@
+<section class="sheet" aria-labelledby="site-heading">
+  <div class="page-head" style="margin-bottom: 14px">
+    <h2 id="site-heading" style="margin: 0">Nettside for brukerne</h2>
+    {% if site.configured %}
+    <div class="actions">
+      <form method="post" action="/actions/publish" onsubmit="return confirm('Bygge nettsiden og publisere den til brukerne nå?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn quiet small" type="submit" {{ 'disabled' if current }}>Publiser nettside</button>
+      </form>
+      <form method="post" action="/actions/publish">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="preview" value="1">
+        <button class="btn quiet small" type="submit" {{ 'disabled' if current }}>Publiser forhåndsvisning</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  <dl class="facts">
+    <dt>Automatisk publisering</dt>
+    <dd>{% if site.enabled %}<span class="state state-active">På</span> <span class="muted small">Etter hver vellykket kjøring.</span>{% else %}<span class="state state-paused">Av</span> <span class="muted small">Slås på med SITE_ENABLED=true i .env.</span>{% endif %}</dd>
+    {% if not site.configured %}
+    <dt>Oppsett</dt>
+    <dd class="small">Mangler {{ site.missing }}. Se docs/INSTALL-NETTSIDE.md.</dd>
+    {% endif %}
+    {% if site.base_url %}
+    <dt>Adresse</dt>
+    <dd><a href="{{ site.base_url }}" rel="noopener noreferrer" target="_blank">{{ site.base_url }}</a></dd>
+    {% endif %}
+    <dt>Sist bygget</dt>
+    <dd class="num">{{ site.built_at or "–" }}</dd>
+    <dt>Siste publisering</dt>
+    <dd>
+      {% if site.last %}
+        <span class="state state-{{ 'ok' if site.last.ok else 'failed' }}">{{ "Ferdig" if site.last.ok else "Feilet" }}</span>
+        <span class="num">{{ site.last.at|ts }}</span>
+        <span class="muted small">{{ "forhåndsvisning" if site.last.preview else "produksjon" }}</span>
+        {% if site.last.url %}<div class="small"><a href="{{ site.last.url }}" rel="noopener noreferrer" target="_blank">{{ site.last.url }}</a></div>{% endif %}
+        {% if site.last.error %}<div class="small">{{ site.last.error }}</div>{% endif %}
+      {% else %}–{% endif %}
+    </dd>
+  </dl>
+</section>

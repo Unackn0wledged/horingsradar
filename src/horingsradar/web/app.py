@@ -186,6 +186,8 @@ def create_app(settings: Settings) -> FastAPI:
             "report": "Rapport",
             "assess": "Vurdering",
             "backtest": "Backtest",
+            "site": "Nettside",
+            "publish": "Publisering",
         },
         doc_kinds={
             "horingsbrev": "Høringsbrev",
@@ -264,6 +266,29 @@ def create_app(settings: Settings) -> FastAPI:
             ).fetchone()[0],
         }
 
+    def site_context(conn: sqlite3.Connection) -> dict[str, Any]:
+        from horingsradar.site.publish import PublishError, check_config, last_publish
+
+        try:
+            check_config(settings)
+            missing = ""
+        except PublishError as exc:
+            missing = str(exc).removeprefix("Mangler i .env: ")
+        data_json = settings.site_dir / "data.json"
+        built_at = (
+            datetime.fromtimestamp(data_json.stat().st_mtime).strftime("%d.%m.%Y %H:%M")
+            if data_json.is_file()
+            else None
+        )
+        return {
+            "enabled": settings.site_enabled,
+            "configured": not missing,
+            "missing": missing,
+            "base_url": settings.site_base_url,
+            "built_at": built_at,
+            "last": last_publish(conn),
+        }
+
     def tracked_hearings(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         rows = conn.execute(
             "SELECT h.*, (SELECT COALESCE(a.relevance, '') || '|' || a.status FROM assessment a"
@@ -305,6 +330,7 @@ def create_app(settings: Settings) -> FastAPI:
                 log_tail=stats.tail(last["log_path"] if last else None, 60),
                 tracked=len(items),
                 radar=[seg for seg in relevance_counts(items) if seg["count"]],
+                site=site_context(conn),
             )
 
     @app.get("/partials/status", response_class=HTMLResponse)
@@ -528,6 +554,17 @@ def create_app(settings: Settings) -> FastAPI:
             return data
         with connection() as conn:
             return start(conn, ["run"], "/", "Kjøring")
+
+    @app.post("/actions/publish")
+    async def action_publish(request: Request):
+        data = await require_csrf(request)
+        if isinstance(data, Response):
+            return data
+        preview = data.get("preview") == "1"
+        with connection() as conn:
+            if preview:
+                return start(conn, ["publish", "--preview"], "/", "Publisering til forhåndsvisning")
+            return start(conn, ["publish"], "/", "Publisering av nettsiden")
 
     @app.post("/actions/report")
     async def action_report(request: Request):

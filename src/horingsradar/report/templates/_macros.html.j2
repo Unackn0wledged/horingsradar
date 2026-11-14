@@ -1,10 +1,11 @@
 {# Macros shared by report.html.j2 and hearing.html.j2. Import with context (status_labels). #}
 {% macro page_ranges(items) %}{% for r in items %}{% if not loop.first %}{{ " og " if loop.last else ", " }}{% endif %}{% if r.href %}<a class="page" href="{{ r.href }}">{{ r.label }}</a>{% else %}{{ r.label }}{% endif %}{% endfor %}{% endmacro %}
 
-{% macro facts(v) %}
+{# show_days_left: off in the single-hearing PDF, which the website caches for days. #}
+{% macro facts(v, show_days_left=true) %}
   <dl class="facts">
     <div><dt>Departement</dt><dd>{{ v.row.department or "–" }}{% if v.row.original_department %} (opprinnelig utgitt av {{ v.row.original_department }}){% endif %}</dd></div>
-    <div><dt>Publisert / frist</dt><dd>{{ v.row.published_date|date }} / {{ v.row.deadline|date }}{% if v.days_left is not none and v.days_left >= 0 %} ({{ v.days_left }} dager igjen){% endif %}</dd></div>
+    <div><dt>Publisert / frist</dt><dd>{{ v.row.published_date|date }} / {{ v.row.deadline|date }}{% if show_days_left and v.days_left is not none and v.days_left >= 0 %} ({{ v.days_left }} dager igjen){% endif %}</dd></div>
     <div><dt>Status</dt><dd>{{ v.row.status_raw or status_labels.get(v.row.status, "–") }}</dd></div>
     <div><dt>Datatilsynet på adresselisten</dt><dd>{% if v.row.dt_on_address_list %}Ja{% elif v.row.dt_on_address_list is none %}–{% else %}Nei{% endif %}</dd></div>
     <div><dt>Sektor</dt><dd>{{ v.sectors|join(", ") if v.sectors else "–" }}</dd></div>

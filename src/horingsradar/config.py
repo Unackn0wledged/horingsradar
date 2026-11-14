@@ -81,6 +81,19 @@ class Settings(BaseModel):
     # Link to the other radar's panel (regjeringen.no or EU/EEA); empty means no link.
     other_panel_url: str = ""
 
+    # Static website for the users (Høringsradar only). Built after every successful `run` and
+    # uploaded to Cloudflare Pages with wrangler when site_enabled is true.
+    site_enabled: bool = False
+    site_weeks: int = 26
+    site_base_url: str = ""
+    cloudflare_account_id: str = ""
+    cloudflare_api_token: str = Field(default="", repr=False)
+    cloudflare_pages_project: str = "horingsradar"
+    # Deploying to this branch updates production; any other branch is a preview.
+    cloudflare_pages_branch: str = "main"
+    wrangler_bin: str = "wrangler"
+    wrangler_timeout_seconds: float = 900.0
+
     log_level: str = "INFO"
 
     @field_validator("data_dir")
@@ -94,6 +107,13 @@ class Settings(BaseModel):
     def _min_interval(cls, v: float) -> float:
         if v < MIN_REQUEST_INTERVAL:
             raise ValueError(f"REQUEST_INTERVAL_SECONDS must be at least {MIN_REQUEST_INTERVAL}")
+        return v
+
+    @field_validator("site_weeks")
+    @classmethod
+    def _site_weeks(cls, v: int) -> int:
+        if not 1 <= v <= 520:
+            raise ValueError("SITE_WEEKS must be between 1 and 520")
         return v
 
     @field_validator("llm_provider")
@@ -154,6 +174,16 @@ class Settings(BaseModel):
     @property
     def logs_dir(self) -> Path:
         return self.data_dir / "logs"
+
+    @property
+    def site_dir(self) -> Path:
+        """The finished website, as uploaded by `publish`."""
+        return self.data_dir / "site"
+
+    @property
+    def site_cache_dir(self) -> Path:
+        """PDFs of single hearings, reused while their content is unchanged."""
+        return self.data_dir / "site_cache"
 
     def ensure_dirs(self) -> None:
         for path in (
