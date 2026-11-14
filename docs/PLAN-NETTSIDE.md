@@ -66,7 +66,7 @@ Basert på mockupen (lokalt, ikke i repoet):
 - **Faner:** Aktuelle (åpne for høring), Nye, Alle, Følger.
 - **Filtre:** søk, relevans, sektor, departement, målvirksomheten på adresselisten. Sortering på relevans, frist eller dato.
 - **Liste:** høy og middels som kort; lav og ingen samlet i en sammenleggbar liste. Merker for Ny, Endret og adresseliste. Ulest-prikk.
-- **Høringsside:** begrunnelse, sammendrag, sider å lese med lenke til riktig side, funn med sitat og kontrollmerke, dokumenter, fakta (departement, datoer, status, adresseliste), knappene «Åpne på regjeringen.no», «Følg», «Kopier lenke» og «Last ned PDF».
+- **Høringsside** (dekker hele vinduet, med «Tilbake til oversikten»): begrunnelse, sammendrag, sider å lese med lenke til riktig side, funn med sitat og kontrollmerke, dokumenter, fakta (departement, datoer, status, adresseliste), knappene «Åpne på regjeringen.no», «Følg», «Kopier lenke» og «Last ned PDF».
 - **Bunntekst:** privat prosjekt, ikke en offisiell tjeneste; vurderingene er KI-generert og må kontrolleres mot kilden. Ingen navn eller logo fra arbeidsgiver.
 - Ingenting som koster penger eller starter jobber. `noindex` og `robots.txt` som stenger søkemotorer ute.
 

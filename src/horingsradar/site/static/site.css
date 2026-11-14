@@ -177,8 +177,14 @@ input[type="search"]::placeholder { color: var(--muted); }
 .search { position: relative; flex: 1 1 260px; max-width: 420px; }
 .search svg { position: absolute; left: 11px; top: 10px; color: var(--muted); pointer-events: none; }
 .sort { display: flex; align-items: center; gap: 8px; margin-left: auto; color: var(--muted); font-size: 15px; }
+.filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 12px; margin-bottom: 14px; }
+.filters .field { flex: 1 1 190px; max-width: 280px; min-width: 0; }
+.filters .field-narrow { flex: 0 1 150px; }
+.field-label { font-weight: 600; font-size: 14px; color: var(--muted); }
 .filter-wrap { position: relative; }
-#filter-count { min-width: 20px; padding: 0 6px; background: var(--accent-solid); color: var(--accent-solid-text); border-color: transparent; }
+.select-btn { width: 100%; justify-content: space-between; font-weight: 400; }
+.select-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.filter-reset { align-self: flex-end; }
 
 .popover {
   position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; width: 320px; max-width: calc(100vw - 32px);
@@ -288,24 +294,32 @@ table.hearings { width: 100%; border-collapse: collapse; }
 }
 .menu-item:hover, .menu-item:focus-visible { background: var(--surface-2); text-decoration: none; outline-offset: -2px; }
 
-/* ---------- Detail drawer ---------- */
-.backdrop { position: fixed; inset: 0; z-index: 40; background: rgba(10, 15, 22, 0.45); }
+/* ---------- Detail page (covers the whole window) ---------- */
 .drawer {
-  position: fixed; z-index: 50; top: 0; right: 0; bottom: 0; width: min(680px, 100%);
-  overflow-y: auto; overscroll-behavior: contain; background: var(--surface);
-  border-left: 1px solid var(--border); box-shadow: var(--shadow-pop);
+  position: fixed; z-index: 50; inset: 0; width: 100%;
+  overflow-y: auto; overscroll-behavior: contain; background: var(--bg);
 }
 .drawer:focus { outline: none; }
-.drawer:not([hidden]) { animation: slide-in 0.18s ease-out; }
-@keyframes slide-in { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+.drawer:not([hidden]) { animation: fade-in 0.15s ease-out; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .drawer:not([hidden]) { animation: none; } .section-toggle::before { transition: none; } }
 
 .drawer-bar {
-  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between;
-  padding: 8px 12px 8px 24px; background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px max(24px, calc((100% - 960px) / 2)); background: var(--surface); border-bottom: 1px solid var(--border);
 }
-.drawer-kicker { color: var(--muted); font-weight: 600; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
-.drawer-body { padding: 20px 24px 40px; display: flex; flex-direction: column; gap: 22px; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 6px 12px 6px 8px;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text);
+  font: inherit; font-weight: 600; font-size: 15px; cursor: pointer;
+}
+.back-btn:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.drawer-brand { color: var(--muted); font-weight: 700; font-size: 15px; }
+.drawer-body {
+  width: 100%; max-width: 960px; margin: 24px auto 0; padding: 28px 32px 48px;
+  display: flex; flex-direction: column; gap: 24px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+}
 .drawer-head { display: flex; flex-direction: column; gap: 10px; }
 .drawer-head .badges { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .drawer-head .tag { margin: 0; }
@@ -398,9 +412,10 @@ table.hearings { width: 100%; border-collapse: collapse; }
   .hearings .c-addr { display: none; }
   .hearings .c-deadline .deadline-date::before { content: "Frist "; font-weight: 400; color: var(--muted); }
 
-  .drawer { width: 100%; border-left: 0; }
-  .drawer-bar { padding-left: 16px; }
-  .drawer-body { padding: 16px 16px 32px; }
+  .drawer-bar { padding: 8px 16px; }
+  .drawer-brand { display: none; }
+  .drawer-body { margin: 0; padding: 16px 16px 32px; border: 0; border-radius: 0; }
+  .filters .field, .filters .field-narrow { flex: 1 1 calc(50% - 6px); max-width: none; }
   .drawer-title { font-size: 21px; }
   .facts { grid-template-columns: minmax(0, 1fr); gap: 2px; }
   .facts dd { margin-bottom: 10px; }
@@ -416,5 +431,5 @@ table.hearings { width: 100%; border-collapse: collapse; }
 }
 
 @media print {
-  .sidebar, .toolbar, .chips, .kpis, .drawer-bar, .actions, .backdrop { display: none !important; }
+  .sidebar, .toolbar, .filters, .chips, .kpis, .drawer-bar, .actions { display: none !important; }
 }

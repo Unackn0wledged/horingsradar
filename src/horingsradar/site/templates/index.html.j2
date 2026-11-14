@@ -106,43 +106,6 @@
           <input type="search" id="search" placeholder="Søk i høringer" aria-label="Søk i tittel, departement, sammendrag, begrunnelse og sektor" autocomplete="off">
         </div>
 
-        <div class="filter-wrap">
-          <button type="button" class="btn" id="filter-btn" aria-expanded="false" aria-controls="filter-pop" aria-haspopup="true">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></g></svg>
-            <span>Filter</span>
-            <span class="chip-count" id="filter-count" hidden>0</span>
-          </button>
-          <div class="popover" id="filter-pop" role="group" aria-label="Filter" hidden>
-            <fieldset class="fs">
-              <legend>Relevans</legend>
-              <label class="check"><input type="checkbox" name="rel" value="hoy"> Høy</label>
-              <label class="check"><input type="checkbox" name="rel" value="middels"> Middels</label>
-              <label class="check"><input type="checkbox" name="rel" value="lav"> Lav</label>
-              <label class="check"><input type="checkbox" name="rel" value="ingen"> Ingen</label>
-            </fieldset>
-            <div class="field">
-              <label for="f-sector">Sektor</label>
-              <select id="f-sector"><option value="">Alle sektorer</option></select>
-            </div>
-            <div class="field">
-              <label for="f-dept">Departement</label>
-              <select id="f-dept"><option value="">Alle departementer</option></select>
-            </div>
-            <div class="field">
-              <label for="f-addr">Datatilsynet på adresselisten</label>
-              <select id="f-addr">
-                <option value="">Alle</option>
-                <option value="yes">Ja</option>
-                <option value="no">Nei</option>
-              </select>
-            </div>
-            <div class="pop-actions">
-              <button type="button" class="btn btn-quiet" id="filter-reset">Nullstill</button>
-              <button type="button" class="btn btn-primary" id="filter-done">Ferdig</button>
-            </div>
-          </div>
-        </div>
-
         <div class="sort">
           <label for="sort-select">Sorter</label>
           <select id="sort-select">
@@ -151,6 +114,45 @@
             <option value="publisert">Publisert</option>
           </select>
         </div>
+      </div>
+
+      <div class="filters" role="group" aria-label="Filter">
+        <div class="field filter-wrap">
+          <span class="field-label" id="rel-label">Relevans</span>
+          <button type="button" class="btn select-btn" id="filter-btn" aria-expanded="false" aria-controls="filter-pop" aria-haspopup="true" aria-labelledby="rel-label filter-btn-text">
+            <span id="filter-btn-text">Alle nivåer</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="popover" id="filter-pop" role="group" aria-label="Relevans" hidden>
+            <fieldset class="fs">
+              <legend>Vis relevans</legend>
+              <label class="check"><input type="checkbox" name="rel" value="hoy"> Høy</label>
+              <label class="check"><input type="checkbox" name="rel" value="middels"> Middels</label>
+              <label class="check"><input type="checkbox" name="rel" value="lav"> Lav</label>
+              <label class="check"><input type="checkbox" name="rel" value="ingen"> Ingen</label>
+            </fieldset>
+            <div class="pop-actions">
+              <button type="button" class="btn btn-primary" id="filter-done">Ferdig</button>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-sector">Sektor</label>
+          <select id="f-sector"><option value="">Alle sektorer</option></select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="f-dept">Departement</label>
+          <select id="f-dept"><option value="">Alle departementer</option></select>
+        </div>
+        <div class="field field-narrow">
+          <label class="field-label" for="f-addr" title="Datatilsynet står på adresselisten">På adresselisten</label>
+          <select id="f-addr">
+            <option value="">Alle</option>
+            <option value="yes">Ja</option>
+            <option value="no">Nei</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-quiet filter-reset" id="filter-reset" hidden>Nullstill filter</button>
       </div>
 
       <div class="chips" id="chips" aria-label="Aktive filtre"></div>
@@ -167,16 +169,16 @@
   </main>
 </div>
 
-<div class="backdrop" id="backdrop" hidden></div>
-<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1" hidden>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1" hidden>
   <div class="drawer-bar">
-    <span class="drawer-kicker">Høring</span>
-    <button type="button" class="icon-btn" id="drawer-close" aria-label="Lukk detaljvisning">
-      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <button type="button" class="back-btn" id="drawer-close">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Tilbake til oversikten</span>
     </button>
+    <span class="drawer-brand">Høringsradar</span>
   </div>
   <div class="drawer-body" id="drawer-body"></div>
-</aside>
+</div>
 
 <div class="menu" id="row-menu" role="menu" hidden></div>
 

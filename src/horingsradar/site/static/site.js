@@ -393,9 +393,10 @@
       });
       box.appendChild(b);
     }
-    const count = $("filter-count");
-    count.hidden = specs.length === 0;
-    count.textContent = String(specs.length);
+    const names = { hoy: "Høy", middels: "Middels", lav: "Lav", ingen: "Ingen" };
+    const rel = Array.from(state.filters.rel).sort((a, b) => REL_ORDER[a] - REL_ORDER[b]);
+    $("filter-btn-text").textContent = rel.length ? rel.map((r) => names[r] || r).join(", ") : "Alle nivåer";
+    $("filter-reset").hidden = specs.length === 0;
   }
 
   function relPill(h) {
@@ -867,7 +868,6 @@
     storeSetJSON("read", state.read);
     buildDrawer(h);
     $("drawer").hidden = false;
-    $("backdrop").hidden = false;
     $("app").inert = true;
     document.body.classList.add("no-scroll");
     $("drawer").scrollTop = 0;
@@ -881,7 +881,6 @@
     state.drawerId = null;
     state.drawerOpener = null;
     $("drawer").hidden = true;
-    $("backdrop").hidden = true;
     $("app").inert = false;
     document.body.classList.remove("no-scroll");
     if (restoreFocus) {
@@ -1017,7 +1016,6 @@
     });
 
     $("drawer-close").addEventListener("click", requestCloseDrawer);
-    $("backdrop").addEventListener("click", requestCloseDrawer);
     window.addEventListener("hashchange", function () {
       route(true);
     });
