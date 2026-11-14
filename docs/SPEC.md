@@ -18,10 +18,12 @@ Med i piloten:
 - PDF-rapport som hentes ut manuelt og videresendes til pilotbrukerne
 - Backtest mot historiske høringer
 - Enkelt adminpanel på LAN for administratoren
+- Statisk nettside for brukerne bak innlogging (se Nettside for brukerne)
 
 Utenfor piloten:
 - Andre kilder (direktorater, særorganer, Stortinget). EU-kilder dekkes av EU/EØS-radaren.
-- E-post, hastevarsler, web-UI for brukerne, tilbakemeldingsknapper
+- E-post, hastevarsler, tilbakemeldingsknapper
+- Web-UI for brukerne utover den statiske nettsiden
 - Skrivestøtte og utkast til høringsinnspill
 
 ## Datakilde: regjeringen.no
@@ -248,6 +250,17 @@ Ikke med: redigering av prompts, konfigurasjon eller API-nøkkel, brukerhåndter
 - HTTP Basic auth med brukernavn og passord-hash fra `.env`, siden alt på LAN-et kan nå panelet.
 - Alle handlinger er POST med CSRF-token. GET endrer aldri tilstand.
 - Panelet viser aldri API-nøkkelen eller annet innhold fra `.env`.
+
+## Nettside for brukerne
+
+Statisk nettside der brukerne selv slår opp høringer. Gjelder bare Høringsradar. Plan, milepæler og avgjørelser står i [PLAN-NETTSIDE.md](PLAN-NETTSIDE.md), oppsettet i [INSTALL-NETTSIDE.md](INSTALL-NETTSIDE.md).
+
+- Siden lages på lab etter `run` og lastes opp til en statisk host (Cloudflare Pages). Lab-serveren eksponeres aldri; bare utgående trafikk.
+- Bare innloggede brukere kommer inn (Cloudflare Access med engangskode på e-post). Søkemotorer stenges ute med `noindex` og `robots.txt`.
+- Siden er bare til lesing: ingen knapper som starter jobber eller koster penger, ingen e-post, varsler, kommentarer eller tilbakemeldinger, og ingen brukerdata på server. Personlige valg lagres i nettleseren.
+- Samme regler som rapporten: alle høringer vises, metadata kommer fra HTML-en, og uverifiserte sitater er synlig merket.
+- Bare driftsvurderinger, aldri backtest-vurderinger.
+- Ingen hemmeligheter eller interne felt (kostnad, tokens, rå LLM-svar) i det som lastes opp.
 
 ## Drift
 

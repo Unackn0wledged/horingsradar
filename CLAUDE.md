@@ -9,7 +9,7 @@ Krav og detaljer står i `docs/SPEC.md` (Høringsradar) og `docs/EU-SPEC.md` (EU
 ## Harde regler
 
 - Høringsradar har én kilde: regjeringen.no. EU/EØS-radaren har kildene i `docs/EU-SPEC.md`. Ikke implementer andre kilder. Kildespesifikk kode ligger i egne moduler.
-- Ingen e-post, varsler eller tilbakemeldingsfunksjon i piloten. Output er PDF-filer på disk. Eneste web-UI er adminpanelet for administratoren (se SPEC); ingen UI for brukerne.
+- Ingen e-post, varsler eller tilbakemeldingsfunksjon. Output er PDF-filer på disk og, for Høringsradar, en statisk nettside for brukerne bak innlogging (se `docs/PLAN-NETTSIDE.md`). Nettsiden er bare til lesing: ingen knapper som starter jobber eller koster penger, og ingen brukerdata på server. Adminpanelet er eneste web-UI med handlinger, og det blir på LAN.
 - LLM-en skal aldri skrive høringsinnspill, foreslå standpunkt eller vurdere om et forslag er godt eller dårlig. Den beskriver hva som foreslås og hvor det står. Modellen gir aldri egne anbefalinger til brukerne («vi anbefaler» o.l. avvises). Å gjengi hva høringsdokumentene selv sier er tillatt, også «det anbefales» og råd rettet til målvirksomheten («… bør») når det står i kildeteksten (sjekkes i kode).
 - Metadata (tittel, publisert, frist, departement, status, adresseliste) parses fra HTML. LLM-en er aldri kilde til dato, frist eller departement. For EU/EØS-radaren gjelder det samme for referanse, datoer, frister og EØS-status.
 - Høringsradar: ingen høring filtreres bort. Alle vurderes og vises i rapporten; lav og ingen relevans som én linje med begrunnelse.
