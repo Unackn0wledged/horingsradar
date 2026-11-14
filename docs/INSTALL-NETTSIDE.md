@@ -257,19 +257,42 @@ Nøkkelen skal bare ligge i `.env` på lab. Den skal aldri i repoet, i chat elle
 
 > Opplastingsverktøyet er `wrangler`. Det installeres med npm og kjøres av tjenestebrukeren `horingsradar`.
 
-`wrangler` krever en støttet Node.js-versjon (Current, Active eller Maintenance LTS).
+`wrangler` krever Node.js 22.12 eller nyere. Debian 13 har Node.js 20 i sine egne pakker, og den er for gammel. Installer derfor Node.js fra NodeSource, som har oppdaterte LTS-versjoner for Debian. Pakken `nodejs` derfra har med `npm`.
+
+Har du allerede installert `nodejs` og `npm` fra Debian (og kanskje wrangler med dem), fjern dem først. NodeSource-pakken kan ikke installeres ved siden av Debians `npm`:
 
 ```bash
-apt update && apt install -y nodejs npm
+npm uninstall -g wrangler
+apt remove -y nodejs npm
+apt autoremove -y
+```
+
+Feilmeldinger her betyr bare at noe ikke var installert. Gå videre.
+
+Legg til NodeSource og installer Node.js 24 (LTS). Skriptet legger til NodeSource sitt apt-arkiv og nøkkelen til det:
+
+```bash
+apt update && apt install -y curl ca-certificates
+curl -fsSL https://deb.nodesource.com/setup_24.x -o /root/nodesource_setup.sh
+bash /root/nodesource_setup.sh
+apt install -y nodejs
 node --version
 ```
 
-Er versjonen eldre enn den eldste støttede LTS-versjonen, installer Node.js fra NodeSource i stedet, etter deres veiledning for Debian. Installasjonen av wrangler skriver en tydelig feilmelding hvis Node.js er for gammel.
+`curl` skriver ingenting når nedlastingen går bra. Forventet utskrift fra `node --version`: `v24.` og noe mer, f.eks. `v24.22.3`.
+
+Installer wrangler:
 
 ```bash
 npm install -g wrangler
 wrangler --version
 ```
+
+Forventet utskrift: et versjonsnummer, f.eks. `⛅️ wrangler 4.162.0`, uten «Wrangler requires at least Node.js». Får du den meldingen, er det fortsatt den gamle Node.js som brukes; sjekk `which node` (skal være `/usr/bin/node`) og `node --version`.
+
+Får du `-bash: /usr/local/bin/wrangler: No such file or directory`, husker bash stien fra en tidligere installasjon. Kjør `hash -r` (eller logg inn på nytt) og prøv igjen. `which wrangler` skal gi `/usr/bin/wrangler`.
+
+npm kan advare om at installasjonsskriptene til `esbuild` og `workerd` ikke er kjørt («install scripts not yet covered by allowScripts»). Det er ufarlig: de trengs bare for å kjøre Workers lokalt, ikke for å laste opp ferdige filer.
 
 Sjekk at tjenestebrukeren finner den:
 
@@ -303,7 +326,7 @@ WRANGLER_BIN=wrangler
 - `CLOUDFLARE_API_TOKEN`: API-nøkkelen fra del 6.
 - `CLOUDFLARE_PAGES_PROJECT`: navnet på Pages-prosjektet (`horingsradar`).
 - `CLOUDFLARE_PAGES_BRANCH`: produksjonsgrenen til Pages-prosjektet. For prosjekt med direkte opplasting er den `main`. Sjekk under **Workers & Pages** > prosjektet > **Settings**, og bruk navnet som står der. Et annet navn gir forhåndsvisning i stedet for produksjon.
-- `WRANGLER_BIN`: kommandoen for wrangler. Standard er `wrangler`. Bruk full sti, f.eks. `/usr/local/bin/wrangler`, hvis `which wrangler` ikke finner den (del 7).
+- `WRANGLER_BIN`: kommandoen for wrangler. Standard er `wrangler`. Bruk full sti, f.eks. `/usr/bin/wrangler`, hvis `which wrangler` ikke finner den (del 7).
 
 ```bash
 chmod 600 /opt/horingsradar/.env
@@ -387,6 +410,8 @@ Panelet viser tidspunkt og resultat for siste publisering. Knappene **Publiser n
 | Brukeren får ingen kode | Adressen er ikke i regelen, eller e-posten stoppes på jobb | Sjekk regelen (5.3); se i søppelpost og karantene; be IT hvitliste `noreply@notify.cloudflare.com` |
 | Koden er «allerede brukt» | Sikkerhetsfilter har åpnet e-posten | Hvitlisting hos IT |
 | `publish` feiler med 401/403 | Feil eller utløpt nøkkel, mangler Pages-rettighet, eller feil Account ID | Lag ny nøkkel (del 6) og sjekk `.env` |
+| «Wrangler requires at least Node.js v22.12.0» | Node.js fra Debian (v20) brukes | Installer Node.js fra NodeSource (del 7) og installer wrangler på nytt |
+| `/usr/local/bin/wrangler: No such file or directory` | Bash husker stien fra en tidligere installasjon | `hash -r`, eller logg inn på nytt |
 | `publish` feiler fordi `wrangler` ikke finnes | Del 7 er ikke gjort, eller `PATH` mangler npm-mappen for tjenestebrukeren | `which wrangler` som `horingsradar`-brukeren. Finner den ingenting, sett `WRANGLER_BIN` til full sti (del 8) |
 | `publish` går til forhåndsvisning, ikke produksjon | `CLOUDFLARE_PAGES_BRANCH` er ikke produksjonsgrenen i Pages-prosjektet | Sjekk **Settings** i prosjektet og sett navnet der (ofte `main`) |
 | `wrangler` feiler med at den ikke kan skrive | Tjenesten kan bare skrive i `/var/lib/horingsradar`, og `wrangler/`-mappen der har feil eier | Sjekk at `/var/lib/horingsradar/wrangler/` finnes og eies av `horingsradar` |
