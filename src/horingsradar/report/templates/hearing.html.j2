@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<title>Høringsradar – {{ v.row.title }}</title>
+{% include "_style.html.j2" %}
+<style>
+h2.hearing-title { font-size: 14pt; line-height: 1.25; margin: 6mm 0 2mm; padding-bottom: 0; border-bottom: none; }
+h2.hearing-title .badge { font-size: 9pt; vertical-align: 2px; }
+</style>
+</head>
+<body>
+{# One hearing, for the website's «Last ned PDF». Same look as the report, without the parts that
+   only belong in a report of many hearings (overview, counts, period, changes since last report). #}
+{% import "_macros.html.j2" as m with context %}
+
+<div class="masthead">
+  <h1>Høringsradar</h1>
+  <div class="sub">Høringer fra regjeringen.no sortert etter personvernrelevans</div>
+</div>
+<div class="meta">
+  <span><strong>Generert:</strong> {{ generated_at }}</span>
+  <span><strong>Vurdert:</strong> {{ v.assessment.created_at|date if v.assessment else "–" }}</span><br>
+  <span><strong>Modell og prompt:</strong> {{ v.assessment.model ~ " / prompt " ~ v.assessment.prompt_version if v.assessment else "–" }}</span>
+</div>
+<div class="notice">
+  <strong>Merk:</strong> Relevansnivå, sammendrag, funn og leseguide er KI-generert sortering og må verifiseres mot kildedokumentene.
+  Verktøyet tar ikke stilling til forslagene og skriver ikke høringsinnspill. Tittel, datoer, frist, departement og adresseliste er hentet direkte fra regjeringen.no.
+  Sitater er kontrollert maskinelt mot dokumentteksten; sitater som ikke kunne bekreftes er tydelig merket.
+</div>
+
+<section class="hearing" id="h{{ v.id }}">
+  <h2 class="hearing-title"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a></h2>
+{{ m.facts(v) }}
+{% if v.relevance == "feilet" %}
+  <h4>Vurdering</h4>
+  <p>Vurderingen feilet ved siste forsøk og prøves på nytt ved neste kjøring. Høringen er ikke filtrert bort.</p>
+{% elif v.relevance == "ikke_vurdert" %}
+  <h4>Vurdering</h4>
+  <p>Venter på vurdering. Høringen er hentet og vurderes ved neste kjøring.</p>
+{% else %}
+{{ m.analysis(v) }}
+{% endif %}
+</section>
+
+</body>
+</html>

@@ -3,6 +3,10 @@
 Endringer i PDF-rapportene, nyeste først. Én linje per endring.
 **H** = rapporten om høringer fra regjeringen.no, **EU** = rapporten om EU/EØS-forslag.
 
+## 2026-11-14
+
+- **H:** Ny PDF for én høring (til nettsiden), med samme utseende som rapporten og full visning også for lav og ingen relevans.
+
 ## 2026-11-05
 
 - **H:** Oversikten er kortere: fem kolonner, med departement, dato og sektorer i en grå linje under tittelen.

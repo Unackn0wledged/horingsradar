@@ -1,7 +1,7 @@
 
 # Høringsradar – plan for nettside til brukerne
 
-Status: M0 er ferdig (se [Avgjørelser i M0](#avgjørelser-i-m0-2026-11-14)). Neste er M1. Gjelder bare Høringsradar (regjeringen.no); EU/EØS-radaren er ikke med.
+Status: M0 og M1 er ferdige (se [Avgjørelser i M0](#avgjørelser-i-m0-2026-11-14)). Neste er M2. Gjelder bare Høringsradar (regjeringen.no); EU/EØS-radaren er ikke med.
 
 Installasjonsveiledningen er [INSTALL-NETTSIDE.md](INSTALL-NETTSIDE.md).
 
@@ -80,12 +80,14 @@ Hver milepæl får en egen plan som godkjennes før koding, som før.
 - Velge opplastingsverktøy og godkjenne eventuell ny avhengighet.
 - Kjøpe domene og sette opp Cloudflare etter installasjonsveiledningen, del 2–6.
 
-### M1 – PDF for én høring
-- Ny mal `report/templates/hearing.html.j2` som deler stil og makroer med `report.html.j2` (flyttes til en felles fil). Uten det som bare gjelder samlerapporten: oversiktstabell, tellinger, «Frister fremover», «Endret frist», tomme seksjoner og periodelinje. Lav og ingen får full visning, ikke én linje.
-- Topptekst med tittel, «Hentet <dato>» og modell/prompt. Samme merknad om KI og kontroll av sitater.
-- Kommando `horingsradar hearing-pdf <id> [--out <fil>]` for å teste for hånd.
-- Endrer ikke `reported_in` eller `report_item`.
-- Tester: høy, middels, lav, ingen, feilet og ikke vurdert; uverifisert sitat er synlig merket; ingen samlerapport-seksjoner i PDF-en.
+### M1 – PDF for én høring (ferdig 2026-11-14)
+- Ny mal `report/templates/hearing.html.j2`. Stilen og makroene (fakta, funn, leseguide) er flyttet fra `report.html.j2` til `_style.html.j2` og `_macros.html.j2`, som begge malene bruker. Samlerapporten ser ut som før.
+- Uten det som bare gjelder samlerapporten: oversiktstabell, tellinger, periodelinje, «Frister som nærmer seg», endringer siden forrige rapport og «Ny»-merker. Lav og ingen får full visning, ikke én linje.
+- Topptekst med «Generert», «Vurdert» (dato for vurderingen) og modell/prompt, og samme merknad om KI og kontroll av sitater. «Hentet <dato>» ble droppet fordi den ville bli utdatert i en PDF som bare lages på nytt ved endringer.
+- Feilet vurdering vises uten den interne feilteksten.
+- Kommando `horingsradar hearing-pdf <id> [--out <fil>]`. Leser bare databasen, tar ikke jobb-låsen; `site` i M2 tar låsen.
+- Endrer ikke `report`, `report_item` eller `reported_in`.
+- Tester: høy, middels, lav, ingen, feilet og ikke vurdert; uverifisert sitat er synlig merket; ingen samlerapport-seksjoner; bare driftsvurderinger; ukjent eller ikke fulgt høring gir feil.
 
 ### M2 – Statisk side
 - Ny modul `src/horingsradar/site/` med Jinja2-maler, CSS og egen JS (vendret i repoet, ingen CDN).

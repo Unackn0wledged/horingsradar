@@ -170,6 +170,17 @@ Utforming:
 - Relevansnivå vises med tekst, ikke bare farge.
 - Alle lenker er klikkbare.
 
+### PDF for én høring
+
+`horingsradar hearing-pdf <id> [--out <fil>]` lager en PDF av én høring til nettsiden (se Nettside for brukerne). Malen er `hearing.html.j2`; den deler stil og makroer med rapportmalen (`_style.html.j2`, `_macros.html.j2`).
+
+- Topptekst med tidspunkt for generering, dato for vurderingen, modell og promptversjon, og samme merknad om KI og kontroll av sitater som rapporten.
+- Tittel med relevansmerke og lenke, metadata og full visning for alle nivåer, også lav og ingen: sammendrag, begrunnelse, funn med verifiseringsstatus, leseguide og merknader.
+- Feilet vurdering: en melding om at den prøves på nytt, uten den interne feilteksten. Ikke vurdert: «Venter på vurdering».
+- Uten oversiktstabell, antall, periode, «Frister som nærmer seg», endringer siden forrige rapport og «Ny»-merker.
+- Bruker siste driftsvurdering, aldri backtest. Bare høringer i drift.
+- Skriver bare filen (standard `DATA_DIR/hearing_pdfs/horing-<id>.pdf`). Endrer ikke `report`, `report_item` eller `reported_in`, og tar ikke jobb-låsen, siden den bare leser databasen.
+
 ## Backtest
 
 Backtesten måler om modellen og prompten rangerer høringer riktig, med målvirksomhetens faktiske høringssvar som fasit. Den tester verktøyet, ikke målvirksomheten.

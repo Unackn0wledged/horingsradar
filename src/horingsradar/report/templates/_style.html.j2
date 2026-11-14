@@ -1,0 +1,89 @@
+{# Shared stylesheet for report.html.j2 and hearing.html.j2. eu_report.html.j2 has its own copy. #}
+<style>
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Regular.ttf"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-It.ttf"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Semibold.ttf"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "Source Sans 3"; src: url("{{ fonts_dir }}/SourceSans3-Bold.ttf"); font-weight: 700; font-style: normal; }
+
+@page {
+  size: A4;
+  margin: 17mm 15mm 18mm 15mm;
+  @bottom-left { content: "Høringsradar · KI-generert sortering – verifiser mot kilden"; font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+  @bottom-right { content: "Side " counter(page) " av " counter(pages); font-family: "Source Sans 3"; font-size: 7.5pt; color: #5b6470; }
+}
+@page :first { @bottom-left { content: none; } }
+
+html { font-family: "Source Sans 3", sans-serif; font-size: 9.8pt; color: #1b1f24; line-height: 1.38; }
+body { margin: 0; }
+a { color: #1d4f91; text-decoration: none; }
+h1 { font-size: 22pt; font-weight: 700; margin: 0; letter-spacing: -0.2pt; }
+h2 { font-size: 13.5pt; font-weight: 700; margin: 8mm 0 3mm; padding-bottom: 1.2mm; border-bottom: 0.5mm solid #1b1f24; break-after: avoid; }
+h3 { font-size: 11.5pt; font-weight: 600; margin: 0 0 1.5mm; break-after: avoid; }
+h4 { font-size: 9.8pt; font-weight: 700; margin: 3mm 0 1mm; text-transform: uppercase; letter-spacing: 0.4pt; color: #3d4652; break-after: avoid; }
+p { margin: 0 0 2mm; }
+
+.masthead { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1.2mm solid #1b1f24; padding-bottom: 2mm; }
+.masthead .sub { font-size: 10pt; color: #3d4652; }
+.meta { margin: 3mm 0; font-size: 9pt; color: #3d4652; }
+.meta span { margin-right: 6mm; }
+.notice { border: 0.35mm solid #a15c07; background: #fff7e8; padding: 2.5mm 3.5mm; font-size: 9pt; margin: 3mm 0 2mm; }
+
+.badge { display: inline-block; padding: 0.3mm 1.8mm; border-radius: 1.2mm; border: 0.3mm solid; font-weight: 700; font-size: 8pt; white-space: nowrap; }
+.rel-hoy { background: #fde4e2; border-color: #a8231b; color: #7a160f; }
+.rel-middels { background: #fff0d4; border-color: #a85a07; color: #683606; }
+.rel-lav { background: #e6f0fa; border-color: #2d68ad; color: #1b4677; }
+.rel-ingen { background: #eff1f3; border-color: #69717d; color: #39414b; }
+.rel-feilet, .rel-ikke_vurdert { background: #ffffff; border-style: dashed; border-color: #69717d; color: #39414b; }
+.tag { display: inline-block; font-size: 7.5pt; font-weight: 700; color: #ffffff; background: #1d4f91; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-left: 1.5mm; vertical-align: 1px; }
+
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; font-weight: 700; font-size: 8pt; color: #3d4652; border-bottom: 0.4mm solid #1b1f24; padding: 1.2mm 1.5mm; vertical-align: bottom; }
+td { border-bottom: 0.2mm solid #d4d9df; padding: 1.3mm 1.5mm; vertical-align: top; font-size: 8.6pt; }
+tr { break-inside: avoid; }
+td.num { text-align: right; white-space: nowrap; }
+td.date { white-space: nowrap; }
+.muted { color: #5b6470; }
+.empty { color: #5b6470; font-style: italic; }
+
+.hearing { border-top: 0.3mm solid #b7bec7; padding-top: 3.5mm; margin-top: 5mm; }
+.hearing:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.facts { display: table; width: 100%; font-size: 8.8pt; margin: 1.5mm 0 2.5mm; }
+.facts div { display: table-row; }
+.facts dt, .facts dd { display: table-cell; padding: 0.4mm 0; }
+.facts dt { width: 46mm; color: #3d4652; font-weight: 600; }
+.facts dd { margin: 0; }
+
+.finding { border-left: 1mm solid #b7bec7; padding: 0.5mm 0 0.5mm 3mm; margin: 0 0 2.5mm; break-inside: avoid; }
+.finding.unverified { border-left-color: #a8231b; }
+.finding .head { font-size: 8.6pt; color: #3d4652; }
+.finding .head strong { color: #1b1f24; }
+.quote { font-style: italic; margin: 1mm 0 0.5mm; }
+.verified { font-size: 8pt; color: #2b6a37; font-weight: 600; }
+.warning { font-size: 8.5pt; color: #a8231b; font-weight: 700; }
+.flag { display: inline-block; background: #a8231b; color: #ffffff; border-radius: 1mm; padding: 0.2mm 1.4mm; margin-right: 1mm; font-size: 7.5pt; letter-spacing: 0.3pt; }
+
+.counts { margin: 0 0 1.5mm; }
+.counts .badge { font-size: 9pt; padding: 0.5mm 2.2mm; margin-right: 1mm; }
+.legend { font-size: 8pt; color: #5b6470; margin: 0 0 2mm; }
+table.overview { table-layout: fixed; }
+table.overview th.rel { width: 16mm; }
+table.overview th.date { width: 18mm; }
+table.overview th.days { width: 11mm; text-align: right; }
+table.overview th.dt { width: 15mm; }
+table.overview td { padding: 1mm 1.5mm; }
+.row-title { font-size: 8.8pt; line-height: 1.25; }
+.row-meta { color: #5b6470; font-size: 7.6pt; line-height: 1.25; margin-top: 0.3mm; }
+a.badge-link { text-decoration: none; }
+a.page { text-decoration: underline; text-decoration-color: #9fb3cf; }
+.back { text-align: right; font-size: 8pt; margin: 1.5mm 0 0; }
+.back-inline { font-size: 8pt; white-space: nowrap; }
+.changes { border: 0.35mm solid #1d4f91; background: #eef3fa; border-radius: 1mm; padding: 2.5mm 3.5mm; margin: 1mm 0 3mm; break-inside: avoid; }
+.changes-head { font-weight: 700; color: #173e72; margin-bottom: 1mm; }
+.changes table { width: auto; }
+.changes td { border: 0; padding: 0.4mm 4mm 0.4mm 0; font-size: 9pt; }
+.changes td.what { color: #3d4652; font-weight: 600; white-space: nowrap; }
+.tag.new { background: #2b6a37; }
+ul.brief { list-style: none; padding: 0; margin: 0; }
+ul.brief li { padding: 1.4mm 0; border-bottom: 0.2mm solid #d4d9df; break-inside: avoid; }
+</style>
+

@@ -5,6 +5,9 @@ plus high/medium hearings that changed since the report that last showed them (s
 select_for_report). `--week YYYY-Www` regenerates the hearings published in that ISO week, and
 `--weeks N` makes a report of the hearings published in the last N weeks. Neither touches
 `reported_in`, so the next operational report is the same with or without them.
+
+`build_hearing_pdf` makes a PDF of one hearing (hearing.html.j2) for the website. It only writes
+the file: no `report` row, and `reported_in` and `report_item` are left alone.
 """
 
 from __future__ import annotations
@@ -468,6 +471,48 @@ def _environment() -> Environment:
 
 def render_html(context: dict[str, Any]) -> str:
     return _environment().get_template("report.html.j2").render(**context)
+
+
+class HearingNotFound(LookupError):
+    """No tracked (operational) hearing with that ID."""
+
+
+def hearing_pdf_path(settings: Settings, hearing_id: int) -> Path:
+    return settings.data_dir / "hearing_pdfs" / f"horing-{hearing_id}.pdf"
+
+
+def render_hearing_html(
+    conn: sqlite3.Connection, hearing_id: int, now: datetime | None = None
+) -> str:
+    """HTML for one hearing with its latest operational assessment (never a backtest one)."""
+    now = now or datetime.now().astimezone()
+    row = conn.execute(
+        "SELECT * FROM hearing WHERE id = ? AND tracked = 1", (hearing_id,)
+    ).fetchone()
+    if row is None:
+        raise HearingNotFound(f"Fant ingen høring i drift med ID {hearing_id}")
+    context = {
+        "v": _view(conn, row, now.date()),
+        "generated_at": now.strftime("%d.%m.%Y kl. %H:%M"),
+        "status_labels": STATUS_LABELS,
+        "fonts_dir": (HERE / "fonts").as_uri(),
+    }
+    return _environment().get_template("hearing.html.j2").render(**context)
+
+
+def build_hearing_pdf(
+    settings: Settings,
+    conn: sqlite3.Connection,
+    hearing_id: int,
+    out: Path | None = None,
+    now: datetime | None = None,
+) -> Path:
+    """Write the PDF of one hearing to `out` (default DATA_DIR/hearing_pdfs/horing-<id>.pdf)."""
+    html = render_hearing_html(conn, hearing_id, now)
+    path = out or hearing_pdf_path(settings, hearing_id)
+    write_pdf(html, path)
+    log.info("PDF for hearing %s written to %s", hearing_id, path)
+    return path
 
 
 def free_path(path: Path) -> Path:

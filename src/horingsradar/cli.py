@@ -7,6 +7,7 @@ import getpass
 import logging
 import sys
 from datetime import date
+from pathlib import Path
 
 from horingsradar import db
 from horingsradar.config import get_settings
@@ -59,6 +60,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="høringer publisert de siste N ukene; endrer ikke hva som regnes som rapportert",
     )
     add_trigger(p)
+
+    p = sub.add_parser("hearing-pdf", help="lag PDF av én høring (som på nettsiden)")
+    p.add_argument("hearing_id", type=int)
+    p.add_argument(
+        "--out", type=Path, help="utfil (standard DATA_DIR/hearing_pdfs/horing-<id>.pdf)"
+    )
 
     p = sub.add_parser("backtest", help="manuell backtest med kostnadsestimat og bekreftelse")
     p.add_argument("--split", choices=("dev", "test"))
@@ -234,6 +241,24 @@ def _set_paused(paused: bool) -> int:
     return 0
 
 
+def _hearing_pdf(hearing_id: int, out: Path | None) -> int:
+    """Read-only (no job lock, no job row): writes one PDF and touches no report state."""
+    from horingsradar.report.build import HearingNotFound, build_hearing_pdf
+
+    settings = get_settings()
+    settings.ensure_dirs()
+    conn = db.connect(settings.db_path)
+    try:
+        path = build_hearing_pdf(settings, conn, hearing_id, out=out)
+    except HearingNotFound as exc:
+        print(exc, file=sys.stderr)
+        return 1
+    finally:
+        conn.close()
+    print(path)
+    return 0
+
+
 def _status() -> int:
     settings = get_settings()
     settings.ensure_dirs()
@@ -283,6 +308,8 @@ def main(argv: list[str] | None = None) -> int:
         return _set_paused(False)
     if args.command == "status":
         return _status()
+    if args.command == "hearing-pdf":
+        return _hearing_pdf(args.hearing_id, args.out)
     return 2
 
 
