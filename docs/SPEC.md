@@ -49,6 +49,7 @@ Kjente variasjoner:
 - `Opprinnelig utgitt av: <departement>` når ansvaret er flyttet mellom departementer. Lagre begge.
 - Statusverdier inkluderer `På høring` og `Under behandling`. Lagre rå streng og en normalisert verdi.
 - Datoformat `dd.mm.yyyy`
+- Høringsnotatet kan ligge som egen dokumentside på regjeringen.no i stedet for som fil, typisk en NOU (`/no/dokumenter/nou-2026-12/id3190350/`). Lenker til slike sider i boksen «Høringsnotat» følges ett steg, og PDF-en fra listen «Last ned dokument» brukes. Lenker i høringsbrevet følges ikke. Kan siden ikke leses akkurat nå, avbrytes oppdateringen av høringen, slik at ingen dokumenter merkes som fjernet. Har siden ingen PDF, vises dokumentet som ikke lest.
 
 Strukturen må verifiseres mot ekte sider og lagres som fixtures før parseren skrives.
 

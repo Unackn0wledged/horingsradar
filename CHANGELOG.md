@@ -5,6 +5,7 @@ Endringer i PDF-rapportene, nyeste først. Én linje per endring.
 
 ## 2026-11-14
 
+- **H:** Et høringsnotat som ligger som egen dokumentside på regjeringen.no (typisk en NOU), blir nå lest. Før ble det tatt for et fjernet dokument, og høringen ble vurdert uten det.
 - **H:** Ny PDF for én høring (til nettsiden), med samme utseende som rapporten og full visning også for lav og ingen relevans.
 - **H:** PDF-en for én høring viser ikke lenger hvor mange dager som er igjen til fristen, siden nettsiden gjenbruker PDF-en i flere dager. Nettsiden viser dager igjen selv.
 

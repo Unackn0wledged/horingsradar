@@ -19,6 +19,7 @@ from horingsradar.http import Fetcher, FetchError
 from horingsradar.sources.regjeringen.parse import (
     DocumentLink,
     ListingItem,
+    document_page_file,
     hearing_id_from_url,
     parse_hearing,
     parse_listing,
@@ -230,7 +231,8 @@ class RegjeringenSource:
             ),
         )
 
-        result = self._sync_documents(hearing_id, page.documents, max_age)
+        links = self._resolve_document_pages(hearing_id, page.documents, max_age)
+        result = self._sync_documents(hearing_id, links, max_age)
         if result.changed:
             self.conn.execute(
                 "UPDATE hearing SET content_changed_at = ?,"
@@ -249,6 +251,38 @@ class RegjeringenSource:
         if old and new and old != new:
             db.record_change(self.conn, hearing_id, "deadline", old, new)
             log.info("Hearing %s: deadline changed from %s to %s", hearing_id, old, new)
+
+    def _resolve_document_pages(
+        self, hearing_id: int, links: list[DocumentLink], max_age: float
+    ) -> list[DocumentLink]:
+        """Replace links to document pages (such as a NOU) with the PDF on that page.
+
+        A temporary error aborts the refresh (FetchError), so a document is never marked as
+        removed just because its page could not be read this time. A page that is gone or has
+        no PDF keeps its own URL; it is then stored as missing or not readable, and shown.
+        """
+        resolved: list[DocumentLink] = []
+        seen: set[str] = set()
+        for link in links:
+            if link.via_page:
+                try:
+                    fetched = self.fetcher.get(link.url, max_age=max_age)
+                except FetchError as exc:
+                    if exc.status not in PERMANENT_STATUSES:
+                        raise
+                    log.warning("Hearing %s: document page %s is gone", hearing_id, link.url)
+                else:
+                    file_url = document_page_file(fetched.text, fetched.final_url or link.url)
+                    if file_url:
+                        log.info("Hearing %s: %s -> %s", hearing_id, link.url, file_url)
+                        link.url = file_url
+                    else:
+                        log.warning("Hearing %s: no PDF on document page %s", hearing_id, link.url)
+            if link.url in seen:
+                continue
+            seen.add(link.url)
+            resolved.append(link)
+        return resolved
 
     def _sync_documents(
         self, hearing_id: int, links: list[DocumentLink], max_age: float
