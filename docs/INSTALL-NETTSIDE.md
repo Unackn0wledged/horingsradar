@@ -5,9 +5,9 @@ Guiden setter opp den statiske nettsiden fra [PLAN-NETTSIDE.md](PLAN-NETTSIDE.md
 - et eget domene med siden på et subdomene, f.eks. `horinger.<domene>`,
 - Cloudflare Pages som serverer siden,
 - Cloudflare Access som slipper inn bare brukerne du har lagt inn,
-- opplasting fra lab etter hver kjøring.
+- opplasting fra lab, automatisk etter hver vellykket kjøring hvis du slår det på (del 9).
 
-Lab-serveren får ingen ny innkommende trafikk. Del 2–6 gjøres i nettleseren og kan gjøres før noe er bygget. Del 7–9 krever koden fra milepæl M2 og M3 og er merket med det. Regn med en kveld første gang, pluss ventetid på domenet.
+Lab-serveren får ingen ny innkommende trafikk. Del 2–6 gjøres i nettleseren og kan gjøres før noe er bygget. Del 7–9 gjøres på lab, med koden fra repoet installert. Regn med en kveld første gang, pluss ventetid på domenet.
 
 > **Slik leser du guiden:** Kommandoer kjøres som **root i containeren** (`root@horingsradar`), med mindre blokken starter med `# På utviklingsmaskinen:`. Bytt ut `<vinkelparenteser>` med egne verdier, *inkludert* parentesene. Blokker merket «Forventet utskrift» skal ikke kjøres.
 >
@@ -21,9 +21,9 @@ Lab-serveren får ingen ny innkommende trafikk. Del 2–6 gjøres i nettleseren 
 4. [Opprett Pages-prosjektet](#4-opprett-pages-prosjektet)
 5. [Cloudflare Access: hvem slipper inn](#5-cloudflare-access-hvem-slipper-inn)
 6. [API-nøkkel for opplasting](#6-api-nøkkel-for-opplasting)
-7. [Opplastingsverktøy på lab (M3)](#7-opplastingsverktøy-på-lab-m3)
-8. [Konfigurasjon (.env) og første publisering (M2–M3)](#8-konfigurasjon-env-og-første-publisering-m2m3)
-9. [Automatisk publisering (M3)](#9-automatisk-publisering-m3)
+7. [Opplastingsverktøy på lab](#7-opplastingsverktøy-på-lab)
+8. [Konfigurasjon (.env) og første publisering](#8-konfigurasjon-env-og-første-publisering)
+9. [Automatisk publisering](#9-automatisk-publisering)
 10. [Daglig drift og tilbakerulling](#10-daglig-drift-og-tilbakerulling)
 11. [Sjekkliste før brukerne får tilgang](#11-sjekkliste-før-brukerne-får-tilgang)
 12. [Feilsøking](#12-feilsøking)
@@ -253,9 +253,9 @@ Finner du ikke *Cloudflare Pages* blant rettighetene for kontonøkler, lag nøkk
 
 Nøkkelen skal bare ligge i `.env` på lab. Den skal aldri i repoet, i chat eller i logger. Kommer den på avveie: slett den under **API Tokens** og lag en ny.
 
-## 7. Opplastingsverktøy på lab (M3)
+## 7. Opplastingsverktøy på lab
 
-> Opplastingsverktøyet er `wrangler` (avgjort i M0). Node.js på lab er godkjent som ny avhengighet.
+> Opplastingsverktøyet er `wrangler`. Det installeres med npm og kjøres av tjenestebrukeren `horingsradar`.
 
 `wrangler` krever en støttet Node.js-versjon (Current, Active eller Maintenance LTS).
 
@@ -264,18 +264,26 @@ apt update && apt install -y nodejs npm
 node --version
 ```
 
-Er versjonen eldre enn den eldste støttede LTS-versjonen, installer Node.js fra NodeSource i stedet, etter deres veiledning for Debian.
+Er versjonen eldre enn den eldste støttede LTS-versjonen, installer Node.js fra NodeSource i stedet, etter deres veiledning for Debian. Installasjonen av wrangler skriver en tydelig feilmelding hvis Node.js er for gammel.
 
 ```bash
 npm install -g wrangler
 wrangler --version
 ```
 
-Ikke kjør `wrangler login`. På lab brukes API-nøkkelen fra `.env`.
+Sjekk at tjenestebrukeren finner den:
 
-## 8. Konfigurasjon (.env) og første publisering (M2–M3)
+```bash
+sudo -u horingsradar bash -c 'which wrangler && wrangler --version'
+```
 
-Legg til i `/opt/horingsradar/.env` (variabelnavnene kan bli justert i M3; `.env.example` er fasit):
+Finner den ingenting, sett `WRANGLER_BIN` til full sti (del 8).
+
+Ikke kjør `wrangler login`. Lab bruker API-nøkkelen fra `.env`, ikke en innlogging.
+
+## 8. Konfigurasjon (.env) og første publisering
+
+Legg til i `/opt/horingsradar/.env`. `.env.example` har alle variablene.
 
 ```
 SITE_ENABLED=false
@@ -284,11 +292,24 @@ SITE_BASE_URL=https://horinger.<domene>
 CLOUDFLARE_ACCOUNT_ID=<account-id>
 CLOUDFLARE_API_TOKEN=<nøkkel>
 CLOUDFLARE_PAGES_PROJECT=horingsradar
+CLOUDFLARE_PAGES_BRANCH=main
+WRANGLER_BIN=wrangler
 ```
+
+- `SITE_ENABLED`: `true` bygger og publiserer siden etter hver vellykket `run` (del 9). `false` gjør ingenting automatisk; du starter `site` og `publish` selv.
+- `SITE_WEEKS`: hvor mange uker tilbake siden tar med. Åpne høringer tas alltid med.
+- `SITE_BASE_URL`: adressen til siden. Brukes bare til å vise adressen i panelet.
+- `CLOUDFLARE_ACCOUNT_ID`: Account ID fra del 6.
+- `CLOUDFLARE_API_TOKEN`: API-nøkkelen fra del 6.
+- `CLOUDFLARE_PAGES_PROJECT`: navnet på Pages-prosjektet (`horingsradar`).
+- `CLOUDFLARE_PAGES_BRANCH`: produksjonsgrenen til Pages-prosjektet. For prosjekt med direkte opplasting er den `main`. Sjekk under **Workers & Pages** > prosjektet > **Settings**, og bruk navnet som står der. Et annet navn gir forhåndsvisning i stedet for produksjon.
+- `WRANGLER_BIN`: kommandoen for wrangler. Standard er `wrangler`. Bruk full sti, f.eks. `/usr/local/bin/wrangler`, hvis `which wrangler` ikke finner den (del 7).
 
 ```bash
 chmod 600 /opt/horingsradar/.env
 ```
+
+Wrangler skriver sin konfigurasjon og logg i `/var/lib/horingsradar/wrangler/`, fordi tjenesten bare kan skrive der. Telemetri er av. Du trenger ikke gjøre noe med det.
 
 Bygg siden for hånd og se på den:
 
@@ -297,7 +318,7 @@ sudo -u horingsradar bash -c 'cd /opt/horingsradar && uv run horingsradar site'
 ls /var/lib/horingsradar/site
 ```
 
-Forventet utskrift: `index.html`, `data.json`, `pdf` og `robots.txt`.
+Kommandoen skriver ut stien til siden. Forventet listing: `index.html`, `data.json`, `assets`, `pdf`, `robots.txt` og `_headers`.
 
 Publiser til forhåndsvisning først. Den rører ikke produksjon:
 
@@ -305,13 +326,15 @@ Publiser til forhåndsvisning først. Den rører ikke produksjon:
 sudo -u horingsradar bash -c 'cd /opt/horingsradar && uv run horingsradar publish --preview'
 ```
 
-Åpne adressen som skrives ut. Du skal få innloggingssiden fra del 5.5. Ser alt riktig ut, publiser til produksjon:
+Åpne adressen som skrives ut. Du skal få innloggingssiden fra del 5.5. Sjekk også i panelet, under «Nettside for brukerne», at siste publisering står som ok med forhåndsvisning. Ser alt riktig ut, publiser til produksjon:
 
 ```bash
 sudo -u horingsradar bash -c 'cd /opt/horingsradar && uv run horingsradar publish'
 ```
 
-## 9. Automatisk publisering (M3)
+`publish` bygger siden først, så `site` trenger du ikke kjøre før. Sjekk i panelet at siste publisering står som ok med produksjon.
+
+## 9. Automatisk publisering
 
 Sett i `.env`:
 
@@ -319,13 +342,16 @@ Sett i `.env`:
 SITE_ENABLED=true
 ```
 
-Fra nå bygges og publiseres siden etter hver vellykket `run`. Timeren er den samme som før; ingen nye systemd-filer. Feiler kjøringen, blir forrige versjon av siden liggende.
+Fra nå bygges og publiseres siden etter hver vellykket `run`. Timeren er den samme som før; ingen nye systemd-filer.
 
-Panelet viser tidspunkt og resultat for siste publisering og har knappen **Publiser nettside**.
+- Feiler `run`, publiseres ingenting, og forrige versjon av siden blir liggende.
+- Feiler bygging eller opplasting, er `run` likevel ok. Feilen vises i panelet, og forrige versjon av siden blir liggende.
+
+Panelet viser tidspunkt og resultat for siste publisering. Knappene **Publiser nettside** og **Publiser forhåndsvisning** starter `publish` og `publish --preview` som egne prosesser. Knappene vises når Cloudflare-innstillingene er fylt ut.
 
 ## 10. Daglig drift og tilbakerulling
 
-- **Se siste publisering:** panelet, eller Pages-prosjektet > **Deployments**.
+- **Se siste publisering:** panelet under «Nettside for brukerne», eller Pages-prosjektet > **Deployments**.
 - **Rulle tilbake:** Pages-prosjektet > **Deployments** > velg en tidligere versjon > **Rollback to this deployment**. Neste vellykkede publisering legger seg over igjen; sett `SITE_ENABLED=false` hvis du vil holde den gamle versjonen.
 - **Legge til eller fjerne brukere:** **Zero Trust** > **Access controls** > **Policies** > `Høringsradar – brukere`. Endringen gjelder alle applikasjoner som bruker regelen, fra neste innlogging. En bruker du fjerner, mister tilgang når økten går ut.
 - **Stenge en bruker ute med en gang:** **Zero Trust** > **Team & Resources** > **Users** > brukeren > **Revoke**.
@@ -361,5 +387,8 @@ Panelet viser tidspunkt og resultat for siste publisering og har knappen **Publi
 | Brukeren får ingen kode | Adressen er ikke i regelen, eller e-posten stoppes på jobb | Sjekk regelen (5.3); se i søppelpost og karantene; be IT hvitliste `noreply@notify.cloudflare.com` |
 | Koden er «allerede brukt» | Sikkerhetsfilter har åpnet e-posten | Hvitlisting hos IT |
 | `publish` feiler med 401/403 | Feil eller utløpt nøkkel, mangler Pages-rettighet, eller feil Account ID | Lag ny nøkkel (del 6) og sjekk `.env` |
-| `publish` feiler fordi `wrangler` ikke finnes | Del 7 er ikke gjort, eller `PATH` mangler npm-mappen for tjenestebrukeren | `which wrangler` som `horingsradar`-brukeren |
-| Siden viser gamle data | `SITE_ENABLED=false`, eller siste `run` feilet | Se jobbloggen i panelet |
+| `publish` feiler fordi `wrangler` ikke finnes | Del 7 er ikke gjort, eller `PATH` mangler npm-mappen for tjenestebrukeren | `which wrangler` som `horingsradar`-brukeren. Finner den ingenting, sett `WRANGLER_BIN` til full sti (del 8) |
+| `publish` går til forhåndsvisning, ikke produksjon | `CLOUDFLARE_PAGES_BRANCH` er ikke produksjonsgrenen i Pages-prosjektet | Sjekk **Settings** i prosjektet og sett navnet der (ofte `main`) |
+| `wrangler` feiler med at den ikke kan skrive | Tjenesten kan bare skrive i `/var/lib/horingsradar`, og `wrangler/`-mappen der har feil eier | Sjekk at `/var/lib/horingsradar/wrangler/` finnes og eies av `horingsradar` |
+| Panelet viser feil under «Nettside for brukerne», men `run` er ok | Bygging eller opplasting feilet etter kjøringen | Les feilen i panelet og kjør `publish` på nytt. Forrige versjon ligger fortsatt ute |
+| Siden viser gamle data | `SITE_ENABLED=false`, eller siste `run` eller publisering feilet | Se jobbloggen og «Nettside for brukerne» i panelet |

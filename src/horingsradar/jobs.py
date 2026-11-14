@@ -22,7 +22,7 @@ from horingsradar.lock import JobLock, pid_alive
 
 log = logging.getLogger("horingsradar")
 
-KINDS = ("run", "report", "backtest", "assess")
+KINDS = ("run", "report", "backtest", "assess", "site", "publish")
 TRIGGERS = ("timer", "cli", "web")
 LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
 

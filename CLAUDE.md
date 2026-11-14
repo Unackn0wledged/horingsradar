@@ -23,7 +23,7 @@ Krav og detaljer står i `docs/SPEC.md` (Høringsradar) og `docs/EU-SPEC.md` (EU
 
 ## Stack
 
-Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pydantic, sqlite3 (stdlib), Jinja2 + WeasyPrint, rapidfuzz, pytest, ruff. Adminpanel: FastAPI + uvicorn, Jinja2-maler og HTMX (vendret i repoet, ingen CDN). Spør før du legger til andre avhengigheter.
+Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pydantic, sqlite3 (stdlib), Jinja2 + WeasyPrint, rapidfuzz, pytest, ruff. Adminpanel: FastAPI + uvicorn, Jinja2-maler og HTMX (vendret i repoet, ingen CDN). Nettsiden: Jinja2, egen CSS og vanilla JS (vendret, ingen CDN, ingen byggesteg), lastet opp med Cloudflares `wrangler` (Node.js på lab, ikke en Python-avhengighet). Spør før du legger til andre avhengigheter.
 
 ## Kommandoer
 
@@ -33,7 +33,9 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - `uv run horingsradar run` – hent nye og endrede høringer og vurder dem
 - `uv run horingsradar assess <id>` – vurder én høring på nytt (prompt-iterasjon)
 - `uv run horingsradar report` – PDF for alle høringer som ikke er rapportert før. `--weeks N` tar med de siste N ukene og endrer ikke hva som regnes som rapportert
-- `uv run horingsradar hearing-pdf <id> [--out <fil>]` – PDF av én høring, slik nettsiden skal tilby den. Leser bare databasen; ingen jobb-lås, og endrer ikke hva som regnes som rapportert
+- `uv run horingsradar site` – bygg nettsiden i `DATA_DIR/site/` (laster ikke opp)
+- `uv run horingsradar publish [--preview] [--no-build]` – bygg og last opp nettsiden til Cloudflare Pages; `--preview` rører ikke produksjon
+- `uv run horingsradar hearing-pdf <id> [--out <fil>]` – PDF av én høring, slik nettsiden tilbyr den. Leser bare databasen; ingen jobb-lås, og endrer ikke hva som regnes som rapportert
 - `uv run horingsradar backtest --split dev|test` – kun manuelt; viser kostnadsestimat og krever bekreftelse
 - `uv run horingsradar web` – start adminpanelet lokalt
 - `uv run horingsradar-eu run [--no-assess]|assess <sak>|report|status|pause|resume|web` – EU/EØS-radaren. Krever `RADAR=eu` i `.env` (se `.env.eu.example`). `horingsradar-eu hash-password` lager passord-hash til EU-panelet.
@@ -50,7 +52,7 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 - LLM-svar valideres mot Pydantic-modeller. Ugyldig svar gir ett nytt forsøk; feiler det igjen, logges det og vurderingen markeres som feilet. Ikke fyll inn manglende felter selv.
 - Forespørsler mot regjeringen.no: identifiserende User-Agent fra config, minst 2 sekunder mellom kall, disk-cache, respekter robots.txt.
 - Høringer identifiseres med regjeringen.no-ID-en (tallet i `/idNNNNNNN/`). Alle steg skal være idempotente.
-- Alle jobber (`run`, `report`, `backtest`, `assess`) tar en felles fil-lås i `DATA_DIR`. Kun én jobb om gangen per instans, uansett om den startes fra timer, panel eller terminal.
+- Alle jobber (`run`, `report`, `backtest`, `assess`, `site`, `publish`) tar en felles fil-lås i `DATA_DIR`. Kun én jobb om gangen per instans, uansett om den startes fra timer, panel eller terminal.
 - Adminpanelet starter jobber ved å kjøre CLI-en som egen prosess. Ingen pipeline-kode kjører i web-prosessen, og panelet styrer aldri systemd.
 - Tester bruker lagrede HTML- og PDF-fixtures i `tests/fixtures/` og mocket LLM. Ingen tester mot nett eller ekte API.
 - Parseren må tåle både bokmål og nynorsk (`Høringsfrist`/`Høyringsfrist`, `På høring`/`På høyring`) og datoformat `dd.mm.yyyy`.
@@ -65,6 +67,6 @@ Python 3.12, uv (`pyproject.toml` + `uv.lock`), httpx, selectolax, PyMuPDF, Pyda
 
 ## Drift
 
-Debian-LXC på Proxmox. systemd-timer kjører kun `run`, daglig; `report` og `backtest` kjøres manuelt. Adminpanelet kjører som egen systemd-tjeneste. Kun utgående trafikk. WeasyPrint krever Pango fra apt; følg WeasyPrints installasjonsguide for Debian. Deploy på LXC: `git pull --ff-only && uv sync --frozen`.
+Debian-LXC på Proxmox. systemd-timer kjører kun `run`, daglig; med `SITE_ENABLED=true` bygger og publiserer `run` også nettsiden etterpå. `report` og `backtest` kjøres manuelt. Adminpanelet kjører som egen systemd-tjeneste. Kun utgående trafikk (også til Cloudflare Pages). API-nøkkelen til Cloudflare gis til `wrangler` bare via miljøet og skal aldri i logg, jobbsammendrag eller database. WeasyPrint krever Pango fra apt; følg WeasyPrints installasjonsguide for Debian. Deploy på LXC: `git pull --ff-only && uv sync --frozen`.
 
 EU/EØS-radaren kjører på samme LXC som egen instans: kode i `/opt/horingsradar-eu`, data i `/var/lib/horingsradar-eu`, egne systemd-filer i `deploy/eu/systemd/` (ukentlig `run`) og eget deploy-skript `deploy/eu/deploy.sh`. Se `docs/INSTALL-EU.md`. Pilotens filer i `deploy/systemd/` og `deploy/deploy.sh` brukes ikke for EU-instansen.

@@ -15,7 +15,7 @@ from horingsradar.config import REPO_ROOT, Settings
 from horingsradar.jobs import running_job
 from horingsradar.lock import JobLock, pid_alive
 
-ALLOWED = {"run", "report", "assess", "backtest"}
+ALLOWED = {"run", "report", "assess", "backtest", "publish"}
 
 
 class JobBusy(Exception):

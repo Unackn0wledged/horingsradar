@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light dark">
+<title>Høringsradar</title>
+<link rel="stylesheet" href="assets/site.css?v={{ asset_version }}">
+<script src="assets/site.js?v={{ asset_version }}" defer></script>
+</head>
+<body>
+<div class="app" id="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" width="32" height="32" aria-hidden="true" focusable="false">
+        <rect width="32" height="32" rx="8" class="brand-bg"/>
+        <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="16" cy="16" r="9"/>
+          <circle cx="16" cy="16" r="4.5"/>
+          <path d="M16 16 L23 9"/>
+        </g>
+        <circle cx="16" cy="16" r="1.6" fill="currentColor"/>
+      </svg>
+      <span class="brand-name">Høringsradar</span>
+    </div>
+
+    <nav class="nav" aria-label="Visning" id="nav">
+      <button type="button" class="nav-item" data-tab="aktuelle" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></g></svg>
+        <span class="nav-label">Aktuelle</span>
+        <span class="chip-count" data-count="aktuelle">0</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="nye" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.2 5.3 5.8.5-4.4 3.8 1.4 5.6L12 15l-5 3.2 1.4-5.6L4 8.8l5.8-.5z"/></g></svg>
+        <span class="nav-label">Nye</span>
+        <span class="chip-count" data-count="nye">0</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="alle" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h12M8 12h12M8 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></g></svg>
+        <span class="nav-label">Alle</span>
+        <span class="chip-count" data-count="alle">0</span>
+      </button>
+      <button type="button" class="nav-item" data-tab="folger" aria-pressed="false">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v17l-6-4-6 4z"/></g></svg>
+        <span class="nav-label">Følger</span>
+        <span class="chip-count" data-count="folger">0</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-foot">
+      <button type="button" class="nav-item nav-about" id="about-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></g></svg>
+        <span class="nav-label">Om siden</span>
+      </button>
+      <p class="updated">Oppdatert {{ generated_label }}</p>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <header class="topbar">
+      <h1 class="view-title" id="view-title" tabindex="-1">Aktuelle høringer</h1>
+      <div class="period">
+        <label for="period-select">Publisert</label>
+        <select id="period-select">
+          <option value="1">siste 1 uke</option>
+          <option value="2">siste 2 uker</option>
+          <option value="3">siste 3 uker</option>
+          <option value="4">siste 4 uker</option>
+          <option value="8">siste 8 uker</option>
+          <option value="all" selected>Alle (siste {{ site_weeks }} uker)</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <noscript><p class="notice">Denne siden trenger JavaScript for å vise høringslisten. Høringsradar lister høringer fra regjeringen.no sortert etter personvernrelevans. Sorteringen er KI-generert og må kontrolleres mot kilden.</p></noscript>
+
+      <section class="kpis" id="kpis" aria-label="Nøkkeltall">
+        <button type="button" class="kpi" data-kpi="hoy">
+          <span class="kpi-label">Høy relevans</span>
+          <span class="kpi-value" data-kpi-value>–</span>
+          <span class="kpi-sub">på høring nå</span>
+        </button>
+        <button type="button" class="kpi" data-kpi="frist">
+          <span class="kpi-label">Frist innen 3 uker</span>
+          <span class="kpi-value" data-kpi-value>–</span>
+          <span class="kpi-sub">høy og middels</span>
+        </button>
+        <button type="button" class="kpi" data-kpi="nye">
+          <span class="kpi-label">Nye eller endret</span>
+          <span class="kpi-value" data-kpi-value>–</span>
+          <span class="kpi-sub" id="kpi-new-sub">siden forrige besøk</span>
+        </button>
+        <button type="button" class="kpi" data-kpi="open">
+          <span class="kpi-label">Åpne høringer</span>
+          <span class="kpi-value" data-kpi-value>–</span>
+          <span class="kpi-sub">alle relevansnivåer</span>
+        </button>
+      </section>
+
+      <div class="toolbar" role="search">
+        <div class="search">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></g></svg>
+          <input type="search" id="search" placeholder="Søk i høringer" aria-label="Søk i tittel, departement, sammendrag, begrunnelse og sektor" autocomplete="off">
+        </div>
+
+        <div class="filter-wrap">
+          <button type="button" class="btn" id="filter-btn" aria-expanded="false" aria-controls="filter-pop" aria-haspopup="true">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16l-6 7v6l-4 2v-8z"/></g></svg>
+            <span>Filter</span>
+            <span class="chip-count" id="filter-count" hidden>0</span>
+          </button>
+          <div class="popover" id="filter-pop" role="group" aria-label="Filter" hidden>
+            <fieldset class="fs">
+              <legend>Relevans</legend>
+              <label class="check"><input type="checkbox" name="rel" value="hoy"> Høy</label>
+              <label class="check"><input type="checkbox" name="rel" value="middels"> Middels</label>
+              <label class="check"><input type="checkbox" name="rel" value="lav"> Lav</label>
+              <label class="check"><input type="checkbox" name="rel" value="ingen"> Ingen</label>
+            </fieldset>
+            <div class="field">
+              <label for="f-sector">Sektor</label>
+              <select id="f-sector"><option value="">Alle sektorer</option></select>
+            </div>
+            <div class="field">
+              <label for="f-dept">Departement</label>
+              <select id="f-dept"><option value="">Alle departementer</option></select>
+            </div>
+            <div class="field">
+              <label for="f-addr">Datatilsynet på adresselisten</label>
+              <select id="f-addr">
+                <option value="">Alle</option>
+                <option value="yes">Ja</option>
+                <option value="no">Nei</option>
+              </select>
+            </div>
+            <div class="pop-actions">
+              <button type="button" class="btn btn-quiet" id="filter-reset">Nullstill</button>
+              <button type="button" class="btn btn-primary" id="filter-done">Ferdig</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="sort">
+          <label for="sort-select">Sorter</label>
+          <select id="sort-select">
+            <option value="relevans">Relevans</option>
+            <option value="frist">Frist</option>
+            <option value="publisert">Publisert</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="chips" id="chips" aria-label="Aktive filtre"></div>
+
+      <div id="list" class="list" aria-live="polite">
+        <p class="loading">Laster høringer …</p>
+      </div>
+
+      <footer class="page-foot">
+        <p>Høringsradar er et privat prosjekt og ikke en offisiell tjeneste. KI-generert sortering – kontroller mot kilden. <button type="button" class="link-btn" id="about-btn-2">Om siden</button></p>
+        <p class="muted">Oppdatert {{ generated_label }}</p>
+      </footer>
+    </div>
+  </main>
+</div>
+
+<div class="backdrop" id="backdrop" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1" hidden>
+  <div class="drawer-bar">
+    <span class="drawer-kicker">Høring</span>
+    <button type="button" class="icon-btn" id="drawer-close" aria-label="Lukk detaljvisning">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<div class="menu" id="row-menu" role="menu" hidden></div>
+
+<dialog class="about" id="about-dialog" aria-labelledby="about-title">
+  <h2 id="about-title">Om siden</h2>
+  <p>Høringsradar er et privat prosjekt og ikke en offisiell tjeneste. Relevansnivå, sammendrag, funn og sider å lese er KI-generert sortering og må kontrolleres mot kildedokumentene. Verktøyet tar ikke stilling til forslagene og skriver ikke høringsinnspill. Tittel, datoer, frist, departement og adresseliste er hentet direkte fra regjeringen.no. Sitater er kontrollert maskinelt mot dokumentteksten; sitater som ikke kunne bekreftes, er tydelig merket.</p>
+  <p class="muted">Dine valg (følger, leste høringer, filter) lagres bare i din egen nettleser.</p>
+  <div class="about-actions"><button type="button" class="btn btn-primary" id="about-close">Lukk</button></div>
+</dialog>
+
+<div class="sr-only" id="live" role="status" aria-live="polite"></div>
+</body>
+</html>

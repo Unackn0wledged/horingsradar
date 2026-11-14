@@ -31,7 +31,7 @@ h2.hearing-title .badge { font-size: 9pt; vertical-align: 2px; }
 
 <section class="hearing" id="h{{ v.id }}">
   <h2 class="hearing-title"><span class="badge rel-{{ v.relevance }}">{{ v.relevance_label }}</span> <a href="{{ v.row.url }}">{{ v.row.title }}</a></h2>
-{{ m.facts(v) }}
+{{ m.facts(v, show_days_left=false) }}
 {% if v.relevance == "feilet" %}
   <h4>Vurdering</h4>
   <p>Vurderingen feilet ved siste forsøk og prøves på nytt ved neste kjøring. Høringen er ikke filtrert bort.</p>

@@ -61,6 +61,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_trigger(p)
 
+    p = sub.add_parser("site", help="bygg nettsiden i DATA_DIR/site (laster ikke opp)")
+    add_trigger(p)
+
+    p = sub.add_parser("publish", help="bygg nettsiden og last den opp til Cloudflare Pages")
+    p.add_argument(
+        "--preview", action="store_true", help="last opp til en forhåndsvisning, ikke produksjon"
+    )
+    p.add_argument("--no-build", action="store_true", help="last opp siden slik den er bygget")
+    add_trigger(p)
+
     p = sub.add_parser("hearing-pdf", help="lag PDF av én høring (som på nettsiden)")
     p.add_argument("hearing_id", type=int)
     p.add_argument(
@@ -114,6 +124,10 @@ def _run_job(args: argparse.Namespace) -> int:
                 from horingsradar.pipeline import run
 
                 run(settings, conn, job, assess=not args.no_assess)
+                if settings.site_enabled:
+                    from horingsradar.site.publish import build_and_publish
+
+                    job.summary["site"] = build_and_publish(settings, conn)
             elif args.command == "assess":
                 from horingsradar.assess import assess_hearing
                 from horingsradar.http import Fetcher
@@ -168,6 +182,21 @@ def _run_job(args: argparse.Namespace) -> int:
                 result = build_report(settings, conn, week=args.week, weeks=args.weeks)
                 job.summary.update(result)
                 print(result["path"])
+            elif args.command == "site":
+                from horingsradar.site.build import build_site
+
+                result = build_site(settings, conn)
+                job.summary.update(result)
+                print(result["path"])
+            elif args.command == "publish":
+                from horingsradar.site.build import build_site
+                from horingsradar.site.publish import publish_site
+
+                if not args.no_build:
+                    job.summary["site"] = build_site(settings, conn)
+                result = publish_site(settings, conn, preview=args.preview)
+                job.summary.update(result)
+                print(result.get("url") or "Publisert.")
             elif args.command == "backtest":
                 from horingsradar.backtest import run_backtest
                 from horingsradar.llm.client import get_client
@@ -293,7 +322,7 @@ def _status() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    if args.command in ("run", "assess", "report", "backtest"):
+    if args.command in ("run", "assess", "report", "backtest", "site", "publish"):
         return _run_job(args)
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s"

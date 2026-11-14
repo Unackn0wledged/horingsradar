@@ -1,7 +1,7 @@
 
 # Høringsradar – plan for nettside til brukerne
 
-Status: M0 og M1 er ferdige (se [Avgjørelser i M0](#avgjørelser-i-m0-2026-11-14)). Neste er M2. Gjelder bare Høringsradar (regjeringen.no); EU/EØS-radaren er ikke med.
+Status: M0–M3 er bygget. Neste er M4 (tilgang og lansering). Gjelder bare Høringsradar (regjeringen.no); EU/EØS-radaren er ikke med.
 
 Installasjonsveiledningen er [INSTALL-NETTSIDE.md](INSTALL-NETTSIDE.md).
 
@@ -54,7 +54,7 @@ Lab (LXC, bare utgående trafikk)
 ```
 
 - `site` og `publish` tar samme fil-lås som de andre jobbene.
-- Feiler `run` eller `site`, publiseres ingenting, og forrige versjon blir liggende.
+- Feiler `run`, publiseres ingenting. Feiler `site` eller `publish`, er `run` likevel ok; feilen vises i panelet, og forrige versjon blir liggende.
 - Pages tar vare på tidligere opplastinger; tilbakerulling er ett klikk.
 
 ## Innhold på siden
@@ -89,19 +89,21 @@ Hver milepæl får en egen plan som godkjennes før koding, som før.
 - Endrer ikke `report`, `report_item` eller `reported_in`.
 - Tester: høy, middels, lav, ingen, feilet og ikke vurdert; uverifisert sitat er synlig merket; ingen samlerapport-seksjoner; bare driftsvurderinger; ukjent eller ikke fulgt høring gir feil.
 
-### M2 – Statisk side
-- Ny modul `src/horingsradar/site/` med Jinja2-maler, CSS og egen JS (vendret i repoet, ingen CDN).
-- Kommando `horingsradar site` bygger `DATA_DIR/site/`: `index.html`, `data.json`, `pdf/<id>.pdf`, `robots.txt`.
-- Tar med høringer fra en innstillbar periode (`SITE_WEEKS`, standard 26 uker), alltid alle åpne.
-- PDF lages bare på nytt når vurderingen, fristen eller dokumentene har endret seg (hash i filnavn eller manifest), så en kjøring tar sekunder.
+### M2 – Statisk side (ferdig 2026-11-14)
+- Ny modul `src/horingsradar/site/` med Jinja2-maler, CSS og egen JS (vendret i repoet, ingen CDN, ingen byggesteg).
+- Kommando `horingsradar site` bygger `DATA_DIR/site/`: `index.html`, `data.json`, `assets/`, `pdf/<id>.pdf`, `robots.txt` og `_headers`. Kommandoen skriver ut stien.
+- Tar med høringer fra en innstillbar periode (`SITE_WEEKS`, standard 26 uker), pluss alle åpne. Alle relevansnivåer tas med, også lav, ingen, feilet og ikke vurdert.
+- PDF for én høring lages bare på nytt når innholdet endrer seg (hash av den gjengitte HTML-en i `DATA_DIR/site_cache/manifest.json`), så et daglig bygg tar sekunder.
+- Bygges i `DATA_DIR/site.new` og byttes inn til slutt. Feiler bygget, blir forrige side liggende.
 - Bare driftsvurderinger; aldri backtest-vurderinger.
+- Tar jobb-låsen, som de andre jobbene.
 - Tester: innholdet i `data.json` mot fixtures, lav/ingen er med, ingen hemmeligheter eller interne felt (kostnad, tokens, rå svar) i output.
 
-### M3 – Publisering
-- Kommando `horingsradar publish [--preview]` laster opp `DATA_DIR/site/` til Pages-prosjektet. `--preview` går til en testadresse og rører ikke produksjon.
-- Kjøres automatisk etter en vellykket `run` når `SITE_ENABLED=true`, og kan startes fra panelet («Publiser nettside»). Panelet viser tidspunkt og resultat for siste publisering.
-- Nye variabler i `.env.example`: `SITE_ENABLED`, `SITE_WEEKS`, `SITE_BASE_URL`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_PAGES_PROJECT`.
-- API-nøkkelen logges aldri.
+### M3 – Publisering (ferdig 2026-11-14)
+- Kommando `horingsradar publish [--preview]` bygger først og laster deretter opp `DATA_DIR/site/` til Pages-prosjektet med wrangler. `--preview` går til en forhåndsvisning og rører ikke produksjon. `--no-build` laster opp siden som allerede er bygget.
+- Kjøres automatisk etter hver vellykket `run` når `SITE_ENABLED=true`, og kan startes fra panelet («Publiser nettside» og «Publiser forhåndsvisning»). Panelet viser tidspunkt og resultat for siste publisering.
+- Nye variabler i `.env.example`: `SITE_ENABLED`, `SITE_WEEKS`, `SITE_BASE_URL`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_PAGES_PROJECT`, `CLOUDFLARE_PAGES_BRANCH` og `WRANGLER_BIN`. De to siste ble lagt til under bygging.
+- API-nøkkelen logges aldri. Den gis til wrangler bare i miljøet, og wrangler-utskrift renses for nøkkelen før den logges.
 - Tester med falsk opplasting; ingen nettverk.
 
 ### M4 – Tilgang og lansering
@@ -114,9 +116,9 @@ Hver milepæl får en egen plan som godkjennes før koding, som før.
 
 ## Åpne spørsmål
 
-1. **Tidspunkt for publisering.** Rett etter morgenkjøringen, slik at siden er oppdatert når arbeidsdagen starter. Avgjøres i M3.
+Ingen åpne spørsmål gjenstår.
 
-Avgjort i M0: opplastingsverktøy (`wrangler`), innlogging (Cloudflare Access) og periode (`SITE_WEEKS` = 26 uker).
+Avgjort i M0: opplastingsverktøy (`wrangler`), innlogging (Cloudflare Access) og periode (`SITE_WEEKS` = 26 uker). Avgjort i M3: publisering rett etter hver vellykket `run`, når `SITE_ENABLED=true`.
 
 ## Risiko
 
@@ -135,5 +137,4 @@ Avgjort i M0: opplastingsverktøy (`wrangler`), innlogging (Cloudflare Access) o
 - Kommentarer, tilbakemeldinger eller andre brukerdata på server.
 - Knapper som starter jobber eller koster penger.
 - Hosting på lab eller VPS.
-
 
