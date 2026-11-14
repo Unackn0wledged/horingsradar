@@ -50,6 +50,7 @@ uv run ruff check .
 - Installasjon på Proxmox-LXC: [Høringsradar](docs/INSTALL-LXC.md) og [EU/EØS-radaren](docs/INSTALL-EU.md)
 - Krav: [Høringsradar](docs/SPEC.md) og [EU/EØS-radaren](docs/EU-SPEC.md)
 - Plan og beslutninger: [Høringsradar](docs/PLAN.md) og [EU/EØS-radaren](docs/EU-PLAN.md)
+- Nettside for brukerne (Høringsradar): [plan](docs/PLAN-NETTSIDE.md) og [installasjon](docs/INSTALL-NETTSIDE.md)
 
 Adminpanelet lytter bare på LAN. For tilgang utenfra kan Tailscale kjøre på Proxmox-verten som subnet router. Bruk aldri `tailscale funnel`.
 

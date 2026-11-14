@@ -162,6 +162,6 @@ Milepæl 1–4 og 6–8 er ferdige og i drift på lab. Milepæl 5 (backtest) er 
 
 ## Ting som bevisst ikke er med
 
-- OCR, andre kilder, e-post og UI for brukerne (jf. SPEC).
+- OCR, andre kilder og e-post (jf. SPEC). Nettsiden for brukerne har egen plan i [PLAN-NETTSIDE.md](PLAN-NETTSIDE.md).
 - Word-vedlegg (.docx/.odt) leses ikke. De registreres som dokument med merknaden «ikke lest», og det vises i rapporten.
 - Lenker til andre nettsteder (for eksempel hoering.udir.no) følges ikke.
