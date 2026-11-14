@@ -24,6 +24,7 @@ KNOWN_HEARINGS = {
     3116210,
     3119016,
     3171614,
+    3190689,
 }
 
 
@@ -79,6 +80,9 @@ class FakeSite:
             )
         if "/id" in path:
             hearing_id = int(path.rstrip("/").rsplit("/id", 1)[1])
+            if (REGJERINGEN / f"docpage_{hearing_id}.html").exists():
+                # A separate document page (such as a NOU) linked from a hearing.
+                return self._html(f"docpage_{hearing_id}.html")
             if request.url.params.get("showSvar"):
                 name = f"svar_{hearing_id}.html"
                 if not (REGJERINGEN / name).exists():

@@ -17,6 +17,8 @@ DATE_RE = re.compile(r"(\d{1,2})\.(\d{1,2})\.(\d{4})")
 ID_RE = re.compile(r"/id(\d+)/?$")
 COUNT_RE = re.compile(r"(\d[\d\s ]*)\s+treff")
 FILE_EXT_RE = re.compile(r"\.(pdf|docx?|odt|rtf|xlsx?|txt)$", re.IGNORECASE)
+# A separate document page on regjeringen.no, e.g. /no/dokumenter/nou-2026-12/id3190350/.
+DOCUMENT_PAGE_RE = re.compile(r"^/(no|nn|en)/dokument(er)?/[^/]+/id\d+/?$", re.IGNORECASE)
 PDF_SIZE_RE = re.compile(r"\((?:PDF|DOCX?|ODT)[^)]*\)", re.IGNORECASE)
 NO_COMMENTS_RE = re.compile(r"\(\s*uten\s+merknad(?:er)?\s*\)", re.IGNORECASE)
 DEADLINE_LABEL_RE = re.compile(r"h(?:ø|o|øy|oy)ringsfrist", re.IGNORECASE)
@@ -69,6 +71,9 @@ class DocumentLink:
     kind: str
     position: int
     inline_html: str | None = None
+    # True when `url` is a document page on regjeringen.no (such as a NOU) and not the file.
+    # The crawler fetches that page and replaces `url` with the PDF it offers.
+    via_page: bool = False
 
     @property
     def is_inline(self) -> bool:
@@ -261,29 +266,62 @@ def _is_document_link(href: str, page_url: str, hearing_id: int) -> bool:
     return bool(FILE_EXT_RE.search(path)) and hearing_id_from_url(absolute) != hearing_id
 
 
+def _is_document_page(href: str, page_url: str, hearing_id: int) -> bool:
+    """A link to another document page on regjeringen.no, such as the page of a NOU."""
+    if not href or href.startswith(("#", "mailto:", "javascript:")):
+        return False
+    absolute = urljoin(page_url, href)
+    parsed = urlparse(absolute)
+    if parsed.netloc and not parsed.netloc.endswith("regjeringen.no"):
+        return False
+    return bool(DOCUMENT_PAGE_RE.match(parsed.path)) and hearing_id_from_url(
+        absolute.split("?")[0].split("#")[0]
+    ) not in (None, hearing_id)
+
+
 def _factbox_documents(
     content: LexborNode, section: str, page_url: str, hearing_id: int, start: int
 ) -> list[DocumentLink]:
-    raw: list[tuple[str, str]] = []
+    raw: list[tuple[str, str, bool]] = []
     seen: set[str] = set()
     for a in content.css("a"):
         href = a.attributes.get("href") or ""
-        if not _is_document_link(href, page_url, hearing_id):
+        if _is_document_link(href, page_url, hearing_id):
+            absolute, via_page = urljoin(page_url, href).split("#")[0], False
+        elif section == "horingsnotater" and _is_document_page(href, page_url, hearing_id):
+            # The notat is published as its own page (typical for a NOU); the crawler
+            # follows it to the file. Only in this box: the letter may link to background.
+            absolute, via_page = urljoin(page_url, href).split("#")[0].split("?")[0], True
+        else:
             continue
-        absolute = urljoin(page_url, href).split("#")[0]
         if absolute in seen:
             continue
         seen.add(absolute)
         title = clean(a.attributes.get("title")) or _text(a) or absolute.rsplit("/", 1)[-1]
-        raw.append((absolute, title))
+        raw.append((absolute, title, via_page))
     docs: list[DocumentLink] = []
-    has_notat = any(NOTAT_TITLE_RE.search(t) for _, t in raw)
-    for i, (absolute, title) in enumerate(raw):
+    has_notat = any(NOTAT_TITLE_RE.search(t) for _, t, _ in raw)
+    for i, (absolute, title, via_page) in enumerate(raw):
         kind = _classify(section, title, len(raw))
         if section == "horingsnotater" and not has_notat and i == 0 and kind != "lovutkast":
             kind = "horingsnotat"
-        docs.append(DocumentLink(absolute, title, section, kind, start + i))
+        docs.append(DocumentLink(absolute, title, section, kind, start + i, via_page=via_page))
     return docs
+
+
+def document_page_file(html: str, url: str) -> str | None:
+    """The PDF offered on a regjeringen.no document page (its «Last ned» list), or None."""
+    tree = LexborHTMLParser(html)
+    links = tree.css("[data-longdoc-download-list] a, ul.longdoc-download-list a")
+    if not links:
+        main = tree.css_first("main") or tree.body
+        links = main.css("a") if main else []
+    for a in links:
+        absolute = urljoin(url, a.attributes.get("href") or "").split("#")[0]
+        parsed = urlparse(absolute)
+        if parsed.netloc.endswith("regjeringen.no") and parsed.path.lower().endswith(".pdf"):
+            return absolute
+    return None
 
 
 def _inline_text_length(content: LexborNode) -> int:

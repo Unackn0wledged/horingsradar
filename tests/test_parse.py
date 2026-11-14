@@ -3,6 +3,7 @@ from datetime import date
 from conftest import LIST_URL, fixture_text, hearing_url
 
 from horingsradar.sources.regjeringen.parse import (
+    document_page_file,
     hearing_id_from_url,
     html_to_text,
     normalize_status,
@@ -156,3 +157,35 @@ def test_listing_pagination_on_later_pages():
     page = parse_listing(fixture_text("list_page2.html"), LIST_URL)
     assert page.next_url == f"{LIST_URL}?page=3"
     assert len(page.items) == 20
+
+
+def test_notat_published_as_its_own_document_page():
+    # NOU 2026:12: the «Høringsnotat» box links to the NOU's page, not to the PDF.
+    h = hearing(3190689)
+    assert [(d.kind, d.via_page) for d in h.documents] == [
+        ("horingsbrev", False),
+        ("horingsnotat", True),
+    ]
+    nou = h.documents[1]
+    assert nou.url == "https://www.regjeringen.no/no/dokumenter/nou-2026-12/id3190350/"
+    assert nou.title == "NOU 2026: 12"
+
+
+def test_document_page_offers_its_pdf():
+    url = "https://www.regjeringen.no/no/dokumenter/nou-2026-12/id3190350/"
+    assert document_page_file(fixture_text("docpage_3190350.html"), url) == (
+        "https://www.regjeringen.no/contentassets/8089c2908e604358ac67a5b9cbdf8d6e"
+        "/no/pdfs/nou202620260012000dddpdfs.pdf"
+    )
+    assert document_page_file("<html><body><p>Ingen fil</p></body></html>", url) is None
+
+
+def test_document_pages_are_not_followed_from_the_letter():
+    html = fixture_text("hearing_3190689.html").replace(
+        "Departementet gjør også oppmerksom",
+        '<a href="/no/dokumenter/meld.-st.-9-20242025/id3075000/">Meld. St. 9</a> Departementet gjør også oppmerksom',
+    )
+    h = parse_hearing(html, hearing_url(3190689))
+    assert [d.url for d in h.documents if d.via_page] == [
+        "https://www.regjeringen.no/no/dokumenter/nou-2026-12/id3190350/"
+    ]
