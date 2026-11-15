@@ -59,14 +59,14 @@ Lab (LXC, bare utgående trafikk)
 
 ## Innhold på siden
 
-Basert på mockupen (lokalt, ikke i repoet):
+Første versjon var basert på en mockup (lokalt, ikke i repoet). Oppsettet ble lagt om 2026-11-15 etter en gjennomgang av hvor mange klikk det tar å finne riktig høring og riktig informasjon.
 
-- **Periode:** publisert siste 1, 2, 3, 4 eller 8 uker, eller alle. Gjelder liste, tall og filtre.
-- **Tall øverst:** høy relevans og åpne; høy/middels med frist innen 3 uker; nye eller endret siden forrige besøk; åpne totalt. Klikkbare som snarveier.
-- **Faner:** Aktuelle (åpne for høring), Nye, Alle, Følger.
-- **Filtre:** søk, relevans, sektor, departement, målvirksomheten på adresselisten. Sortering på relevans, frist eller dato.
-- **Liste:** høy og middels som kort; lav og ingen samlet i en sammenleggbar liste. Merker for Ny, Endret og adresseliste. Ulest-prikk.
-- **Høringsside** (dekker hele vinduet, med «Tilbake til oversikten»): begrunnelse, sammendrag, sider å lese med lenke til riktig side, funn med sitat og kontrollmerke, dokumenter, fakta (departement, datoer, status, adresseliste), knappene «Åpne på regjeringen.no», «Følg», «Kopier lenke» og «Last ned PDF».
+- **Topplinje:** fanene På høring, Nye siden sist, Alle og Følger, med antall. Innholdet er midtstilt med en maksbredde.
+- **Filterkolonne** til venstre (på mobil bak knappen «Filter»): søk; relevans som fargede knapper med antall; frist (alle eller innen 3 uker); målvirksomheten på adresselisten (alle, ja, nei); sektor; departement; periode (publisert siste 1, 2, 3, 4 eller 8 uker, eller alle). Under: forklaring av fet tittel, Ny, Endret og Adresseliste, og temavalg (Auto, Lys, Mørk).
+- **Sortering** over listen: relevans, frist eller publisert.
+- **Liste:** farget stripe i relevansfargen; ved sortering på relevans én overskrift per nivå. Hver rad viser tittel, begrunnelsen for relevansnivået, departement, publisert, sektor, merket Adresseliste og frist med dager igjen. Ulest høring har fet tittel. Bokmerke for å følge, og ⋯ med lenke til regjeringen.no og PDF. Lav og ingen, og ikke vurdert, er samlet i sammenleggbare lister.
+- **Høringsside** (dekker hele vinduet, med «Tilbake til oversikten» og «Forrige/Neste» gjennom listen slik den er filtrert): begrunnelse, sammendrag, sider å lese med lenke til riktig side, funn med sitat og kontrollmerke, endringer, dokumenter og merknader. Knappene «Åpne på regjeringen.no», «Følg», «Kopier lenke» og «Last ned PDF» og faktaene (departement, datoer, status, adresseliste, sektor, personvernkapittel, vurdert) står i en egen kolonne.
+- **Utseende:** varme, rolige farger; overskrifter og titler i Source Serif 4, brødtekst i Source Sans 3 (begge OFL og vendret i repoet). Lys og mørk etter systemet, eller valgt på siden.
 - **Bunntekst:** privat prosjekt, ikke en offisiell tjeneste; vurderingene er KI-generert og må kontrolleres mot kilden. Ingen navn eller logo fra arbeidsgiver.
 - Ingenting som koster penger eller starter jobber. `noindex` og `robots.txt` som stenger søkemotorer ute.
 

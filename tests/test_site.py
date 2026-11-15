@@ -79,7 +79,9 @@ def test_site_has_all_files(settings, conn):
         "_headers",
         "assets/site.css",
         "assets/site.js",
+        "assets/theme.js",
         "assets/fonts/SourceSans3-Regular.ttf",
+        "assets/fonts/SourceSerif4-Semibold.woff2",
     ):
         assert (site / name).is_file(), name
     assert result["hearings"] == 40

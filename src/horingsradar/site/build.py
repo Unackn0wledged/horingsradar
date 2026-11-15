@@ -42,7 +42,8 @@ log = logging.getLogger(__name__)
 
 HERE = Path(__file__).parent
 FONTS_DIR = HERE.parent / "report" / "fonts"
-STATIC_FILES = ("site.css", "site.js")
+WEB_FONTS_DIR = HERE / "static" / "fonts"  # web-only fonts (Source Serif 4 headings)
+STATIC_FILES = ("site.css", "site.js", "theme.js")
 MAX_CHANGES = 10
 
 ROBOTS_TXT = "User-agent: *\nDisallow: /\n"
@@ -284,7 +285,7 @@ def build_site(
     (work / "index.html").write_text(index, encoding="utf-8")
     for name in STATIC_FILES:
         shutil.copy2(HERE / "static" / name, work / "assets" / name)
-    for font in sorted(FONTS_DIR.glob("*.ttf")):
+    for font in sorted(FONTS_DIR.glob("*.ttf")) + sorted(WEB_FONTS_DIR.glob("*.woff2")):
         shutil.copy2(font, work / "assets" / "fonts" / font.name)
     (work / "robots.txt").write_text(ROBOTS_TXT, encoding="utf-8")
     (work / "_headers").write_text(HEADERS, encoding="utf-8")
